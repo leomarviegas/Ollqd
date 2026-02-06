@@ -1,0 +1,23 @@
+# Ollqd Configuration
+
+[ollama]
+host = "http://localhost:11434"
+chat_model = "qwen2.5:14b"
+embed_model = "nomic-embed-text"
+timeout = 120
+
+[qdrant]
+host = "http://localhost:6333"
+default_collection = "codebase"
+
+[indexing]
+chunk_size = 512
+chunk_overlap = 64
+max_file_size_kb = 512
+
+[server]
+name = "ollqd-rag-server"
+transport = "stdio"
+
+[client]
+max_tool_rounds = 6
