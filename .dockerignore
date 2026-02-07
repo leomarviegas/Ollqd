@@ -1,0 +1,13 @@
+.venv
+.git
+.pytest_cache
+__pycache__
+*.pyc
+_docs
+tests
+*.egg-info
+.gitignore
+README.md
+DESIGN.md
+LICENSE
+ollqd.toml

@@ -14,14 +14,38 @@ services:
   ollama:
     image: ollama/ollama:latest
     container_name: ollqd-ollama
+    entrypoint: ["/bin/bash", "/ollama-entrypoint.sh"]
     ports:
       - "11434:11434"
     volumes:
       - ollama_data:/root/.ollama
+      - ./ollama-entrypoint.sh:/ollama-entrypoint.sh:ro
     environment:
       - OLLAMA_KEEP_ALIVE=24h
+    restart: unless-stopped
+
+  web:
+    build: .
+    container_name: ollqd-web
+    ports:
+      - "8000:8000"
+    volumes:
+      - /Users/alfagnish/VSCode:/Users/alfagnish/VSCode:ro
+      - /tmp:/tmp
+      - uploads_data:/uploads
+    environment:
+      - OLLAMA_URL=http://ollama:11434
+      - QDRANT_URL=http://qdrant:6333
+      - MOUNTED_PATHS=/Users/alfagnish/VSCode,/tmp
+      - UPLOAD_DIR=/uploads
+      - PII_MASKING_ENABLED=false
+      - PII_USE_SPACY=true
+    depends_on:
+      - qdrant
+      - ollama
     restart: unless-stopped
 
 volumes:
   qdrant_data:
   ollama_data:
+  uploads_data:

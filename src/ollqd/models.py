@@ -42,6 +42,17 @@ class SearchResult:
 
 
 @dataclass
+class ImageFileInfo:
+    path: str
+    abs_path: str
+    extension: str
+    size_bytes: int
+    content_hash: str
+    width: Optional[int] = None
+    height: Optional[int] = None
+
+
+@dataclass
 class IndexingStats:
     files_discovered: int = 0
     files_indexed: int = 0

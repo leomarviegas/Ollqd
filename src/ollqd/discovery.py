@@ -6,7 +6,7 @@ import os
 from pathlib import Path
 from typing import Optional
 
-from .models import FileInfo
+from .models import FileInfo, ImageFileInfo
 
 log = logging.getLogger("ollqd.discovery")
 
@@ -101,3 +101,60 @@ def discover_files(
 
     log.info("Discovered %d indexable files", len(files))
     return files
+
+
+IMAGE_EXTENSIONS: set[str] = {".png", ".jpg", ".jpeg", ".gif", ".webp", ".bmp", ".tiff"}
+
+
+def discover_images(
+    root: Path,
+    max_image_size_kb: int = 10240,
+    extra_skip_dirs: Optional[set[str]] = None,
+) -> list[ImageFileInfo]:
+    """Walk directory tree and collect image files."""
+    skip = SKIP_DIRS | (extra_skip_dirs or set())
+    images: list[ImageFileInfo] = []
+
+    for dirpath, dirnames, filenames in os.walk(root):
+        dirnames[:] = [d for d in dirnames if d not in skip and not d.startswith(".")]
+
+        for fname in filenames:
+            ext = Path(fname).suffix.lower()
+            if ext not in IMAGE_EXTENSIONS:
+                continue
+
+            full = Path(dirpath) / fname
+            try:
+                stat = full.stat()
+            except OSError:
+                continue
+
+            if stat.st_size > max_image_size_kb * 1024:
+                continue
+
+            try:
+                content = full.read_bytes()
+                content_hash = hashlib.sha256(content).hexdigest()
+            except (OSError, PermissionError):
+                continue
+
+            width, height = None, None
+            try:
+                from PIL import Image
+                with Image.open(full) as img:
+                    width, height = img.size
+            except Exception:
+                pass
+
+            images.append(ImageFileInfo(
+                path=str(full.relative_to(root)),
+                abs_path=str(full),
+                extension=ext,
+                size_bytes=stat.st_size,
+                content_hash=content_hash,
+                width=width,
+                height=height,
+            ))
+
+    log.info("Discovered %d image files", len(images))
+    return images

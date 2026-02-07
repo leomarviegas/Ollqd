@@ -6,6 +6,147 @@ from typing import Optional
 from .models import Chunk, FileInfo
 
 
+def chunk_pdf(
+    file_path: str,
+    pdf_bytes: bytes,
+    chunk_size: int = 512,
+    chunk_overlap: int = 64,
+    content_hash: str = "",
+) -> list[Chunk]:
+    """Extract text from PDF and chunk by paragraph boundaries."""
+    import fitz  # PyMuPDF
+
+    doc = fitz.open(stream=pdf_bytes, filetype="pdf")
+    pages_text = []
+    for page in doc:
+        pages_text.append(page.get_text("text"))
+    doc.close()
+
+    full_text = "\n\n".join(pages_text)
+    if not full_text.strip():
+        return []
+
+    return chunk_document(
+        file_path=file_path,
+        content=full_text,
+        language="text",
+        chunk_size=chunk_size,
+        chunk_overlap=chunk_overlap,
+        content_hash=content_hash,
+    )
+
+
+def chunk_docx(
+    file_path: str,
+    docx_bytes: bytes,
+    chunk_size: int = 512,
+    chunk_overlap: int = 64,
+    content_hash: str = "",
+) -> list[Chunk]:
+    """Extract text from .docx (paragraphs + tables) and chunk."""
+    from io import BytesIO
+    from docx import Document
+
+    doc = Document(BytesIO(docx_bytes))
+    parts: list[str] = []
+    for p in doc.paragraphs:
+        if p.text.strip():
+            parts.append(p.text.strip())
+    for table in doc.tables:
+        for row in table.rows:
+            cells = [cell.text.strip() for cell in row.cells if cell.text.strip()]
+            if cells:
+                parts.append(" | ".join(cells))
+
+    full_text = "\n\n".join(parts)
+    if not full_text.strip():
+        return []
+
+    return chunk_document(
+        file_path=file_path,
+        content=full_text,
+        language="text",
+        chunk_size=chunk_size,
+        chunk_overlap=chunk_overlap,
+        content_hash=content_hash,
+    )
+
+
+def chunk_xlsx(
+    file_path: str,
+    xlsx_bytes: bytes,
+    chunk_size: int = 512,
+    chunk_overlap: int = 64,
+    content_hash: str = "",
+) -> list[Chunk]:
+    """Extract text from .xlsx (all sheets, rows as pipe-delimited) and chunk."""
+    from io import BytesIO
+    from openpyxl import load_workbook
+
+    wb = load_workbook(BytesIO(xlsx_bytes), read_only=True, data_only=True)
+    sheets_text: list[str] = []
+    for ws in wb:
+        rows: list[str] = []
+        for row in ws.iter_rows(values_only=True):
+            cells = [str(c) for c in row if c is not None]
+            if cells:
+                rows.append(" | ".join(cells))
+        if rows:
+            sheets_text.append(f"Sheet: {ws.title}\n" + "\n".join(rows))
+    wb.close()
+
+    full_text = "\n\n".join(sheets_text)
+    if not full_text.strip():
+        return []
+
+    return chunk_document(
+        file_path=file_path,
+        content=full_text,
+        language="text",
+        chunk_size=chunk_size,
+        chunk_overlap=chunk_overlap,
+        content_hash=content_hash,
+    )
+
+
+def chunk_pptx(
+    file_path: str,
+    pptx_bytes: bytes,
+    chunk_size: int = 512,
+    chunk_overlap: int = 64,
+    content_hash: str = "",
+) -> list[Chunk]:
+    """Extract text from .pptx (slide text frames) and chunk."""
+    from io import BytesIO
+    from pptx import Presentation
+
+    prs = Presentation(BytesIO(pptx_bytes))
+    slides_text: list[str] = []
+    for i, slide in enumerate(prs.slides, 1):
+        texts: list[str] = []
+        for shape in slide.shapes:
+            if shape.has_text_frame:
+                for para in shape.text_frame.paragraphs:
+                    text = para.text.strip()
+                    if text:
+                        texts.append(text)
+        if texts:
+            slides_text.append(f"Slide {i}\n" + "\n".join(texts))
+
+    full_text = "\n\n".join(slides_text)
+    if not full_text.strip():
+        return []
+
+    return chunk_document(
+        file_path=file_path,
+        content=full_text,
+        language="text",
+        chunk_size=chunk_size,
+        chunk_overlap=chunk_overlap,
+        content_hash=content_hash,
+    )
+
+
 def _is_boundary_line(line: str, language: str) -> bool:
     """Heuristic: is this line a natural split point?"""
     stripped = line.strip()

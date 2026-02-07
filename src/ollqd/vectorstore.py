@@ -22,13 +22,21 @@ log = logging.getLogger("ollqd.vectorstore")
 class QdrantManager:
     """Manages Qdrant collections and point operations."""
 
-    def __init__(self, url: str, collection: str, dimension: int):
+    def __init__(self, url: str, collection: str, dimension: int, distance: str = "Cosine"):
         try:
             self.client = QdrantClient(url=url)
         except Exception as e:
             raise VectorStoreError(f"Cannot connect to Qdrant at {url}: {e}") from e
         self.collection = collection
         self.dimension = dimension
+        self.distance = distance
+
+    _distance_map = {
+        "Cosine": Distance.COSINE,
+        "Euclid": Distance.EUCLID,
+        "Dot": Distance.DOT,
+        "Manhattan": Distance.MANHATTAN,
+    }
 
     def ensure_collection(self):
         collections = [c.name for c in self.client.get_collections().collections]
@@ -36,9 +44,10 @@ class QdrantManager:
             log.info("Collection '%s' already exists", self.collection)
             return
 
+        dist = self._distance_map.get(self.distance, Distance.COSINE)
         self.client.create_collection(
             collection_name=self.collection,
-            vectors_config=VectorParams(size=self.dimension, distance=Distance.COSINE),
+            vectors_config=VectorParams(size=self.dimension, distance=dist),
         )
         for field in ("file_path", "language", "content_hash"):
             self.client.create_payload_index(
@@ -46,7 +55,7 @@ class QdrantManager:
                 field_name=field,
                 field_schema=PayloadSchemaType.KEYWORD,
             )
-        log.info("Created collection '%s' (dim=%d, cosine)", self.collection, self.dimension)
+        log.info("Created collection '%s' (dim=%d, %s)", self.collection, self.dimension, self.distance)
 
     def get_indexed_hashes(self) -> dict[str, str]:
         result: dict[str, str] = {}
@@ -104,14 +113,23 @@ class QdrantManager:
 
         hits = []
         for point in results.points:
-            hits.append({
+            hit = {
                 "score": point.score,
                 "file_path": point.payload.get("file_path", ""),
                 "language": point.payload.get("language", ""),
                 "lines": f"{point.payload.get('start_line', '?')}-{point.payload.get('end_line', '?')}",
                 "chunk": f"{point.payload.get('chunk_index', 0) + 1}/{point.payload.get('total_chunks', '?')}",
                 "content": point.payload.get("content", ""),
-            })
+            }
+            # Include extra fields for image results
+            if point.payload.get("language") == "image":
+                hit["abs_path"] = point.payload.get("abs_path", "")
+                hit["caption"] = point.payload.get("caption", "")
+                hit["image_type"] = point.payload.get("image_type", "")
+                if point.payload.get("width"):
+                    hit["width"] = point.payload["width"]
+                    hit["height"] = point.payload["height"]
+            hits.append(hit)
         return hits
 
     def count(self) -> int:

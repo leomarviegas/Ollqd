@@ -3,7 +3,7 @@
 [ollama]
 host = "http://localhost:11434"
 chat_model = "qwen2.5:14b"
-embed_model = "nomic-embed-text"
+embed_model = "qwen3-embedding:0.6b"
 timeout = 120
 
 [qdrant]

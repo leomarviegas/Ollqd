@@ -1,0 +1,1218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ollqd WebUI</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body x-data="app()" x-init="init()" class="bg-gray-50 min-h-screen">
+
+<!-- Sidebar + Main Layout -->
+<div class="flex h-screen">
+  <!-- Sidebar -->
+  <aside class="w-56 bg-gray-900 text-white flex flex-col">
+    <div class="p-4 border-b border-gray-700">
+      <h1 class="text-lg font-bold tracking-tight">Ollqd</h1>
+      <p class="text-xs text-gray-400 mt-0.5">Ollama + Qdrant RAG</p>
+    </div>
+    <nav class="flex-1 p-2 space-y-1">
+      <template x-for="item in nav" :key="item.id">
+        <button @click="view = item.id; if(item.load) item.load()"
+                :class="view === item.id ? 'bg-gray-700 text-white' : 'text-gray-300 hover:bg-gray-800 hover:text-white'"
+                class="w-full flex items-center gap-2 px-3 py-2 text-sm rounded-md transition-colors">
+          <i :class="item.icon" class="w-4 text-center"></i>
+          <span x-text="item.label"></span>
+        </button>
+      </template>
+    </nav>
+    <!-- Health -->
+    <div class="p-3 border-t border-gray-700 text-xs space-y-1">
+      <div class="flex items-center justify-between">
+        <span class="text-gray-400">Ollama</span>
+        <span class="flex items-center gap-1">
+          <span class="w-2 h-2 rounded-full" :class="health.ollama ? 'bg-green-400' : 'bg-red-400'"></span>
+          <span :class="health.ollama ? 'text-green-400' : 'text-red-400'" x-text="health.ollama ? 'up' : 'down'"></span>
+        </span>
+      </div>
+      <div class="flex items-center justify-between">
+        <span class="text-gray-400">Qdrant</span>
+        <span class="flex items-center gap-1">
+          <span class="w-2 h-2 rounded-full" :class="health.qdrant ? 'bg-green-400' : 'bg-red-400'"></span>
+          <span :class="health.qdrant ? 'text-green-400' : 'text-red-400'" x-text="health.qdrant ? 'up' : 'down'"></span>
+        </span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="flex-1 overflow-y-auto">
+    <div class="max-w-6xl mx-auto p-6">
+
+      <!-- ═══ Dashboard ═══ -->
+      <div x-show="view === 'dashboard'" x-cloak class="fade-in">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">Dashboard</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+          <div class="bg-white rounded-lg shadow p-5">
+            <p class="text-sm text-gray-500">Collections</p>
+            <p class="text-3xl font-bold mt-1" x-text="collections.length"></p>
+          </div>
+          <div class="bg-white rounded-lg shadow p-5">
+            <p class="text-sm text-gray-500">Total Vectors</p>
+            <p class="text-3xl font-bold mt-1" x-text="collections.reduce((s,c) => s + c.points_count, 0).toLocaleString()"></p>
+          </div>
+          <div class="bg-white rounded-lg shadow p-5">
+            <p class="text-sm text-gray-500">Models</p>
+            <p class="text-3xl font-bold mt-1" x-text="models.length"></p>
+          </div>
+        </div>
+        <!-- Collections table -->
+        <div class="bg-white rounded-lg shadow overflow-hidden">
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Collection</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Points</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Dimensions</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Distance</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200">
+              <template x-for="c in collections" :key="c.name">
+                <tr class="hover:bg-gray-50">
+                  <td class="px-4 py-3 text-sm font-medium text-blue-600" x-text="c.name"></td>
+                  <td class="px-4 py-3 text-sm text-gray-700" x-text="c.points_count.toLocaleString()"></td>
+                  <td class="px-4 py-3 text-sm text-gray-700" x-text="c.config?.size || '—'"></td>
+                  <td class="px-4 py-3 text-sm text-gray-700" x-text="c.config?.distance || '—'"></td>
+                  <td class="px-4 py-3"><span class="text-xs px-2 py-0.5 rounded-full bg-green-100 text-green-700" x-text="c.status"></span></td>
+                </tr>
+              </template>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ═══ Collections ═══ -->
+      <div x-show="view === 'collections'" x-cloak class="fade-in">
+        <div class="flex justify-between items-center mb-6">
+          <h2 class="text-2xl font-bold text-gray-900">Collections</h2>
+          <button @click="showModal = 'create-collection'" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm">Create Collection</button>
+        </div>
+        <div class="space-y-3">
+          <template x-for="c in collections" :key="c.name">
+            <div class="bg-white rounded-lg shadow p-4 flex items-center justify-between">
+              <div>
+                <p class="font-medium text-gray-900" x-text="c.name"></p>
+                <p class="text-sm text-gray-500"><span x-text="c.points_count.toLocaleString()"></span> points &middot; <span x-text="c.config?.size"></span>d &middot; <span x-text="c.config?.distance"></span></p>
+              </div>
+              <div class="flex gap-2">
+                <button @click="browseCollection(c.name)" class="text-sm text-blue-600 hover:text-blue-800 px-3 py-1 rounded border border-blue-200 hover:bg-blue-50">Browse</button>
+                <button @click="searchInCollection(c.name)" class="text-sm text-green-600 hover:text-green-800 px-3 py-1 rounded border border-green-200 hover:bg-green-50">Search</button>
+                <button @click="confirmDeleteCollection(c.name)" class="text-sm text-red-600 hover:text-red-800 px-3 py-1 rounded border border-red-200 hover:bg-red-50">Delete</button>
+              </div>
+            </div>
+          </template>
+        </div>
+
+        <!-- Browse Points -->
+        <div x-show="browsingCollection" x-cloak class="mt-6">
+          <div class="flex justify-between items-center mb-3">
+            <h3 class="text-lg font-semibold">Points in <span class="text-blue-600" x-text="browsingCollection"></span></h3>
+            <button @click="browsingCollection = null; browsePoints = []" class="text-sm text-gray-500 hover:text-gray-700">Close</button>
+          </div>
+          <div class="space-y-2">
+            <template x-for="p in browsePoints" :key="p.id">
+              <div class="bg-white rounded shadow p-3 text-sm">
+                <div class="flex justify-between mb-1">
+                  <span class="font-mono text-xs text-gray-500" x-text="p.id"></span>
+                  <span class="text-xs text-gray-400" x-text="p.payload?.language"></span>
+                </div>
+                <p class="text-gray-600 text-xs" x-text="p.payload?.file_path"></p>
+                <template x-if="p.payload?.language === 'image'">
+                  <div class="mt-2">
+                    <img :src="'/api/rag/image?path=' + encodeURIComponent(p.payload?.abs_path || '')" class="image-thumb rounded" alt="thumbnail">
+                    <p class="text-xs text-gray-600 mt-1" x-text="p.payload?.caption || p.payload?.content"></p>
+                  </div>
+                </template>
+                <template x-if="p.payload?.language !== 'image'">
+                  <pre class="mt-1 text-xs bg-gray-50 p-2 rounded max-h-32 overflow-auto" x-text="(p.payload?.content || '').slice(0, 300)"></pre>
+                </template>
+              </div>
+            </template>
+          </div>
+          <button x-show="browseNextOffset" @click="loadMorePoints()" class="mt-3 text-sm text-blue-600 hover:text-blue-800">Load more...</button>
+        </div>
+
+        <!-- Search in Collection -->
+        <div x-show="searchingCollection" x-cloak class="mt-6">
+          <div class="flex justify-between items-center mb-3">
+            <h3 class="text-lg font-semibold">Search <span class="text-blue-600" x-text="searchingCollection"></span></h3>
+            <button @click="searchingCollection = null; searchResults = []" class="text-sm text-gray-500 hover:text-gray-700">Close</button>
+          </div>
+          <form @submit.prevent="runCollectionSearch()" class="flex gap-2 mb-4">
+            <input x-model="searchQuery" type="text" placeholder="Enter search query..." class="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+            <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm">Search</button>
+          </form>
+          <div class="space-y-2">
+            <template x-for="r in searchResults" :key="r.id">
+              <div class="bg-white rounded shadow p-3 text-sm">
+                <div class="flex justify-between mb-1">
+                  <span class="font-medium text-gray-900" x-text="r.file_path"></span>
+                  <span class="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full" x-text="(r.score * 100).toFixed(1) + '%'"></span>
+                </div>
+                <template x-if="r.language === 'image'">
+                  <div class="mt-2">
+                    <img :src="'/api/rag/image?path=' + encodeURIComponent(r.abs_path || r.file_path)" class="image-thumb rounded" alt="thumbnail">
+                    <p class="text-xs text-gray-600 mt-1" x-text="r.content"></p>
+                  </div>
+                </template>
+                <template x-if="r.language !== 'image'">
+                  <div>
+                    <p class="text-xs text-gray-500">Lines <span x-text="r.lines"></span></p>
+                    <pre class="mt-1 text-xs bg-gray-50 p-2 rounded max-h-32 overflow-auto" x-text="(r.content || '').slice(0, 400)"></pre>
+                  </div>
+                </template>
+              </div>
+            </template>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ Models ═══ -->
+      <div x-show="view === 'models'" x-cloak class="fade-in">
+        <div class="flex justify-between items-center mb-6">
+          <h2 class="text-2xl font-bold text-gray-900">Ollama Models</h2>
+          <div class="flex gap-2">
+            <button @click="loadRunningModels()" class="text-sm text-gray-600 hover:text-gray-800 px-3 py-2 rounded border border-gray-200 hover:bg-gray-50">Running</button>
+            <button @click="showModal = 'pull-model'" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm">Pull Model</button>
+          </div>
+        </div>
+        <div x-show="runningModels.length > 0" class="mb-4 bg-green-50 rounded-lg p-3">
+          <p class="text-sm font-medium text-green-800 mb-2">Running Models</p>
+          <template x-for="m in runningModels" :key="m.name">
+            <p class="text-sm text-green-700"><span x-text="m.name"></span> — <span x-text="formatBytes(m.size)"></span> VRAM</p>
+          </template>
+        </div>
+        <div class="space-y-3">
+          <template x-for="m in models" :key="m.name">
+            <div class="bg-white rounded-lg shadow p-4 flex items-center justify-between">
+              <div>
+                <p class="font-medium text-gray-900" x-text="m.name"></p>
+                <p class="text-sm text-gray-500">
+                  <span x-text="formatBytes(m.size)"></span>
+                  &middot; <span x-text="m.details?.family || '—'"></span>
+                  &middot; <span x-text="m.details?.parameter_size || '—'"></span>
+                  &middot; <span x-text="m.details?.quantization_level || '—'"></span>
+                </p>
+              </div>
+              <div class="flex gap-2">
+                <button @click="showModelDetails(m.name)" class="text-sm text-blue-600 hover:text-blue-800 px-3 py-1 rounded border border-blue-200 hover:bg-blue-50">Details</button>
+                <button @click="confirmDeleteModel(m.name)" class="text-sm text-red-600 hover:text-red-800 px-3 py-1 rounded border border-red-200 hover:bg-red-50">Delete</button>
+              </div>
+            </div>
+          </template>
+        </div>
+        <div x-show="pullProgress" x-cloak class="mt-4 bg-white rounded-lg shadow p-4">
+          <p class="text-sm font-medium mb-2">Pulling: <span x-text="pullModelName" class="text-blue-600"></span></p>
+          <div class="w-full bg-gray-200 rounded-full h-2 mb-1">
+            <div class="bg-blue-600 h-2 rounded-full transition-all" :style="`width:${pullProgress}%`"></div>
+          </div>
+          <p class="text-xs text-gray-500" x-text="pullStatus"></p>
+        </div>
+      </div>
+
+      <!-- ═══ RAG Chat ═══ -->
+      <div x-show="view === 'chat'" x-cloak class="fade-in flex flex-col" style="height: calc(100vh - 3rem);">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-2xl font-bold text-gray-900">RAG Chat</h2>
+          <div class="flex items-center gap-3 text-sm">
+            <button @click="clearChat()" class="text-gray-500 hover:text-gray-700 px-3 py-1 rounded border border-gray-200 hover:bg-gray-50"><i class="fa-solid fa-broom mr-1"></i>Clear</button>
+            <label class="text-gray-500">Collection:</label>
+            <select x-model="chatCollection" class="border border-gray-300 rounded px-2 py-1 text-sm">
+              <template x-for="c in collections" :key="c.name">
+                <option :value="c.name" x-text="c.name"></option>
+              </template>
+            </select>
+            <label class="text-gray-500">Model:</label>
+            <select x-model="chatModel" class="border border-gray-300 rounded px-2 py-1 text-sm">
+              <template x-for="m in models" :key="m.name">
+                <option :value="m.name" x-text="m.name"></option>
+              </template>
+            </select>
+            <label class="flex items-center gap-1.5 text-gray-500 cursor-pointer ml-1 pl-2 border-l border-gray-200">
+              <input type="checkbox" x-model="piiChatEnabled" class="rounded border-gray-300 text-purple-600 h-3.5 w-3.5">
+              <span class="text-xs whitespace-nowrap"><i class="fa-solid fa-shield-halved" :class="piiChatEnabled ? 'text-purple-600' : 'text-gray-400'"></i> PII</span>
+            </label>
+          </div>
+        </div>
+        <div class="flex-1 bg-white rounded-lg shadow overflow-y-auto p-4 space-y-4" x-ref="chatBox">
+          <template x-for="msg in chatMessages" :key="msg.id">
+            <div :class="msg.role === 'user' ? 'flex justify-end' : 'flex justify-start'">
+              <div :class="msg.role === 'user' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-900'"
+                   class="max-w-2xl px-4 py-3 rounded-2xl text-sm chat-content" :class="msg.streaming && 'streaming'">
+                <div x-html="msg.html || msg.content"></div>
+                <template x-if="msg.piiMasked">
+                  <div class="mt-1 flex items-center gap-1 text-xs opacity-50">
+                    <i class="fa-solid fa-shield-halved text-purple-500"></i>
+                    <span x-text="msg.piiEntitiesCount + ' PII entities masked'"></span>
+                  </div>
+                </template>
+                <template x-if="msg.sources && msg.sources.length">
+                  <div class="mt-2 pt-2 border-t" :class="msg.role === 'user' ? 'border-blue-500' : 'border-gray-300'">
+                    <p class="text-xs font-semibold mb-1">Sources:</p>
+                    <template x-for="s in msg.sources">
+                      <div class="mb-1">
+                        <template x-if="s.language === 'image'">
+                          <div class="flex items-start gap-2">
+                            <img :src="'/api/rag/image?path=' + encodeURIComponent(s.abs_path || s.file_path)" class="image-thumb-sm rounded" alt="">
+                            <span class="text-xs opacity-75" x-text="s.file_path + ' (' + (s.score*100).toFixed(0) + '%)'"></span>
+                          </div>
+                        </template>
+                        <template x-if="s.language !== 'image'">
+                          <p class="text-xs opacity-75" x-text="s.file_path + ' L' + s.lines + ' (' + (s.score*100).toFixed(0) + '%)'"></p>
+                        </template>
+                      </div>
+                    </template>
+                  </div>
+                </template>
+              </div>
+            </div>
+          </template>
+          <div x-show="chatMessages.length === 0" class="text-center text-gray-400 py-20">
+            <p class="text-lg">Ask a question about your codebase</p>
+            <p class="text-sm mt-1">Make sure you've indexed a project first</p>
+          </div>
+        </div>
+        <div class="mt-3 flex gap-2">
+          <input x-model="chatInput" @keyup.enter="sendChat()" type="text"
+                 placeholder="Ask about your code..." :disabled="chatStreaming"
+                 class="flex-1 border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100">
+          <button @click="sendChat()" :disabled="!chatInput.trim() || chatStreaming"
+                  class="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white px-5 py-2.5 rounded-lg text-sm font-medium">
+            Send
+          </button>
+        </div>
+      </div>
+
+      <!-- ═══ Indexing ═══ -->
+      <div x-show="view === 'indexing'" x-cloak class="fade-in">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">Indexing</h2>
+        <!-- Mounted Paths (editable) -->
+        <div class="mb-4 bg-blue-50 border border-blue-200 rounded-lg p-3">
+          <div class="flex items-center justify-between mb-2">
+            <div class="flex items-center gap-2 text-sm text-blue-800">
+              <i class="fa-solid fa-folder-open text-blue-500"></i>
+              <span class="font-medium">Available Paths</span>
+            </div>
+            <span class="text-xs text-blue-500">Paths accessible for indexing</span>
+          </div>
+          <div class="flex flex-wrap gap-1.5 mb-2">
+            <template x-for="p in mountedPaths" :key="p">
+              <span class="inline-flex items-center gap-1 bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs">
+                <code x-text="p"></code>
+                <button @click="removeMountedPath(p)" class="text-blue-400 hover:text-red-500 ml-0.5" title="Remove">&times;</button>
+              </span>
+            </template>
+            <span x-show="mountedPaths.length === 0" class="text-xs text-blue-400 italic py-1">No paths configured</span>
+          </div>
+          <form @submit.prevent="addMountedPath()" class="flex gap-2">
+            <input x-model="newMountedPath" type="text" placeholder="/path/to/mount"
+                   class="flex-1 border border-blue-200 bg-white rounded px-2 py-1 text-xs focus:ring-1 focus:ring-blue-400 focus:border-blue-400">
+            <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-xs">Add</button>
+          </form>
+        </div>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <!-- Index Form (Tabbed) -->
+          <div class="bg-white rounded-lg shadow p-6">
+            <div class="flex border-b border-gray-200 mb-4">
+              <button @click="indexTab = 'codebase'"
+                      :class="indexTab === 'codebase' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700'"
+                      class="px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors">
+                <i class="fa-solid fa-code mr-1"></i> Codebase
+              </button>
+              <button @click="indexTab = 'images'"
+                      :class="indexTab === 'images' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700'"
+                      class="px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors">
+                <i class="fa-solid fa-image mr-1"></i> Images
+              </button>
+              <button @click="indexTab = 'upload'"
+                      :class="indexTab === 'upload' ? 'border-green-600 text-green-600' : 'border-transparent text-gray-500 hover:text-gray-700'"
+                      class="px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors">
+                <i class="fa-solid fa-upload mr-1"></i> Upload
+              </button>
+            </div>
+
+            <!-- Codebase Tab -->
+            <form x-show="indexTab === 'codebase'" @submit.prevent="startIndexCodebase()">
+              <div class="space-y-3">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Root Path</label>
+                  <input x-model="indexForm.root_path" type="text" required placeholder="/path/to/project"
+                         class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Collection Name</label>
+                  <input x-model="indexForm.collection" type="text"
+                         class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Chunk Size</label>
+                    <input x-model.number="indexForm.chunk_size" type="number"
+                           class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Chunk Overlap</label>
+                    <input x-model.number="indexForm.chunk_overlap" type="number"
+                           class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+                  </div>
+                </div>
+                <label class="flex items-center gap-2 text-sm">
+                  <input x-model="indexForm.incremental" type="checkbox" class="rounded border-gray-300 text-blue-600">
+                  <span>Incremental (skip unchanged files)</span>
+                </label>
+                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2.5 rounded-lg text-sm font-medium">
+                  Start Indexing
+                </button>
+              </div>
+            </form>
+
+            <!-- Images Tab -->
+            <form x-show="indexTab === 'images'" @submit.prevent="startIndexImages()">
+              <div class="space-y-3">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Root Path</label>
+                  <input x-model="imageIndexForm.root_path" type="text" required placeholder="/path/to/images"
+                         class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Collection Name</label>
+                  <input x-model="imageIndexForm.collection" type="text"
+                         class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Vision Model (optional)</label>
+                  <select x-model="imageIndexForm.vision_model" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+                    <option value="">Default (server config)</option>
+                    <template x-for="m in models" :key="m.name">
+                      <option :value="m.name" x-text="m.name"></option>
+                    </template>
+                  </select>
+                </div>
+                <label class="flex items-center gap-2 text-sm">
+                  <input x-model="imageIndexForm.incremental" type="checkbox" class="rounded border-gray-300 text-blue-600">
+                  <span>Incremental (skip unchanged images)</span>
+                </label>
+                <button type="submit" class="w-full bg-purple-600 hover:bg-purple-700 text-white py-2.5 rounded-lg text-sm font-medium">
+                  <i class="fa-solid fa-image mr-1"></i> Start Image Indexing
+                </button>
+              </div>
+            </form>
+
+            <!-- Upload Tab -->
+            <div x-show="indexTab === 'upload'" class="space-y-3">
+              <!-- Drag & Drop Zone -->
+              <div @dragover.prevent="uploadDragging = true"
+                   @dragleave.prevent="uploadDragging = false"
+                   @drop.prevent="handleUploadDrop($event)"
+                   :class="uploadDragging ? 'border-green-400 bg-green-50' : 'border-gray-300 bg-gray-50'"
+                   class="border-2 border-dashed rounded-lg p-8 text-center transition-colors cursor-pointer"
+                   @click="$refs.uploadInput.click()">
+                <i class="fa-solid fa-cloud-arrow-up text-3xl mb-2"
+                   :class="uploadDragging ? 'text-green-500' : 'text-gray-400'"></i>
+                <p class="text-sm text-gray-600">Drag & drop files here or click to browse</p>
+                <p class="text-xs text-gray-400 mt-1">Supports: .md, .txt, .rst, .html, .pdf, .docx, .xlsx, .pptx, .png, .jpg, .gif, .webp</p>
+                <input type="file" x-ref="uploadInput" @change="handleUploadSelect($event)"
+                       multiple accept=".md,.txt,.rst,.html,.pdf,.docx,.xlsx,.pptx,.png,.jpg,.jpeg,.gif,.webp,.bmp,.tiff" class="hidden">
+              </div>
+
+              <!-- File List -->
+              <div x-show="uploadFiles.length > 0" class="space-y-1 max-h-40 overflow-y-auto">
+                <template x-for="(f, i) in uploadFiles" :key="i">
+                  <div class="flex items-center justify-between bg-white rounded px-3 py-1.5 text-sm border border-gray-200">
+                    <div class="flex items-center gap-2 min-w-0">
+                      <template x-if="/\.(png|jpe?g|gif|webp|bmp|tiff)$/i.test(f.name)">
+                        <img :src="URL.createObjectURL(f)" class="w-8 h-8 object-cover rounded flex-shrink-0" alt="">
+                      </template>
+                      <template x-if="!/\.(png|jpe?g|gif|webp|bmp|tiff)$/i.test(f.name)">
+                        <i class="fa-solid fa-file text-gray-400 text-xs flex-shrink-0"></i>
+                      </template>
+                      <span class="truncate" x-text="f.name"></span>
+                      <span class="text-xs text-gray-400 flex-shrink-0" x-text="formatBytes(f.size)"></span>
+                    </div>
+                    <button @click="removeUploadFile(i)" class="text-gray-400 hover:text-red-500 flex-shrink-0 ml-2">&times;</button>
+                  </div>
+                </template>
+              </div>
+
+              <!-- Options -->
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Collection Name</label>
+                <input x-model="uploadCollection" type="text"
+                       class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-green-500">
+              </div>
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Chunk Size</label>
+                  <input x-model.number="uploadChunkSize" type="number"
+                         class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Chunk Overlap</label>
+                  <input x-model.number="uploadChunkOverlap" type="number"
+                         class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+                </div>
+              </div>
+              <p x-show="uploadFiles.some(f => /\.(png|jpe?g|gif|webp|bmp|tiff)$/i.test(f.name))" class="text-xs text-gray-400">Chunk size/overlap only apply to text files.</p>
+              <!-- Vision Model (shown when images are queued) -->
+              <div x-show="uploadFiles.some(f => /\.(png|jpe?g|gif|webp|bmp|tiff)$/i.test(f.name))">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Vision Model (optional)</label>
+                <select x-model="uploadVisionModel" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-green-500">
+                  <option value="">Default (server config)</option>
+                  <template x-for="m in models" :key="m.name">
+                    <option :value="m.name" x-text="m.name"></option>
+                  </template>
+                </select>
+                <p class="text-xs text-gray-400 mt-1">Images will be captioned using this vision model, then the caption is embedded for semantic search.</p>
+              </div>
+              <button @click="startUpload()" :disabled="!uploadFiles.length"
+                      class="w-full bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white py-2.5 rounded-lg text-sm font-medium">
+                <i class="fa-solid fa-upload mr-1"></i> Upload & Index
+                <span x-show="uploadFiles.length > 0" x-text="'(' + uploadFiles.length + ' files)'"></span>
+              </button>
+            </div>
+          </div>
+          <!-- Tasks (Enhanced) -->
+          <div class="bg-white rounded-lg shadow p-6">
+            <div class="flex justify-between items-center mb-4">
+              <h3 class="text-lg font-semibold">Tasks</h3>
+              <div class="flex items-center gap-2">
+                <select x-model="taskFilter" class="text-xs border border-gray-200 rounded px-2 py-1">
+                  <option value="all">All</option>
+                  <option value="running">Running</option>
+                  <option value="completed">Completed</option>
+                  <option value="failed">Failed</option>
+                  <option value="cancelled">Cancelled</option>
+                </select>
+                <label class="flex items-center gap-1 text-xs text-gray-500 cursor-pointer">
+                  <input type="checkbox" :checked="taskAutoRefresh" @change="toggleTaskAutoRefresh()" class="rounded border-gray-300 text-blue-600 h-3 w-3">
+                  Auto
+                </label>
+                <button @click="clearTasks()" class="text-xs text-red-600 hover:text-red-800">Clear</button>
+                <button @click="loadTasks()" class="text-xs text-blue-600 hover:text-blue-800">Refresh</button>
+              </div>
+            </div>
+            <div class="space-y-3">
+              <template x-for="t in filteredTasks" :key="t.id">
+                <div class="border border-gray-200 rounded-lg p-3">
+                  <div class="flex justify-between items-start mb-2">
+                    <div>
+                      <span class="text-sm font-medium" x-text="t.type"></span>
+                      <span x-show="t.type === 'index_images'" class="text-xs text-purple-600 ml-1"><i class="fa-solid fa-image"></i></span>
+                      <span class="text-xs text-gray-400 ml-2" x-text="t.id"></span>
+                    </div>
+                    <div class="flex items-center gap-1">
+                      <span class="text-xs text-gray-400" x-text="formatDuration(t.duration_ms)"></span>
+                      <span class="text-xs px-2 py-0.5 rounded-full"
+                            :class="{
+                              'bg-yellow-100 text-yellow-700': t.status === 'pending',
+                              'bg-blue-100 text-blue-700': t.status === 'running',
+                              'bg-green-100 text-green-700': t.status === 'completed',
+                              'bg-red-100 text-red-700': t.status === 'failed',
+                              'bg-gray-100 text-gray-700': t.status === 'cancelled',
+                            }" x-text="t.status"></span>
+                    </div>
+                  </div>
+                  <div class="w-full bg-gray-200 rounded-full h-1.5 mb-1">
+                    <div class="bg-blue-600 h-1.5 rounded-full transition-all" :style="`width:${t.progress * 100}%`"></div>
+                  </div>
+                  <div class="flex justify-between items-center mt-1">
+                    <div>
+                      <template x-if="t.result && t.type === 'index_images'">
+                        <p class="text-xs text-gray-500"><span x-text="t.result.images_found"></span> found, <span x-text="t.result.images_indexed"></span> indexed</p>
+                      </template>
+                      <template x-if="t.result && t.type !== 'index_images'">
+                        <p class="text-xs text-gray-500">
+                          <span x-text="t.result.files"></span> files, <span x-text="t.result.chunks"></span> chunks
+                          <template x-if="t.result.images_indexed > 0">
+                            <span class="text-purple-500 ml-1">+ <span x-text="t.result.images_indexed"></span> images captioned</span>
+                          </template>
+                        </p>
+                      </template>
+                      <template x-if="t.error">
+                        <p class="text-xs text-red-500" x-text="t.error"></p>
+                      </template>
+                    </div>
+                    <div class="flex gap-1">
+                      <button x-show="t.status === 'running' || t.status === 'pending'" @click="cancelTask(t.id)" class="text-xs text-red-500 hover:text-red-700 px-1" title="Cancel"><i class="fa-solid fa-stop"></i></button>
+                      <button x-show="t.status === 'failed' || t.status === 'cancelled'" @click="retryTask(t.id)" class="text-xs text-blue-500 hover:text-blue-700 px-1" title="Retry"><i class="fa-solid fa-rotate"></i></button>
+                      <button @click="showTaskDetail(t)" class="text-xs text-gray-400 hover:text-gray-600 px-1" title="Details"><i class="fa-solid fa-info-circle"></i></button>
+                    </div>
+                  </div>
+                </div>
+              </template>
+              <p x-show="filteredTasks.length === 0" class="text-sm text-gray-400 text-center py-6">No tasks</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ Visualize ═══ -->
+      <div x-show="view === 'visualize'" x-cloak class="fade-in">
+        <div class="flex justify-between items-center mb-6">
+          <h2 class="text-2xl font-bold text-gray-900">Visualize</h2>
+          <div class="flex items-center gap-3 text-sm">
+            <label class="text-gray-500">Collection:</label>
+            <select x-model="vizCollection" class="border border-gray-300 rounded px-2 py-1 text-sm">
+              <template x-for="c in collections" :key="c.name">
+                <option :value="c.name" x-text="c.name"></option>
+              </template>
+            </select>
+          </div>
+        </div>
+
+        <!-- Viz Sub-tabs -->
+        <div class="flex border-b border-gray-200 mb-4">
+          <button @click="vizTab = 'overview'"
+                  :class="vizTab === 'overview' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700'"
+                  class="px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors">
+            <i class="fa-solid fa-diagram-project mr-1"></i> Collection Overview
+          </button>
+          <button @click="vizTab = 'vectors'"
+                  :class="vizTab === 'vectors' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700'"
+                  class="px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors">
+            <i class="fa-solid fa-cube mr-1"></i> Vector Space 3D
+          </button>
+          <button @click="vizTab = 'filetree'"
+                  :class="vizTab === 'filetree' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700'"
+                  class="px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors">
+            <i class="fa-solid fa-sitemap mr-1"></i> File Tree
+          </button>
+        </div>
+
+        <!-- Overview -->
+        <div x-show="vizTab === 'overview'">
+          <div class="flex gap-2 mb-3">
+            <input x-model.number="vizLimit" type="number" min="10" max="5000" class="w-24 border border-gray-300 rounded px-2 py-1 text-sm" placeholder="Limit">
+            <button @click="loadVizOverview()" :disabled="vizLoading" class="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white px-4 py-1 rounded text-sm">
+              <span x-show="!vizLoading">Load</span>
+              <span x-show="vizLoading"><i class="fa-solid fa-spinner fa-spin"></i></span>
+            </button>
+          </div>
+          <div id="viz-overview-container" class="viz-container"></div>
+        </div>
+
+        <!-- Vector Space 3D -->
+        <div x-show="vizTab === 'vectors'">
+          <div class="flex gap-2 mb-3">
+            <select x-model="vizMethod" class="border border-gray-300 rounded px-2 py-1 text-sm">
+              <option value="pca">PCA (fast)</option>
+              <option value="tsne">t-SNE (slow)</option>
+            </select>
+            <input x-model.number="vizLimit" type="number" min="10" max="2000" class="w-24 border border-gray-300 rounded px-2 py-1 text-sm" placeholder="Limit">
+            <button @click="loadVizVectors()" :disabled="vizLoading" class="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white px-4 py-1 rounded text-sm">
+              <span x-show="!vizLoading">Load</span>
+              <span x-show="vizLoading"><i class="fa-solid fa-spinner fa-spin"></i></span>
+            </button>
+          </div>
+          <div id="viz-vectors-container" class="viz-container"></div>
+        </div>
+
+        <!-- File Tree -->
+        <div x-show="vizTab === 'filetree'">
+          <div class="flex gap-2 mb-3">
+            <select x-model="vizSelectedFile" class="flex-1 border border-gray-300 rounded px-2 py-1 text-sm">
+              <option value="">Select a file...</option>
+              <template x-for="f in vizFileList" :key="f">
+                <option :value="f" x-text="f"></option>
+              </template>
+            </select>
+            <button @click="loadVizFileTree()" :disabled="vizLoading || !vizSelectedFile" class="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white px-4 py-1 rounded text-sm">
+              <span x-show="!vizLoading">Load</span>
+              <span x-show="vizLoading"><i class="fa-solid fa-spinner fa-spin"></i></span>
+            </button>
+            <button x-show="vizFileList.length === 0" @click="loadVizOverview()" class="text-xs text-blue-600 hover:text-blue-800">Load file list first (Overview tab)</button>
+          </div>
+          <div id="viz-filetree-container" class="viz-container"></div>
+        </div>
+      </div>
+
+      <!-- ═══ SMB Shares ═══ -->
+      <div x-show="view === 'smb'" x-cloak class="fade-in">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">SMB/CIFS Network Shares</h2>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <!-- Add Share Form -->
+          <div class="bg-white rounded-lg shadow p-6">
+            <h3 class="text-lg font-semibold mb-4">Add Network Share</h3>
+            <div class="space-y-3">
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Server</label>
+                  <input x-model="smbForm.server" type="text" placeholder="192.168.1.100 or hostname"
+                         class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Share Name</label>
+                  <input x-model="smbForm.share" type="text" placeholder="documents"
+                         class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500">
+                </div>
+              </div>
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Username</label>
+                  <input x-model="smbForm.username" type="text" placeholder="(optional / guest)"
+                         class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                  <input x-model="smbForm.password" type="password"
+                         class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+                </div>
+              </div>
+              <div class="grid grid-cols-3 gap-3">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Domain</label>
+                  <input x-model="smbForm.domain" type="text" placeholder="WORKGROUP"
+                         class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Port</label>
+                  <input x-model.number="smbForm.port" type="number" value="445"
+                         class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Label</label>
+                  <input x-model="smbForm.label" type="text" placeholder="Friendly name"
+                         class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+                </div>
+              </div>
+              <div class="flex gap-2">
+                <button @click="testSMBConnection()"
+                        class="flex-1 border border-gray-300 hover:bg-gray-50 py-2 rounded-lg text-sm font-medium">
+                  <i class="fa-solid fa-plug mr-1"></i> Test Connection
+                </button>
+                <button @click="addSMBShare()" :disabled="!smbForm.server || !smbForm.share"
+                        class="flex-1 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white py-2 rounded-lg text-sm font-medium">
+                  <i class="fa-solid fa-plus mr-1"></i> Add Share
+                </button>
+              </div>
+              <!-- Test result -->
+              <div x-show="smbTestResult" class="rounded-lg p-3 text-sm"
+                   :class="smbTestResult?.ok ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-red-50 text-red-700 border border-red-200'">
+                <template x-if="smbTestResult?.ok">
+                  <span><i class="fa-solid fa-circle-check mr-1"></i> Connected! <span x-text="smbTestResult?.files"></span> items found.</span>
+                </template>
+                <template x-if="!smbTestResult?.ok">
+                  <span><i class="fa-solid fa-circle-xmark mr-1"></i> <span x-text="smbTestResult?.error"></span></span>
+                </template>
+              </div>
+            </div>
+          </div>
+
+          <!-- Configured Shares -->
+          <div class="bg-white rounded-lg shadow p-6">
+            <h3 class="text-lg font-semibold mb-4">Configured Shares</h3>
+            <div class="space-y-2">
+              <template x-for="s in smbShares" :key="s.id">
+                <div class="border border-gray-200 rounded-lg p-3 flex items-center justify-between">
+                  <div>
+                    <p class="text-sm font-medium" x-text="s.display_name"></p>
+                    <p class="text-xs text-gray-500" x-text="s.username ? s.username + '@' + s.server : s.server"></p>
+                  </div>
+                  <div class="flex gap-1">
+                    <button @click="browseSMBShare(s.id)"
+                            class="text-xs text-blue-600 hover:text-blue-800 px-2 py-1 rounded border border-blue-200 hover:bg-blue-50">
+                      <i class="fa-solid fa-folder-open mr-1"></i> Browse
+                    </button>
+                    <button @click="removeSMBShare(s.id)"
+                            class="text-xs text-red-600 hover:text-red-800 px-2 py-1 rounded border border-red-200 hover:bg-red-50">
+                      <i class="fa-solid fa-trash mr-1"></i> Remove
+                    </button>
+                  </div>
+                </div>
+              </template>
+              <p x-show="smbShares.length === 0" class="text-sm text-gray-400 text-center py-8">
+                <i class="fa-solid fa-network-wired text-2xl mb-2 block"></i>
+                No shares configured yet
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- File Browser -->
+        <div x-show="smbBrowsingShare" class="mt-6 bg-white rounded-lg shadow p-6">
+          <div class="flex justify-between items-center mb-4">
+            <div>
+              <h3 class="text-lg font-semibold">Browse Files</h3>
+              <p class="text-xs text-gray-500 font-mono mt-1" x-text="smbBrowsePath"></p>
+            </div>
+            <div class="flex items-center gap-2">
+              <input x-model="smbIndexCollection" type="text" placeholder="Collection"
+                     class="border border-gray-300 rounded px-2 py-1 text-xs w-32">
+              <button @click="indexSMBFiles()" :disabled="!smbSelectedFiles.length"
+                      class="bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white px-3 py-1.5 rounded text-xs font-medium">
+                <i class="fa-solid fa-download mr-1"></i> Index Selected (<span x-text="smbSelectedFiles.length"></span>)
+              </button>
+              <button x-show="smbBrowsePath !== '/'"
+                      @click="browseSMBShare(smbBrowsingShare, smbBrowsePath.split('/').slice(0,-1).join('/') || '/')"
+                      class="text-xs text-gray-600 hover:text-gray-800 px-2 py-1.5 rounded border border-gray-200 hover:bg-gray-50">
+                <i class="fa-solid fa-arrow-up mr-1"></i> Up
+              </button>
+              <button @click="smbBrowsingShare = null; smbBrowseFiles = []"
+                      class="text-xs text-gray-500 hover:text-gray-700 px-2 py-1.5 rounded border border-gray-200 hover:bg-gray-50">
+                Close
+              </button>
+            </div>
+          </div>
+          <div class="divide-y divide-gray-100 max-h-96 overflow-y-auto">
+            <template x-for="f in smbBrowseFiles" :key="f.path">
+              <div class="flex items-center gap-3 py-2 px-2 hover:bg-gray-50 rounded cursor-pointer"
+                   @click="f.is_dir ? browseSMBShare(smbBrowsingShare, f.path) : toggleSMBFileSelect(f.path)">
+                <input x-show="!f.is_dir" type="checkbox" :checked="smbSelectedFiles.includes(f.path)"
+                       @click.stop="toggleSMBFileSelect(f.path)" class="rounded border-gray-300 text-blue-600">
+                <div x-show="f.is_dir" class="w-4"></div>
+                <i :class="f.is_dir ? 'fa-solid fa-folder text-yellow-500' : 'fa-solid fa-file text-gray-400'" class="w-4 text-center"></i>
+                <span class="text-sm flex-1" x-text="f.name"></span>
+                <span class="text-xs text-gray-400" x-text="f.is_dir ? '' : formatBytes(f.size)"></span>
+              </div>
+            </template>
+            <p x-show="smbBrowseFiles.length === 0" class="text-sm text-gray-400 text-center py-4">No files found</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ Settings ═══ -->
+      <div x-show="view === 'settings'" x-cloak class="fade-in">
+        <h2 class="text-2xl font-bold text-gray-900 mb-2">Settings</h2>
+        <div class="mb-4 bg-amber-50 border border-amber-200 rounded-lg p-2 text-xs text-amber-800">
+          <i class="fa-solid fa-triangle-exclamation mr-1"></i> Changes are in-memory only. Restart server to reset to defaults.
+        </div>
+
+        <!-- Settings Sub-tabs -->
+        <div class="flex border-b border-gray-200 mb-4 flex-wrap">
+          <button @click="settingsTab = 'general'"
+                  :class="settingsTab === 'general' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500'"
+                  class="px-3 py-2 text-sm font-medium border-b-2 -mb-px">General</button>
+          <button @click="settingsTab = 'embedding'; loadEmbeddingInfo()"
+                  :class="settingsTab === 'embedding' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500'"
+                  class="px-3 py-2 text-sm font-medium border-b-2 -mb-px">Embedding</button>
+          <button @click="settingsTab = 'distance'"
+                  :class="settingsTab === 'distance' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500'"
+                  class="px-3 py-2 text-sm font-medium border-b-2 -mb-px">Distance Metrics</button>
+          <button @click="settingsTab = 'paths'"
+                  :class="settingsTab === 'paths' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500'"
+                  class="px-3 py-2 text-sm font-medium border-b-2 -mb-px">Mounted Paths</button>
+          <button @click="settingsTab = 'chunking'"
+                  :class="settingsTab === 'chunking' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500'"
+                  class="px-3 py-2 text-sm font-medium border-b-2 -mb-px">Chunking</button>
+          <button @click="settingsTab = 'image'"
+                  :class="settingsTab === 'image' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500'"
+                  class="px-3 py-2 text-sm font-medium border-b-2 -mb-px">Image</button>
+          <button @click="settingsTab = 'privacy'; loadPIIConfig()"
+                  :class="settingsTab === 'privacy' ? 'border-purple-600 text-purple-600' : 'border-transparent text-gray-500'"
+                  class="px-3 py-2 text-sm font-medium border-b-2 -mb-px"><i class="fa-solid fa-shield-halved mr-1"></i>Privacy</button>
+        </div>
+
+        <!-- General -->
+        <div x-show="settingsTab === 'general' && settingsConfig" class="space-y-4">
+          <div class="bg-white rounded-lg shadow p-4">
+            <h4 class="font-medium text-gray-900 mb-3">Connection Info</h4>
+            <div class="grid grid-cols-2 gap-4 text-sm">
+              <div><span class="text-gray-500">Ollama URL:</span> <code class="text-gray-900" x-text="settingsConfig?.ollama?.url"></code></div>
+              <div><span class="text-gray-500">Qdrant URL:</span> <code class="text-gray-900" x-text="settingsConfig?.qdrant?.url"></code></div>
+              <div><span class="text-gray-500">Chat Model:</span> <code class="text-gray-900" x-text="settingsConfig?.ollama?.chat_model"></code></div>
+              <div><span class="text-gray-500">Embed Model:</span> <code class="text-gray-900" x-text="settingsConfig?.ollama?.embed_model"></code></div>
+              <div><span class="text-gray-500">Vision Model:</span> <code class="text-gray-900" x-text="settingsConfig?.ollama?.vision_model"></code></div>
+              <div><span class="text-gray-500">Timeout:</span> <code class="text-gray-900" x-text="settingsConfig?.ollama?.timeout_s + 's'"></code></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Embedding -->
+        <div x-show="settingsTab === 'embedding'" class="space-y-4">
+          <!-- Active model info -->
+          <div class="bg-white rounded-lg shadow p-4">
+            <div class="flex justify-between items-center mb-3">
+              <h4 class="font-medium text-gray-900">Active Embedding Model</h4>
+              <button @click="loadEmbeddingInfo()" class="text-xs text-blue-600 hover:text-blue-800"><i class="fa-solid fa-refresh mr-1"></i>Refresh</button>
+            </div>
+            <div x-show="embeddingInfo && !embeddingInfo.error" class="grid grid-cols-3 gap-4 text-sm">
+              <div class="bg-blue-50 rounded p-3 text-center">
+                <p class="text-xs text-gray-500">Model</p>
+                <p class="font-medium" x-text="embeddingInfo?.model"></p>
+              </div>
+              <div class="bg-blue-50 rounded p-3 text-center">
+                <p class="text-xs text-gray-500">Dimension</p>
+                <p class="font-medium" x-text="embeddingInfo?.dimension"></p>
+              </div>
+              <div class="bg-blue-50 rounded p-3 text-center">
+                <p class="text-xs text-gray-500">Latency</p>
+                <p class="font-medium" x-text="(embeddingInfo?.latency_ms || 0) + 'ms'"></p>
+              </div>
+            </div>
+            <p x-show="embeddingInfo?.error" class="text-sm text-red-500" x-text="embeddingInfo?.error"></p>
+            <p x-show="!embeddingInfo" class="text-sm text-gray-400">Loading...</p>
+          </div>
+
+          <!-- Switch model -->
+          <div class="bg-white rounded-lg shadow p-4">
+            <h4 class="font-medium text-gray-900 mb-3">Switch Model</h4>
+            <div class="flex gap-2">
+              <select x-model="switchEmbedModel" class="flex-1 border border-gray-300 rounded px-3 py-2 text-sm">
+                <option value="">Select model...</option>
+                <template x-for="m in models" :key="m.name">
+                  <option :value="m.name" x-text="m.name"></option>
+                </template>
+              </select>
+              <button @click="switchEmbeddingModel()" :disabled="!switchEmbedModel" class="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white px-4 py-2 rounded text-sm">Switch</button>
+            </div>
+          </div>
+
+          <!-- Test embedding -->
+          <div class="bg-white rounded-lg shadow p-4">
+            <h4 class="font-medium text-gray-900 mb-3">Test Embedding</h4>
+            <div class="flex gap-2 mb-3">
+              <input x-model="embeddingTestText" type="text" placeholder="Enter text to embed..." class="flex-1 border border-gray-300 rounded px-3 py-2 text-sm">
+              <button @click="testEmbedding()" :disabled="!embeddingTestText.trim()" class="bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white px-4 py-2 rounded text-sm">Test</button>
+            </div>
+            <div x-show="embeddingTestResult && !embeddingTestResult.error" class="bg-gray-50 rounded p-3 text-sm">
+              <div class="stat-item"><span class="text-gray-500">Dimension</span><span x-text="embeddingTestResult?.dimension"></span></div>
+              <div class="stat-item"><span class="text-gray-500">Latency</span><span x-text="(embeddingTestResult?.latency_ms || 0) + 'ms'"></span></div>
+              <div class="stat-item"><span class="text-gray-500">Min</span><span x-text="embeddingTestResult?.min"></span></div>
+              <div class="stat-item"><span class="text-gray-500">Max</span><span x-text="embeddingTestResult?.max"></span></div>
+              <div class="stat-item"><span class="text-gray-500">Mean</span><span x-text="embeddingTestResult?.mean"></span></div>
+              <div class="stat-item"><span class="text-gray-500">Stdev</span><span x-text="embeddingTestResult?.stdev"></span></div>
+              <div class="stat-item"><span class="text-gray-500">Norm (L2)</span><span x-text="embeddingTestResult?.norm"></span></div>
+            </div>
+          </div>
+
+          <!-- Compare models -->
+          <div class="bg-white rounded-lg shadow p-4">
+            <h4 class="font-medium text-gray-900 mb-3">Compare Models</h4>
+            <div class="space-y-2 mb-3">
+              <input x-model="compareText" type="text" placeholder="Text to compare..." class="w-full border border-gray-300 rounded px-3 py-2 text-sm">
+              <div class="grid grid-cols-2 gap-2">
+                <select x-model="compareModel1" class="border border-gray-300 rounded px-2 py-2 text-sm">
+                  <option value="">Model 1...</option>
+                  <template x-for="m in models" :key="m.name"><option :value="m.name" x-text="m.name"></option></template>
+                </select>
+                <select x-model="compareModel2" class="border border-gray-300 rounded px-2 py-2 text-sm">
+                  <option value="">Model 2...</option>
+                  <template x-for="m in models" :key="m.name"><option :value="m.name" x-text="m.name"></option></template>
+                </select>
+              </div>
+              <button @click="compareEmbeddings()" :disabled="!compareText.trim() || !compareModel1 || !compareModel2"
+                      class="bg-purple-600 hover:bg-purple-700 disabled:bg-gray-400 text-white px-4 py-2 rounded text-sm w-full">Compare</button>
+            </div>
+            <div x-show="compareResult" class="grid grid-cols-2 gap-3">
+              <template x-for="key in ['model1', 'model2']" :key="key">
+                <div class="bg-gray-50 rounded p-3 text-sm">
+                  <p class="font-medium mb-2" x-text="compareResult?.[key]?.model"></p>
+                  <template x-if="!compareResult?.[key]?.error">
+                    <div>
+                      <div class="stat-item"><span class="text-gray-500">Dim</span><span x-text="compareResult?.[key]?.dimension"></span></div>
+                      <div class="stat-item"><span class="text-gray-500">Latency</span><span x-text="(compareResult?.[key]?.latency_ms || 0) + 'ms'"></span></div>
+                      <div class="stat-item"><span class="text-gray-500">Norm</span><span x-text="compareResult?.[key]?.norm"></span></div>
+                    </div>
+                  </template>
+                  <template x-if="compareResult?.[key]?.error">
+                    <p class="text-xs text-red-500" x-text="compareResult?.[key]?.error"></p>
+                  </template>
+                </div>
+              </template>
+            </div>
+          </div>
+        </div>
+
+        <!-- Distance Metrics -->
+        <div x-show="settingsTab === 'distance' && settingsConfig" class="space-y-4">
+          <div class="bg-white rounded-lg shadow p-4">
+            <h4 class="font-medium text-gray-900 mb-3">Default Distance Metric</h4>
+            <p class="text-xs text-gray-500 mb-3">Applied to new collections only. Existing collections keep their metric.</p>
+            <div class="flex gap-2 mb-4">
+              <select x-model="settingsConfig.qdrant.default_distance" class="flex-1 border border-gray-300 rounded px-3 py-2 text-sm">
+                <option value="Cosine">Cosine (Recommended)</option>
+                <option value="Dot">Dot Product</option>
+                <option value="Euclid">Euclidean</option>
+                <option value="Manhattan">Manhattan</option>
+              </select>
+              <button @click="saveDistanceMetric()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm">Save</button>
+            </div>
+            <!-- Info cards -->
+            <div class="grid grid-cols-2 gap-3">
+              <div class="metric-card border rounded-lg p-3 text-sm" :class="settingsConfig.qdrant.default_distance === 'Cosine' ? 'border-blue-300 bg-blue-50' : 'border-gray-200'">
+                <p class="font-medium text-blue-700">Cosine</p>
+                <p class="text-xs text-gray-600 mt-1">Best for all current embed models. Measures angle between vectors. Pre-normalized for 2x speed.</p>
+              </div>
+              <div class="metric-card border rounded-lg p-3 text-sm" :class="settingsConfig.qdrant.default_distance === 'Dot' ? 'border-green-300 bg-green-50' : 'border-gray-200'">
+                <p class="font-medium text-green-700">Dot Product</p>
+                <p class="text-xs text-gray-600 mt-1">Fastest metric. Equivalent to Cosine for normalized vectors. Good for max-speed scenarios.</p>
+              </div>
+              <div class="metric-card border rounded-lg p-3 text-sm" :class="settingsConfig.qdrant.default_distance === 'Euclid' ? 'border-orange-300 bg-orange-50' : 'border-gray-200'">
+                <p class="font-medium text-orange-700">Euclidean</p>
+                <p class="text-xs text-gray-600 mt-1">L2 distance. Better for clustering and non-normalized embeddings. Moderate speed.</p>
+              </div>
+              <div class="metric-card border rounded-lg p-3 text-sm" :class="settingsConfig.qdrant.default_distance === 'Manhattan' ? 'border-purple-300 bg-purple-50' : 'border-gray-200'">
+                <p class="font-medium text-purple-700">Manhattan</p>
+                <p class="text-xs text-gray-600 mt-1">L1 distance. Better for high-dimensional sparse data. More robust to outliers.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mounted Paths -->
+        <div x-show="settingsTab === 'paths'" class="space-y-4">
+          <div class="bg-white rounded-lg shadow p-4">
+            <h4 class="font-medium text-gray-900 mb-3">Mounted Paths</h4>
+            <p class="text-xs text-gray-500 mb-3">Directories accessible for indexing.</p>
+            <div class="flex flex-wrap gap-1.5 mb-3">
+              <template x-for="p in mountedPaths" :key="p">
+                <span class="inline-flex items-center gap-1 bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs">
+                  <code x-text="p"></code>
+                  <button @click="removeMountedPath(p)" class="text-blue-400 hover:text-red-500 ml-0.5">&times;</button>
+                </span>
+              </template>
+              <span x-show="mountedPaths.length === 0" class="text-xs text-gray-400 italic">None configured</span>
+            </div>
+            <form @submit.prevent="addMountedPath()" class="flex gap-2">
+              <input x-model="newMountedPath" type="text" placeholder="/path/to/mount"
+                     class="flex-1 border border-gray-300 rounded px-3 py-2 text-sm">
+              <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm">Add</button>
+            </form>
+          </div>
+        </div>
+
+        <!-- Chunking -->
+        <div x-show="settingsTab === 'chunking' && settingsConfig" class="space-y-4">
+          <div class="bg-white rounded-lg shadow p-4">
+            <h4 class="font-medium text-gray-900 mb-3">Chunking Configuration</h4>
+            <div class="grid grid-cols-3 gap-4 text-sm">
+              <div>
+                <label class="block text-xs text-gray-500 mb-1">Chunk Size</label>
+                <p class="font-medium" x-text="settingsConfig?.chunking?.chunk_size"></p>
+              </div>
+              <div>
+                <label class="block text-xs text-gray-500 mb-1">Chunk Overlap</label>
+                <p class="font-medium" x-text="settingsConfig?.chunking?.chunk_overlap"></p>
+              </div>
+              <div>
+                <label class="block text-xs text-gray-500 mb-1">Max File Size (KB)</label>
+                <p class="font-medium" x-text="settingsConfig?.chunking?.max_file_size_kb"></p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Image -->
+        <div x-show="settingsTab === 'image' && settingsConfig" class="space-y-4">
+          <div class="bg-white rounded-lg shadow p-4">
+            <h4 class="font-medium text-gray-900 mb-3">Image Configuration</h4>
+            <div class="space-y-3 text-sm">
+              <div>
+                <label class="block text-xs text-gray-500 mb-1">Vision Model</label>
+                <p class="font-medium" x-text="settingsConfig?.ollama?.vision_model"></p>
+              </div>
+              <div>
+                <label class="block text-xs text-gray-500 mb-1">Max Image Size (KB)</label>
+                <p class="font-medium" x-text="settingsConfig?.image?.max_image_size_kb"></p>
+              </div>
+              <div>
+                <label class="block text-xs text-gray-500 mb-1">Caption Prompt</label>
+                <p class="text-xs text-gray-600 bg-gray-50 p-2 rounded" x-text="settingsConfig?.image?.caption_prompt"></p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Privacy / PII Masking -->
+        <div x-show="settingsTab === 'privacy'" class="space-y-4">
+          <div class="bg-white rounded-lg shadow p-4">
+            <div class="flex justify-between items-center mb-3">
+              <h4 class="font-medium text-gray-900">PII Masking</h4>
+              <span class="text-xs px-2 py-0.5 rounded"
+                    :class="piiConfig?.spacy_available ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'"
+                    x-text="piiConfig?.spacy_available ? 'spaCy NER active' : 'Regex-only mode'"></span>
+            </div>
+            <p class="text-xs text-gray-500 mb-4">
+              When enabled, personally identifiable information (names, emails, phone numbers, etc.)
+              is replaced with tokens like &lt;PERSON_1&gt; before being sent to the LLM,
+              then restored in the response before showing to you.
+            </p>
+
+            <div x-show="piiConfig && !piiConfig.error" class="space-y-3">
+              <label class="flex items-center justify-between p-3 bg-gray-50 rounded-lg cursor-pointer">
+                <div>
+                  <span class="text-sm font-medium text-gray-900">Enable PII Masking</span>
+                  <p class="text-xs text-gray-500">Mask PII in queries and context before sending to LLM</p>
+                </div>
+                <input type="checkbox" x-model="piiConfig.enabled" class="rounded border-gray-300 text-purple-600 h-5 w-5">
+              </label>
+              <label class="flex items-center justify-between p-3 bg-gray-50 rounded-lg cursor-pointer">
+                <div>
+                  <span class="text-sm font-medium text-gray-900">Use spaCy NER</span>
+                  <p class="text-xs text-gray-500">Detect names, organizations, locations via NER model</p>
+                </div>
+                <input type="checkbox" x-model="piiConfig.use_spacy" class="rounded border-gray-300 text-purple-600 h-5 w-5">
+              </label>
+              <label class="flex items-center justify-between p-3 bg-gray-50 rounded-lg cursor-pointer">
+                <div>
+                  <span class="text-sm font-medium text-gray-900">Mask Embeddings</span>
+                  <p class="text-xs text-gray-500">Also mask PII before generating embeddings (may affect search quality)</p>
+                </div>
+                <input type="checkbox" x-model="piiConfig.mask_embeddings" class="rounded border-gray-300 text-purple-600 h-5 w-5">
+              </label>
+              <button @click="savePIIConfig()" class="w-full bg-purple-600 hover:bg-purple-700 text-white py-2 rounded-lg text-sm font-medium">Save PII Settings</button>
+            </div>
+
+            <div class="mt-4 pt-3 border-t border-gray-200">
+              <p class="text-xs font-medium text-gray-700 mb-2">Detected PII Types</p>
+              <div class="flex flex-wrap gap-1.5">
+                <span class="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded">PERSON</span>
+                <span class="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded">ORG</span>
+                <span class="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded">LOCATION</span>
+                <span class="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded">EMAIL</span>
+                <span class="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded">PHONE</span>
+                <span class="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded">SSN</span>
+                <span class="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded">CREDIT_CARD</span>
+                <span class="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded">IP_ADDRESS</span>
+                <span class="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded">IBAN</span>
+              </div>
+              <p class="text-xs text-gray-400 mt-1">Purple = spaCy NER &middot; Blue = regex patterns</p>
+            </div>
+          </div>
+
+          <!-- Test Tool -->
+          <div class="bg-white rounded-lg shadow p-4">
+            <h4 class="font-medium text-gray-900 mb-3">Test PII Detection</h4>
+            <div class="space-y-3">
+              <textarea x-model="piiTestText" rows="3" placeholder="Enter text with PII to test detection...&#10;e.g.: Contact John Smith at john@example.com or 555-123-4567"
+                        class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-purple-500 resize-none"></textarea>
+              <button @click="testPIIMasking()" :disabled="!piiTestText.trim()"
+                      class="bg-purple-600 hover:bg-purple-700 disabled:bg-gray-400 text-white px-4 py-2 rounded-lg text-sm w-full">Test Detection</button>
+            </div>
+            <div x-show="piiTestResult && !piiTestResult.error" class="mt-3 space-y-2">
+              <div class="bg-gray-50 rounded p-3">
+                <p class="text-xs text-gray-500 mb-1">Masked output:</p>
+                <p class="text-sm font-mono" x-text="piiTestResult?.masked"></p>
+              </div>
+              <div x-show="piiTestResult?.entities?.length > 0">
+                <p class="text-xs text-gray-500 mb-1">Detected entities (<span x-text="piiTestResult?.entity_count"></span>):</p>
+                <div class="space-y-1">
+                  <template x-for="e in (piiTestResult?.entities || [])" :key="e.token">
+                    <div class="flex justify-between text-xs bg-purple-50 rounded px-2 py-1">
+                      <code class="text-purple-700" x-text="e.token"></code>
+                      <span class="text-gray-600" x-text="e.original"></span>
+                    </div>
+                  </template>
+                </div>
+              </div>
+              <div x-show="piiTestResult?.entity_count === 0" class="text-xs text-gray-400 italic">
+                No PII detected in the sample text.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<!-- ═══ Modals ═══ -->
+<div x-show="showModal" x-cloak class="fixed inset-0 z-50 flex items-center justify-center bg-black/50" @click.self="showModal = null">
+  <!-- Create Collection -->
+  <div x-show="showModal === 'create-collection'" class="bg-white rounded-xl shadow-xl p-6 w-96">
+    <h3 class="text-lg font-semibold mb-4">Create Collection</h3>
+    <form @submit.prevent="createCollection()">
+      <div class="space-y-3">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Name</label>
+          <input x-model="newCollection.name" type="text" required class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Vector Size</label>
+          <input x-model.number="newCollection.vector_size" type="number" required class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Distance</label>
+          <select x-model="newCollection.distance" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+            <option>Cosine</option><option>Euclid</option><option>Dot</option><option>Manhattan</option>
+          </select>
+        </div>
+        <div class="flex gap-2 pt-2">
+          <button type="button" @click="showModal = null" class="flex-1 border border-gray-300 py-2 rounded-lg text-sm">Cancel</button>
+          <button type="submit" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg text-sm">Create</button>
+        </div>
+      </div>
+    </form>
+  </div>
+  <!-- Pull Model -->
+  <div x-show="showModal === 'pull-model'" class="bg-white rounded-xl shadow-xl p-6 w-96">
+    <h3 class="text-lg font-semibold mb-4">Pull Model</h3>
+    <form @submit.prevent="pullModel()">
+      <div class="space-y-3">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Model Name</label>
+          <input x-model="pullModelName" type="text" required placeholder="e.g. llama3.1, nomic-embed-text"
+                 class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+        </div>
+        <div class="flex gap-2 pt-2">
+          <button type="button" @click="showModal = null" class="flex-1 border border-gray-300 py-2 rounded-lg text-sm">Cancel</button>
+          <button type="submit" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg text-sm">Pull</button>
+        </div>
+      </div>
+    </form>
+  </div>
+  <!-- Model Details -->
+  <div x-show="showModal === 'model-details'" class="bg-white rounded-xl shadow-xl p-6 w-[32rem] max-h-[80vh] overflow-y-auto">
+    <div class="flex justify-between items-center mb-4">
+      <h3 class="text-lg font-semibold" x-text="modelDetailName"></h3>
+      <button @click="showModal = null" class="text-gray-400 hover:text-gray-600">&times;</button>
+    </div>
+    <pre class="text-xs bg-gray-50 p-3 rounded-lg overflow-auto max-h-96" x-text="JSON.stringify(modelDetail, null, 2)"></pre>
+  </div>
+  <!-- Task Detail -->
+  <div x-show="showModal === 'task-detail'" class="bg-white rounded-xl shadow-xl p-6 w-[36rem] max-h-[80vh] overflow-y-auto">
+    <div class="flex justify-between items-center mb-4">
+      <h3 class="text-lg font-semibold">Task Detail</h3>
+      <button @click="showModal = null" class="text-gray-400 hover:text-gray-600">&times;</button>
+    </div>
+    <div x-show="taskDetailData" class="space-y-3 text-sm">
+      <div class="grid grid-cols-2 gap-2">
+        <div><span class="text-gray-500">ID:</span> <code x-text="taskDetailData?.id"></code></div>
+        <div><span class="text-gray-500">Type:</span> <span x-text="taskDetailData?.type"></span></div>
+        <div><span class="text-gray-500">Status:</span> <span x-text="taskDetailData?.status"></span></div>
+        <div><span class="text-gray-500">Progress:</span> <span x-text="((taskDetailData?.progress || 0) * 100).toFixed(1) + '%'"></span></div>
+        <div><span class="text-gray-500">Duration:</span> <span x-text="formatDuration(taskDetailData?.duration_ms)"></span></div>
+        <div><span class="text-gray-500">Created:</span> <span class="text-xs" x-text="taskDetailData?.created_at"></span></div>
+      </div>
+      <div x-show="taskDetailData?.started_at">
+        <span class="text-gray-500 text-xs">Started:</span> <span class="text-xs" x-text="taskDetailData?.started_at"></span>
+      </div>
+      <div x-show="taskDetailData?.completed_at">
+        <span class="text-gray-500 text-xs">Completed:</span> <span class="text-xs" x-text="taskDetailData?.completed_at"></span>
+      </div>
+      <div x-show="taskDetailData?.error" class="bg-red-50 rounded p-2">
+        <p class="text-xs text-red-500 font-medium">Error:</p>
+        <p class="text-xs text-red-700" x-text="taskDetailData?.error"></p>
+      </div>
+      <div x-show="taskDetailData?.result">
+        <p class="text-xs text-gray-500 font-medium mb-1">Result:</p>
+        <pre class="text-xs bg-gray-50 p-2 rounded overflow-auto max-h-40" x-text="JSON.stringify(taskDetailData?.result, null, 2)"></pre>
+      </div>
+      <div x-show="taskDetailData?.request_params">
+        <p class="text-xs text-gray-500 font-medium mb-1">Request Params:</p>
+        <pre class="text-xs bg-gray-50 p-2 rounded overflow-auto max-h-40" x-text="JSON.stringify(taskDetailData?.request_params, null, 2)"></pre>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="/app.js"></script>
+</body>
+</html>
