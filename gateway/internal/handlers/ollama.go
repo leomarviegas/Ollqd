@@ -7,6 +7,7 @@ import (
 	"io"
 	"net/http"
 	"net/http/httputil"
+	"net/url"
 	"time"
 
 	"github.com/go-chi/chi/v5"
@@ -147,11 +148,12 @@ func (h *OllamaHandler) PullModel(w http.ResponseWriter, r *http.Request) {
 // DeleteModel translates DELETE /api/ollama/models/{name} → DELETE /api/delete
 // on Ollama with body {"name": "..."}.
 func (h *OllamaHandler) DeleteModel(w http.ResponseWriter, r *http.Request) {
-	name := chi.URLParam(r, "name")
-	if name == "" {
+	rawName := chi.URLParam(r, "name")
+	if rawName == "" {
 		writeError(w, http.StatusBadRequest, "model name is required")
 		return
 	}
+	name, _ := url.PathUnescape(rawName)
 
 	body, _ := json.Marshal(map[string]string{"name": name})
 	req, err := http.NewRequestWithContext(r.Context(), "DELETE", h.baseURL+"/api/delete", bytes.NewReader(body))
