@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/alfagnish/ollqd-gateway/internal/config"
+	"github.com/alfagnish/ollqd-gateway/internal/docker"
 	grpcclient "github.com/alfagnish/ollqd-gateway/internal/grpc"
 	"github.com/go-chi/chi/v5"
 )
@@ -18,14 +19,16 @@ type SystemHandler struct {
 	cfg      *config.Config
 	grpc     *grpcclient.Client
 	httpCli  *http.Client
+	docker   *docker.Manager
 }
 
 // NewSystemHandler creates a new SystemHandler.
-func NewSystemHandler(cfg *config.Config, gc *grpcclient.Client) *SystemHandler {
+func NewSystemHandler(cfg *config.Config, gc *grpcclient.Client, dm *docker.Manager) *SystemHandler {
 	return &SystemHandler{
 		cfg:     cfg,
 		grpc:    gc,
 		httpCli: &http.Client{Timeout: 5 * time.Second},
+		docker:  dm,
 	}
 }
 
@@ -49,6 +52,8 @@ func (h *SystemHandler) Routes(r chi.Router) {
 	r.Put("/config/chunking", h.UpdateChunking)
 	r.Put("/config/image", h.UpdateImage)
 	r.Delete("/config/{section}", h.ResetConfig)
+	r.Get("/ollama/container", h.OllamaContainerStatus)
+	r.Post("/ollama/container", h.ManageOllamaContainer)
 }
 
 // serviceStatus is used by the Health endpoint to report the health of
@@ -487,4 +492,63 @@ func (h *SystemHandler) ResetConfig(w http.ResponseWriter, r *http.Request) {
 	}
 
 	writeJSON(w, http.StatusOK, resp)
+}
+
+const ollamaContainerName = "ollqd-ollama"
+
+// OllamaContainerStatus returns the Docker container status for the local Ollama instance.
+func (h *SystemHandler) OllamaContainerStatus(w http.ResponseWriter, r *http.Request) {
+	if h.docker == nil {
+		writeJSON(w, http.StatusOK, map[string]string{"status": "unavailable"})
+		return
+	}
+
+	status, err := h.docker.ContainerStatus(r.Context(), ollamaContainerName)
+	if err != nil {
+		writeError(w, http.StatusInternalServerError, fmt.Sprintf("docker error: %v", err))
+		return
+	}
+
+	writeJSON(w, http.StatusOK, map[string]string{"status": status})
+}
+
+// ManageOllamaContainer starts or stops the local Ollama Docker container.
+func (h *SystemHandler) ManageOllamaContainer(w http.ResponseWriter, r *http.Request) {
+	if h.docker == nil {
+		writeError(w, http.StatusServiceUnavailable, "docker not available")
+		return
+	}
+
+	var req struct {
+		Action string `json:"action"` // "start" or "stop"
+	}
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		writeError(w, http.StatusBadRequest, "invalid JSON body")
+		return
+	}
+
+	ctx := r.Context()
+
+	switch req.Action {
+	case "start":
+		if err := h.docker.EnsureContainer(ctx, ollamaContainerName); err != nil {
+			writeError(w, http.StatusInternalServerError, fmt.Sprintf("ensure container: %v", err))
+			return
+		}
+		if err := h.docker.StartContainer(ctx, ollamaContainerName); err != nil {
+			writeError(w, http.StatusInternalServerError, fmt.Sprintf("start container: %v", err))
+			return
+		}
+		writeJSON(w, http.StatusOK, map[string]string{"status": "running", "action": "started"})
+
+	case "stop":
+		if err := h.docker.StopContainer(ctx, ollamaContainerName); err != nil {
+			writeError(w, http.StatusInternalServerError, fmt.Sprintf("stop container: %v", err))
+			return
+		}
+		writeJSON(w, http.StatusOK, map[string]string{"status": "stopped", "action": "stopped"})
+
+	default:
+		writeError(w, http.StatusBadRequest, "action must be 'start' or 'stop'")
+	}
 }

@@ -298,6 +298,7 @@ message UpdateOllamaRequest {
   optional string embed_model = 3;
   optional string vision_model = 4;
   optional double timeout_s = 5;
+  optional bool   local = 6;
 }
 
 message OllamaConfigResponse {
@@ -306,6 +307,7 @@ message OllamaConfigResponse {
   string embed_model = 3;
   string vision_model = 4;
   double timeout_s = 5;
+  bool   local = 6;
 }
 
 message UpdateQdrantRequest {

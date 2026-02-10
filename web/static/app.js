@@ -106,7 +106,8 @@ function app() {
 
     // Settings
     settingsTab: "general",
-    settingsConfig: { qdrant: { default_distance: "Cosine" }, ollama: {}, chunking: {}, image: {}, pii: {}, docling: {} },
+    settingsConfig: { qdrant: { default_distance: "Cosine" }, ollama: { local: false }, chunking: {}, image: {}, pii: {}, docling: {} },
+    ollamaContainerStatus: "unknown",
     embeddingInfo: null,
     embeddingTestText: "",
     embeddingTestResult: null,
@@ -848,6 +849,7 @@ function app() {
         const r = await fetch("/api/system/config");
         this.settingsConfig = await r.json();
         this.mountedPaths = this.settingsConfig.mounted_paths || [];
+        this.checkOllamaContainer();
       } catch (e) {
         console.error("Failed to load settings:", e);
       }
@@ -928,6 +930,7 @@ function app() {
             embed_model: this.settingsConfig.ollama.embed_model,
             vision_model: this.settingsConfig.ollama.vision_model,
             timeout_s: this.settingsConfig.ollama.timeout_s,
+            local: this.settingsConfig.ollama.local,
           }),
         });
         if (!r.ok) throw new Error((await r.json()).detail);
@@ -936,6 +939,58 @@ function app() {
         alert("Ollama settings saved");
       } catch (e) {
         alert("Save failed: " + e.message);
+      }
+    },
+
+    async checkOllamaContainer() {
+      try {
+        const r = await fetch("/api/system/ollama/container");
+        const d = await r.json();
+        this.ollamaContainerStatus = d.status || "unknown";
+      } catch {
+        this.ollamaContainerStatus = "unknown";
+      }
+    },
+
+    async toggleOllamaLocal() {
+      const goingLocal = !this.settingsConfig.ollama.local;
+
+      try {
+        if (goingLocal) {
+          // Start container
+          this.ollamaContainerStatus = "starting";
+          const r = await fetch("/api/system/ollama/container", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ action: "start" }),
+          });
+          if (!r.ok) throw new Error((await r.json()).detail);
+          const d = await r.json();
+          this.ollamaContainerStatus = d.status;
+
+          // Update config: set local=true, base_url to Docker internal
+          this.settingsConfig.ollama.local = true;
+          this.settingsConfig.ollama.base_url = "http://host.docker.internal:11434";
+          await this.saveOllamaConfig();
+        } else {
+          // Stop container
+          this.ollamaContainerStatus = "stopping";
+          const r = await fetch("/api/system/ollama/container", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ action: "stop" }),
+          });
+          if (!r.ok) throw new Error((await r.json()).detail);
+          const d = await r.json();
+          this.ollamaContainerStatus = d.status;
+
+          // Update config: set local=false
+          this.settingsConfig.ollama.local = false;
+          await this.saveOllamaConfig();
+        }
+      } catch (e) {
+        alert("Toggle failed: " + e.message);
+        await this.checkOllamaContainer();
       }
     },
 

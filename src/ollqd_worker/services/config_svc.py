@@ -86,6 +86,7 @@ class ConfigServiceServicer:
                     embed_model=cfg.ollama.embed_model,
                     vision_model=cfg.ollama.vision_model,
                     timeout_s=cfg.ollama.timeout_s,
+                    local=cfg.ollama.local,
                 ),
                 qdrant=types_pb2.QdrantConfig(
                     url=cfg.qdrant.url,
@@ -251,6 +252,8 @@ class ConfigServiceServicer:
             if request.timeout_s <= 0:
                 await context.abort(grpc.StatusCode.INVALID_ARGUMENT, "timeout_s must be > 0")
             cfg.ollama.timeout_s = request.timeout_s
+        if hasattr(request, "local") and request.HasField("local"):
+            cfg.ollama.local = request.local
 
         result = {
             "base_url": cfg.ollama.base_url,
@@ -258,6 +261,7 @@ class ConfigServiceServicer:
             "embed_model": cfg.ollama.embed_model,
             "vision_model": cfg.ollama.vision_model,
             "timeout_s": cfg.ollama.timeout_s,
+            "local": cfg.ollama.local,
         }
         config_db.save_overrides("ollama", {k: str(v) for k, v in result.items()})
         log.info("Updated Ollama config: %s", result)

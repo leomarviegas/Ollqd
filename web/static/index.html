@@ -911,10 +911,36 @@
           <!-- Ollama Settings -->
           <div class="bg-white rounded-lg shadow p-4">
             <h4 class="font-medium text-gray-900 mb-3">Ollama Settings</h4>
+            <!-- Run Local Toggle -->
+            <div class="flex items-center justify-between mb-4 p-3 bg-gray-50 rounded-lg">
+              <div>
+                <span class="text-sm font-medium text-gray-900">Run Ollama Locally</span>
+                <p class="text-xs text-gray-500">Start a Docker container for local Ollama inference</p>
+              </div>
+              <div class="flex items-center gap-3">
+                <span class="text-xs font-medium px-2 py-0.5 rounded-full"
+                  :class="{
+                    'bg-green-100 text-green-700': ollamaContainerStatus === 'running',
+                    'bg-gray-100 text-gray-500': ollamaContainerStatus === 'exited' || ollamaContainerStatus === 'not_found',
+                    'bg-yellow-100 text-yellow-700': ollamaContainerStatus === 'starting' || ollamaContainerStatus === 'stopping',
+                    'bg-gray-100 text-gray-400': ollamaContainerStatus === 'unknown' || ollamaContainerStatus === 'unavailable',
+                  }"
+                  x-text="ollamaContainerStatus"></span>
+                <button @click="toggleOllamaLocal()"
+                  class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none"
+                  :class="settingsConfig.ollama.local ? 'bg-blue-600' : 'bg-gray-200'"
+                  :disabled="ollamaContainerStatus === 'starting' || ollamaContainerStatus === 'stopping'"
+                  role="switch" :aria-checked="settingsConfig.ollama.local">
+                  <span class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"
+                    :class="settingsConfig.ollama.local ? 'translate-x-5' : 'translate-x-0'"></span>
+                </button>
+              </div>
+            </div>
             <div class="grid grid-cols-2 gap-4 text-sm">
               <div>
                 <label class="block text-xs text-gray-500 mb-1">Base URL</label>
-                <input x-model="settingsConfig.ollama.base_url" type="text" class="w-full border border-gray-300 rounded px-3 py-2 text-sm">
+                <input x-model="settingsConfig.ollama.base_url" type="text" class="w-full border border-gray-300 rounded px-3 py-2 text-sm"
+                  :disabled="settingsConfig.ollama.local" :class="settingsConfig.ollama.local ? 'bg-gray-100 text-gray-400' : ''">
               </div>
               <div>
                 <label class="block text-xs text-gray-500 mb-1">Chat Model</label>

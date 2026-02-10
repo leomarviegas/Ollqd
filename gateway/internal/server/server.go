@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/alfagnish/ollqd-gateway/internal/config"
+	"github.com/alfagnish/ollqd-gateway/internal/docker"
 	grpcclient "github.com/alfagnish/ollqd-gateway/internal/grpc"
 	"github.com/alfagnish/ollqd-gateway/internal/handlers"
 	"github.com/alfagnish/ollqd-gateway/internal/proxy"
@@ -44,10 +45,13 @@ func New(cfg *config.Config, gc *grpcclient.Client, tm *tasks.Manager) (http.Han
 		return nil, err
 	}
 
+	// ── Docker manager ─────────────────────────────────────
+	dm := docker.New(cfg.DockerSocket)
+
 	// ── Handlers ────────────────────────────────────────────
-	systemH := handlers.NewSystemHandler(cfg, gc)
+	systemH := handlers.NewSystemHandler(cfg, gc, dm)
 	ollamaH := handlers.NewOllamaHandler(ollamaProxy, cfg.OllamaURL)
-	qdrantH := handlers.NewQdrantHandler(qdrantProxy)
+	qdrantH := handlers.NewQdrantHandler(qdrantProxy, cfg.QdrantURL, gc)
 	ragH := handlers.NewRAGHandler(gc, tm)
 	tasksH := handlers.NewTasksHandler(gc, tm)
 	uploadH := handlers.NewUploadHandler(cfg, gc, tm)

@@ -2165,6 +2165,7 @@ type UpdateOllamaRequest struct {
 	EmbedModel    *string                `protobuf:"bytes,3,opt,name=embed_model,json=embedModel,proto3,oneof" json:"embed_model,omitempty"`
 	VisionModel   *string                `protobuf:"bytes,4,opt,name=vision_model,json=visionModel,proto3,oneof" json:"vision_model,omitempty"`
 	TimeoutS      *float64               `protobuf:"fixed64,5,opt,name=timeout_s,json=timeoutS,proto3,oneof" json:"timeout_s,omitempty"`
+	Local         *bool                  `protobuf:"varint,6,opt,name=local,proto3,oneof" json:"local,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2234,6 +2235,13 @@ func (x *UpdateOllamaRequest) GetTimeoutS() float64 {
 	return 0
 }
 
+func (x *UpdateOllamaRequest) GetLocal() bool {
+	if x != nil && x.Local != nil {
+		return *x.Local
+	}
+	return false
+}
+
 type OllamaConfigResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	BaseUrl       string                 `protobuf:"bytes,1,opt,name=base_url,json=baseUrl,proto3" json:"base_url,omitempty"`
@@ -2241,6 +2249,7 @@ type OllamaConfigResponse struct {
 	EmbedModel    string                 `protobuf:"bytes,3,opt,name=embed_model,json=embedModel,proto3" json:"embed_model,omitempty"`
 	VisionModel   string                 `protobuf:"bytes,4,opt,name=vision_model,json=visionModel,proto3" json:"vision_model,omitempty"`
 	TimeoutS      float64                `protobuf:"fixed64,5,opt,name=timeout_s,json=timeoutS,proto3" json:"timeout_s,omitempty"`
+	Local         bool                   `protobuf:"varint,6,opt,name=local,proto3" json:"local,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2308,6 +2317,13 @@ func (x *OllamaConfigResponse) GetTimeoutS() float64 {
 		return x.TimeoutS
 	}
 	return 0
+}
+
+func (x *OllamaConfigResponse) GetLocal() bool {
+	if x != nil {
+		return x.Local
+	}
+	return false
 }
 
 type UpdateQdrantRequest struct {
@@ -4080,7 +4096,7 @@ const file_ollqd_v1_processing_proto_rawDesc = "" +
 	"\bdistance\x18\x01 \x01(\tR\bdistance\"P\n" +
 	"\x16UpdateDistanceResponse\x12\x1a\n" +
 	"\bdistance\x18\x01 \x01(\tR\bdistance\x12\x1a\n" +
-	"\bprevious\x18\x02 \x01(\tR\bprevious\"\x94\x02\n" +
+	"\bprevious\x18\x02 \x01(\tR\bprevious\"\xb9\x02\n" +
 	"\x13UpdateOllamaRequest\x12\x1e\n" +
 	"\bbase_url\x18\x01 \x01(\tH\x00R\abaseUrl\x88\x01\x01\x12\"\n" +
 	"\n" +
@@ -4088,13 +4104,15 @@ const file_ollqd_v1_processing_proto_rawDesc = "" +
 	"\vembed_model\x18\x03 \x01(\tH\x02R\n" +
 	"embedModel\x88\x01\x01\x12&\n" +
 	"\fvision_model\x18\x04 \x01(\tH\x03R\vvisionModel\x88\x01\x01\x12 \n" +
-	"\ttimeout_s\x18\x05 \x01(\x01H\x04R\btimeoutS\x88\x01\x01B\v\n" +
+	"\ttimeout_s\x18\x05 \x01(\x01H\x04R\btimeoutS\x88\x01\x01\x12\x19\n" +
+	"\x05local\x18\x06 \x01(\bH\x05R\x05local\x88\x01\x01B\v\n" +
 	"\t_base_urlB\r\n" +
 	"\v_chat_modelB\x0e\n" +
 	"\f_embed_modelB\x0f\n" +
 	"\r_vision_modelB\f\n" +
 	"\n" +
-	"_timeout_s\"\xb1\x01\n" +
+	"_timeout_sB\b\n" +
+	"\x06_local\"\xc7\x01\n" +
 	"\x14OllamaConfigResponse\x12\x19\n" +
 	"\bbase_url\x18\x01 \x01(\tR\abaseUrl\x12\x1d\n" +
 	"\n" +
@@ -4102,7 +4120,8 @@ const file_ollqd_v1_processing_proto_rawDesc = "" +
 	"\vembed_model\x18\x03 \x01(\tR\n" +
 	"embedModel\x12!\n" +
 	"\fvision_model\x18\x04 \x01(\tR\vvisionModel\x12\x1b\n" +
-	"\ttimeout_s\x18\x05 \x01(\x01R\btimeoutS\"\xc4\x01\n" +
+	"\ttimeout_s\x18\x05 \x01(\x01R\btimeoutS\x12\x14\n" +
+	"\x05local\x18\x06 \x01(\bR\x05local\"\xc4\x01\n" +
 	"\x13UpdateQdrantRequest\x12\x15\n" +
 	"\x03url\x18\x01 \x01(\tH\x00R\x03url\x88\x01\x01\x122\n" +
 	"\x12default_collection\x18\x02 \x01(\tH\x01R\x11defaultCollection\x88\x01\x01\x12.\n" +

@@ -15,6 +15,7 @@ class OllamaConfig:
     embed_model: str = field(default_factory=lambda: os.getenv("OLLAMA_EMBED_MODEL", "qwen3-embedding:0.6b"))
     vision_model: str = field(default_factory=lambda: os.getenv("OLLAMA_VISION_MODEL", "llava:7b"))
     timeout_s: float = field(default_factory=lambda: float(os.getenv("OLLAMA_TIMEOUT_S", "120")))
+    local: bool = False
 
 
 @dataclass(slots=True)
@@ -153,6 +154,8 @@ def _apply_db_overrides(cfg: AppConfig) -> None:
         cfg.ollama.vision_model = ollama["vision_model"]
     if "timeout_s" in ollama:
         cfg.ollama.timeout_s = _to_float(ollama["timeout_s"])
+    if "local" in ollama:
+        cfg.ollama.local = _to_bool(ollama["local"])
 
     qdrant = overrides.get("qdrant", {})
     if "url" in qdrant:

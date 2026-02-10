@@ -31,6 +31,8 @@ services:
     #           count: all
     #           capabilities: [gpu]
     restart: unless-stopped
+    profiles:
+      - local-ollama
 
   # Static SPA served by nginx (decoupled from API gateway)
   web:
@@ -102,6 +104,7 @@ services:
       - "8000:8000"
     volumes:
       - uploads_data:/uploads
+      - /var/run/docker.sock:/var/run/docker.sock
     environment:
       - LISTEN_ADDR=:8000
       - WORKER_ADDR=worker:50051
@@ -109,6 +112,7 @@ services:
       - QDRANT_URL=http://qdrant:6333
       - UPLOAD_DIR=/uploads
       - MAX_UPLOAD_SIZE_MB=50
+      - DOCKER_SOCKET=/var/run/docker.sock
     depends_on:
       - worker
       - qdrant

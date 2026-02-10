@@ -7,12 +7,13 @@ import (
 
 // Config holds all gateway configuration loaded from environment variables.
 type Config struct {
-	ListenAddr     string // HTTP listen address
-	WorkerAddr     string // Python gRPC worker address
-	OllamaURL      string // Ollama API base URL
-	QdrantURL      string // Qdrant API base URL
-	UploadDir      string // Directory for uploaded files
+	ListenAddr      string // HTTP listen address
+	WorkerAddr      string // Python gRPC worker address
+	OllamaURL       string // Ollama API base URL
+	QdrantURL       string // Qdrant API base URL
+	UploadDir       string // Directory for uploaded files
 	MaxUploadSizeMB int64  // Maximum upload size in megabytes
+	DockerSocket    string // Docker socket path for container management
 }
 
 // Load reads configuration from environment variables, falling back to defaults.
@@ -24,6 +25,7 @@ func Load() *Config {
 		QdrantURL:       envOrDefault("QDRANT_URL", "http://localhost:6333"),
 		UploadDir:       envOrDefault("UPLOAD_DIR", "/uploads"),
 		MaxUploadSizeMB: envOrDefaultInt64("MAX_UPLOAD_SIZE_MB", 50),
+		DockerSocket:    envOrDefault("DOCKER_SOCKET", "/var/run/docker.sock"),
 	}
 }
 

@@ -344,6 +344,7 @@ type OllamaConfig struct {
 	EmbedModel    string                 `protobuf:"bytes,3,opt,name=embed_model,json=embedModel,proto3" json:"embed_model,omitempty"`
 	VisionModel   string                 `protobuf:"bytes,4,opt,name=vision_model,json=visionModel,proto3" json:"vision_model,omitempty"`
 	TimeoutS      float64                `protobuf:"fixed64,5,opt,name=timeout_s,json=timeoutS,proto3" json:"timeout_s,omitempty"`
+	Local         bool                   `protobuf:"varint,6,opt,name=local,proto3" json:"local,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -411,6 +412,13 @@ func (x *OllamaConfig) GetTimeoutS() float64 {
 		return x.TimeoutS
 	}
 	return 0
+}
+
+func (x *OllamaConfig) GetLocal() bool {
+	if x != nil {
+		return x.Local
+	}
+	return false
 }
 
 type QdrantConfig struct {
@@ -932,7 +940,7 @@ const file_ollqd_v1_types_proto_rawDesc = "" +
 	"\x06result\x18\x05 \x03(\v2\".ollqd.v1.TaskProgress.ResultEntryR\x06result\x1a9\n" +
 	"\vResultEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xa9\x01\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xbf\x01\n" +
 	"\fOllamaConfig\x12\x19\n" +
 	"\bbase_url\x18\x01 \x01(\tR\abaseUrl\x12\x1d\n" +
 	"\n" +
@@ -940,7 +948,8 @@ const file_ollqd_v1_types_proto_rawDesc = "" +
 	"\vembed_model\x18\x03 \x01(\tR\n" +
 	"embedModel\x12!\n" +
 	"\fvision_model\x18\x04 \x01(\tR\vvisionModel\x12\x1b\n" +
-	"\ttimeout_s\x18\x05 \x01(\x01R\btimeoutS\"z\n" +
+	"\ttimeout_s\x18\x05 \x01(\x01R\btimeoutS\x12\x14\n" +
+	"\x05local\x18\x06 \x01(\bR\x05local\"z\n" +
 	"\fQdrantConfig\x12\x10\n" +
 	"\x03url\x18\x01 \x01(\tR\x03url\x12-\n" +
 	"\x12default_collection\x18\x02 \x01(\tR\x11defaultCollection\x12)\n" +

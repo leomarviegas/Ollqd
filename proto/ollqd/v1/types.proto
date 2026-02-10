@@ -48,6 +48,7 @@ message OllamaConfig {
   string embed_model = 3;
   string vision_model = 4;
   double timeout_s = 5;
+  bool   local = 6;
 }
 
 message QdrantConfig {

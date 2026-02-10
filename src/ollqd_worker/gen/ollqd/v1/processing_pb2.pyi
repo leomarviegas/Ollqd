@@ -382,32 +382,36 @@ class UpdateDistanceResponse(_message.Message):
     def __init__(self, distance: _Optional[str] = ..., previous: _Optional[str] = ...) -> None: ...
 
 class UpdateOllamaRequest(_message.Message):
-    __slots__ = ("base_url", "chat_model", "embed_model", "vision_model", "timeout_s")
+    __slots__ = ("base_url", "chat_model", "embed_model", "vision_model", "timeout_s", "local")
     BASE_URL_FIELD_NUMBER: _ClassVar[int]
     CHAT_MODEL_FIELD_NUMBER: _ClassVar[int]
     EMBED_MODEL_FIELD_NUMBER: _ClassVar[int]
     VISION_MODEL_FIELD_NUMBER: _ClassVar[int]
     TIMEOUT_S_FIELD_NUMBER: _ClassVar[int]
+    LOCAL_FIELD_NUMBER: _ClassVar[int]
     base_url: str
     chat_model: str
     embed_model: str
     vision_model: str
     timeout_s: float
-    def __init__(self, base_url: _Optional[str] = ..., chat_model: _Optional[str] = ..., embed_model: _Optional[str] = ..., vision_model: _Optional[str] = ..., timeout_s: _Optional[float] = ...) -> None: ...
+    local: bool
+    def __init__(self, base_url: _Optional[str] = ..., chat_model: _Optional[str] = ..., embed_model: _Optional[str] = ..., vision_model: _Optional[str] = ..., timeout_s: _Optional[float] = ..., local: bool = ...) -> None: ...
 
 class OllamaConfigResponse(_message.Message):
-    __slots__ = ("base_url", "chat_model", "embed_model", "vision_model", "timeout_s")
+    __slots__ = ("base_url", "chat_model", "embed_model", "vision_model", "timeout_s", "local")
     BASE_URL_FIELD_NUMBER: _ClassVar[int]
     CHAT_MODEL_FIELD_NUMBER: _ClassVar[int]
     EMBED_MODEL_FIELD_NUMBER: _ClassVar[int]
     VISION_MODEL_FIELD_NUMBER: _ClassVar[int]
     TIMEOUT_S_FIELD_NUMBER: _ClassVar[int]
+    LOCAL_FIELD_NUMBER: _ClassVar[int]
     base_url: str
     chat_model: str
     embed_model: str
     vision_model: str
     timeout_s: float
-    def __init__(self, base_url: _Optional[str] = ..., chat_model: _Optional[str] = ..., embed_model: _Optional[str] = ..., vision_model: _Optional[str] = ..., timeout_s: _Optional[float] = ...) -> None: ...
+    local: bool
+    def __init__(self, base_url: _Optional[str] = ..., chat_model: _Optional[str] = ..., embed_model: _Optional[str] = ..., vision_model: _Optional[str] = ..., timeout_s: _Optional[float] = ..., local: bool = ...) -> None: ...
 
 class UpdateQdrantRequest(_message.Message):
     __slots__ = ("url", "default_collection", "default_distance")
