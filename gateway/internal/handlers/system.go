@@ -51,14 +51,27 @@ func (h *SystemHandler) Routes(r chi.Router) {
 // upstream services.
 type serviceStatus struct {
 	Status  string `json:"status"`
+	URL     string `json:"url,omitempty"`
 	Latency string `json:"latency,omitempty"`
 	Error   string `json:"error,omitempty"`
 }
 
 // Health pings Ollama and Qdrant to report service status.
+// Accepts optional query params ?ollama_url=...&qdrant_url=... to check arbitrary hosts.
 func (h *SystemHandler) Health(w http.ResponseWriter, r *http.Request) {
-	ollamaStatus := h.pingService(h.cfg.OllamaURL + "/api/tags")
-	qdrantStatus := h.pingService(h.cfg.QdrantURL + "/collections")
+	ollamaURL := r.URL.Query().Get("ollama_url")
+	if ollamaURL == "" {
+		ollamaURL = h.cfg.OllamaURL
+	}
+	qdrantURL := r.URL.Query().Get("qdrant_url")
+	if qdrantURL == "" {
+		qdrantURL = h.cfg.QdrantURL
+	}
+
+	ollamaStatus := h.pingService(ollamaURL + "/api/tags")
+	ollamaStatus.URL = ollamaURL
+	qdrantStatus := h.pingService(qdrantURL + "/collections")
+	qdrantStatus.URL = qdrantURL
 
 	overall := "ok"
 	if ollamaStatus.Error != "" || qdrantStatus.Error != "" {
