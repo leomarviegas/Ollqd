@@ -163,3 +163,16 @@ def get_config() -> AppConfig:
         _config = AppConfig()
         _apply_db_overrides(_config)
     return _config
+
+
+def reset_config() -> AppConfig:
+    """Force re-creation of the config singleton from env vars + DB overrides.
+
+    Call this after deleting DB overrides so the in-memory config reflects
+    the remaining (or absent) overrides.
+    """
+    global _config
+    _config = AppConfig()
+    _apply_db_overrides(_config)
+    log.info("Config singleton re-created from env vars + DB overrides")
+    return _config

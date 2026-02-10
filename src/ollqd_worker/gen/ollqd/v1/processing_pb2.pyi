@@ -389,6 +389,22 @@ class GetDoclingConfigRequest(_message.Message):
     __slots__ = ()
     def __init__(self) -> None: ...
 
+class ResetConfigRequest(_message.Message):
+    __slots__ = ("section", "keys")
+    SECTION_FIELD_NUMBER: _ClassVar[int]
+    KEYS_FIELD_NUMBER: _ClassVar[int]
+    section: str
+    keys: _containers.RepeatedScalarFieldContainer[str]
+    def __init__(self, section: _Optional[str] = ..., keys: _Optional[_Iterable[str]] = ...) -> None: ...
+
+class ResetConfigResponse(_message.Message):
+    __slots__ = ("section", "reset_keys")
+    SECTION_FIELD_NUMBER: _ClassVar[int]
+    RESET_KEYS_FIELD_NUMBER: _ClassVar[int]
+    section: str
+    reset_keys: _containers.RepeatedScalarFieldContainer[str]
+    def __init__(self, section: _Optional[str] = ..., reset_keys: _Optional[_Iterable[str]] = ...) -> None: ...
+
 class OverviewRequest(_message.Message):
     __slots__ = ("collection", "limit")
     COLLECTION_FIELD_NUMBER: _ClassVar[int]

@@ -233,6 +233,7 @@ service ConfigService {
   rpc UpdateDistance(UpdateDistanceRequest)       returns (UpdateDistanceResponse);
   rpc GetPIIConfig(GetPIIConfigRequest)          returns (PIIConfigResponse);
   rpc GetDoclingConfig(GetDoclingConfigRequest)   returns (DoclingConfigResponse);
+  rpc ResetConfig(ResetConfigRequest)            returns (ResetConfigResponse);
 }
 
 message GetConfigRequest {}
@@ -289,6 +290,16 @@ message UpdateDistanceResponse {
 
 message GetPIIConfigRequest {}
 message GetDoclingConfigRequest {}
+
+message ResetConfigRequest {
+  string section = 1;          // "pii", "docling", "qdrant", "app", or "" for all
+  repeated string keys = 2;    // specific keys to reset; empty = entire section
+}
+
+message ResetConfigResponse {
+  string section = 1;
+  repeated string reset_keys = 2;
+}
 
 // ═══════════════════════════════════════════════════════════
 // VisualizationService — force graph, file tree, PCA/t-SNE

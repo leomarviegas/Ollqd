@@ -884,6 +884,11 @@ class ConfigServiceStub(object):
                 request_serializer=ollqd_dot_v1_dot_processing__pb2.GetDoclingConfigRequest.SerializeToString,
                 response_deserializer=ollqd_dot_v1_dot_processing__pb2.DoclingConfigResponse.FromString,
                 _registered_method=True)
+        self.ResetConfig = channel.unary_unary(
+                '/ollqd.v1.ConfigService/ResetConfig',
+                request_serializer=ollqd_dot_v1_dot_processing__pb2.ResetConfigRequest.SerializeToString,
+                response_deserializer=ollqd_dot_v1_dot_processing__pb2.ResetConfigResponse.FromString,
+                _registered_method=True)
 
 
 class ConfigServiceServicer(object):
@@ -935,6 +940,12 @@ class ConfigServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def ResetConfig(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_ConfigServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -972,6 +983,11 @@ def add_ConfigServiceServicer_to_server(servicer, server):
                     servicer.GetDoclingConfig,
                     request_deserializer=ollqd_dot_v1_dot_processing__pb2.GetDoclingConfigRequest.FromString,
                     response_serializer=ollqd_dot_v1_dot_processing__pb2.DoclingConfigResponse.SerializeToString,
+            ),
+            'ResetConfig': grpc.unary_unary_rpc_method_handler(
+                    servicer.ResetConfig,
+                    request_deserializer=ollqd_dot_v1_dot_processing__pb2.ResetConfigRequest.FromString,
+                    response_serializer=ollqd_dot_v1_dot_processing__pb2.ResetConfigResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -1167,6 +1183,33 @@ class ConfigService(object):
             '/ollqd.v1.ConfigService/GetDoclingConfig',
             ollqd_dot_v1_dot_processing__pb2.GetDoclingConfigRequest.SerializeToString,
             ollqd_dot_v1_dot_processing__pb2.DoclingConfigResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def ResetConfig(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/ollqd.v1.ConfigService/ResetConfig',
+            ollqd_dot_v1_dot_processing__pb2.ResetConfigRequest.SerializeToString,
+            ollqd_dot_v1_dot_processing__pb2.ResetConfigResponse.FromString,
             options,
             channel_credentials,
             insecure,

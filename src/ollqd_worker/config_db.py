@@ -68,6 +68,39 @@ def save_overrides(section: str, data: dict[str, str]) -> None:
     conn.commit()
 
 
+def delete_overrides(section: str = "", keys: list[str] | None = None) -> list[str]:
+    """Delete config overrides, returning the keys that were removed.
+
+    Args:
+        section: Section to delete from. Empty string = all sections.
+        keys: Specific keys to delete. None/empty = entire section.
+    """
+    conn = _get_conn()
+    if not section:
+        # Delete everything
+        rows = conn.execute("SELECT section || '.' || key FROM config_overrides").fetchall()
+        conn.execute("DELETE FROM config_overrides")
+    elif keys:
+        placeholders = ",".join("?" for _ in keys)
+        rows = conn.execute(
+            f"SELECT key FROM config_overrides WHERE section = ? AND key IN ({placeholders})",
+            [section, *keys],
+        ).fetchall()
+        conn.execute(
+            f"DELETE FROM config_overrides WHERE section = ? AND key IN ({placeholders})",
+            [section, *keys],
+        )
+    else:
+        rows = conn.execute(
+            "SELECT key FROM config_overrides WHERE section = ?", (section,)
+        ).fetchall()
+        conn.execute("DELETE FROM config_overrides WHERE section = ?", (section,))
+    conn.commit()
+    removed = [r[0] for r in rows]
+    log.info("Deleted config overrides: section=%r keys=%s", section or "*", removed)
+    return removed
+
+
 def load_overrides() -> dict[str, dict[str, str]]:
     """Load all saved overrides, grouped by section.
 

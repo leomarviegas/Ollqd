@@ -1030,6 +1030,7 @@
                 <option value="Manhattan">Manhattan</option>
               </select>
               <button @click="saveDistanceMetric()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm">Save</button>
+              <button @click="resetConfig('qdrant')" class="border border-gray-300 hover:bg-red-50 hover:border-red-300 text-gray-600 hover:text-red-600 px-3 py-2 rounded text-sm" title="Reset to default">Reset</button>
             </div>
             <!-- Info cards -->
             <div class="grid grid-cols-2 gap-3">
@@ -1166,7 +1167,10 @@
                 <input x-model.number="doclingConfig.timeout_s" type="number" min="30" max="1800"
                        class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
               </div>
-              <button @click="updateDoclingConfig()" class="w-full bg-teal-600 hover:bg-teal-700 text-white py-2 rounded-lg text-sm font-medium">Save Document AI Settings</button>
+              <div class="flex gap-2">
+                <button @click="updateDoclingConfig()" class="flex-1 bg-teal-600 hover:bg-teal-700 text-white py-2 rounded-lg text-sm font-medium">Save Document AI Settings</button>
+                <button @click="resetConfig('docling')" class="px-4 py-2 border border-gray-300 hover:bg-red-50 hover:border-red-300 text-gray-600 hover:text-red-600 rounded-lg text-sm font-medium" title="Reset to defaults">Reset</button>
+              </div>
             </div>
 
             <div x-show="doclingConfig?.supported_extensions" class="mt-4 pt-3 border-t border-gray-200">
@@ -1217,7 +1221,10 @@
                 </div>
                 <input type="checkbox" x-model="piiConfig.mask_embeddings" class="rounded border-gray-300 text-purple-600 h-5 w-5">
               </label>
-              <button @click="savePIIConfig()" class="w-full bg-purple-600 hover:bg-purple-700 text-white py-2 rounded-lg text-sm font-medium">Save PII Settings</button>
+              <div class="flex gap-2">
+                <button @click="savePIIConfig()" class="flex-1 bg-purple-600 hover:bg-purple-700 text-white py-2 rounded-lg text-sm font-medium">Save PII Settings</button>
+                <button @click="resetConfig('pii')" class="px-4 py-2 border border-gray-300 hover:bg-red-50 hover:border-red-300 text-gray-600 hover:text-red-600 rounded-lg text-sm font-medium" title="Reset to defaults">Reset</button>
+              </div>
             </div>
 
             <div class="mt-4 pt-3 border-t border-gray-200">

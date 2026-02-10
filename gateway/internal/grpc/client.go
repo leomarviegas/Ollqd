@@ -83,6 +83,8 @@ type UpdateDistanceRequest = pb.UpdateDistanceRequest
 type UpdateDistanceResponse = pb.UpdateDistanceResponse
 type GetPIIConfigRequest = pb.GetPIIConfigRequest
 type GetDoclingConfigRequest = pb.GetDoclingConfigRequest
+type ResetConfigRequest = pb.ResetConfigRequest
+type ResetConfigResponse = pb.ResetConfigResponse
 
 // --- Visualization types ---
 
@@ -203,6 +205,7 @@ type ConfigServiceClient interface {
 	UpdateDistance(ctx context.Context, req *UpdateDistanceRequest) (*UpdateDistanceResponse, error)
 	GetPIIConfig(ctx context.Context) (*PIIConfigResponse, error)
 	GetDoclingConfig(ctx context.Context) (*DoclingConfigResponse, error)
+	ResetConfig(ctx context.Context, req *ResetConfigRequest) (*ResetConfigResponse, error)
 }
 
 // VisualizationServiceClient defines the VisualizationService RPC methods.
@@ -368,6 +371,10 @@ func (a *configAdapter) GetPIIConfig(ctx context.Context) (*PIIConfigResponse, e
 
 func (a *configAdapter) GetDoclingConfig(ctx context.Context) (*DoclingConfigResponse, error) {
 	return a.inner.GetDoclingConfig(ctx, &GetDoclingConfigRequest{})
+}
+
+func (a *configAdapter) ResetConfig(ctx context.Context, req *ResetConfigRequest) (*ResetConfigResponse, error) {
+	return a.inner.ResetConfig(ctx, req)
 }
 
 // --- visualizationAdapter ---

@@ -2230,6 +2230,110 @@ func (*GetDoclingConfigRequest) Descriptor() ([]byte, []int) {
 	return file_ollqd_v1_processing_proto_rawDescGZIP(), []int{33}
 }
 
+type ResetConfigRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Section       string                 `protobuf:"bytes,1,opt,name=section,proto3" json:"section,omitempty"` // "pii", "docling", "qdrant", "app", or "" for all
+	Keys          []string               `protobuf:"bytes,2,rep,name=keys,proto3" json:"keys,omitempty"`       // specific keys to reset; empty = entire section
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ResetConfigRequest) Reset() {
+	*x = ResetConfigRequest{}
+	mi := &file_ollqd_v1_processing_proto_msgTypes[34]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ResetConfigRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ResetConfigRequest) ProtoMessage() {}
+
+func (x *ResetConfigRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_ollqd_v1_processing_proto_msgTypes[34]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ResetConfigRequest.ProtoReflect.Descriptor instead.
+func (*ResetConfigRequest) Descriptor() ([]byte, []int) {
+	return file_ollqd_v1_processing_proto_rawDescGZIP(), []int{34}
+}
+
+func (x *ResetConfigRequest) GetSection() string {
+	if x != nil {
+		return x.Section
+	}
+	return ""
+}
+
+func (x *ResetConfigRequest) GetKeys() []string {
+	if x != nil {
+		return x.Keys
+	}
+	return nil
+}
+
+type ResetConfigResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Section       string                 `protobuf:"bytes,1,opt,name=section,proto3" json:"section,omitempty"`
+	ResetKeys     []string               `protobuf:"bytes,2,rep,name=reset_keys,json=resetKeys,proto3" json:"reset_keys,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ResetConfigResponse) Reset() {
+	*x = ResetConfigResponse{}
+	mi := &file_ollqd_v1_processing_proto_msgTypes[35]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ResetConfigResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ResetConfigResponse) ProtoMessage() {}
+
+func (x *ResetConfigResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_ollqd_v1_processing_proto_msgTypes[35]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ResetConfigResponse.ProtoReflect.Descriptor instead.
+func (*ResetConfigResponse) Descriptor() ([]byte, []int) {
+	return file_ollqd_v1_processing_proto_rawDescGZIP(), []int{35}
+}
+
+func (x *ResetConfigResponse) GetSection() string {
+	if x != nil {
+		return x.Section
+	}
+	return ""
+}
+
+func (x *ResetConfigResponse) GetResetKeys() []string {
+	if x != nil {
+		return x.ResetKeys
+	}
+	return nil
+}
+
 type OverviewRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Collection    string                 `protobuf:"bytes,1,opt,name=collection,proto3" json:"collection,omitempty"`
@@ -2240,7 +2344,7 @@ type OverviewRequest struct {
 
 func (x *OverviewRequest) Reset() {
 	*x = OverviewRequest{}
-	mi := &file_ollqd_v1_processing_proto_msgTypes[34]
+	mi := &file_ollqd_v1_processing_proto_msgTypes[36]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2252,7 +2356,7 @@ func (x *OverviewRequest) String() string {
 func (*OverviewRequest) ProtoMessage() {}
 
 func (x *OverviewRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_ollqd_v1_processing_proto_msgTypes[34]
+	mi := &file_ollqd_v1_processing_proto_msgTypes[36]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2265,7 +2369,7 @@ func (x *OverviewRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use OverviewRequest.ProtoReflect.Descriptor instead.
 func (*OverviewRequest) Descriptor() ([]byte, []int) {
-	return file_ollqd_v1_processing_proto_rawDescGZIP(), []int{34}
+	return file_ollqd_v1_processing_proto_rawDescGZIP(), []int{36}
 }
 
 func (x *OverviewRequest) GetCollection() string {
@@ -2300,7 +2404,7 @@ type VisNode struct {
 
 func (x *VisNode) Reset() {
 	*x = VisNode{}
-	mi := &file_ollqd_v1_processing_proto_msgTypes[35]
+	mi := &file_ollqd_v1_processing_proto_msgTypes[37]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2312,7 +2416,7 @@ func (x *VisNode) String() string {
 func (*VisNode) ProtoMessage() {}
 
 func (x *VisNode) ProtoReflect() protoreflect.Message {
-	mi := &file_ollqd_v1_processing_proto_msgTypes[35]
+	mi := &file_ollqd_v1_processing_proto_msgTypes[37]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2325,7 +2429,7 @@ func (x *VisNode) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use VisNode.ProtoReflect.Descriptor instead.
 func (*VisNode) Descriptor() ([]byte, []int) {
-	return file_ollqd_v1_processing_proto_rawDescGZIP(), []int{35}
+	return file_ollqd_v1_processing_proto_rawDescGZIP(), []int{37}
 }
 
 func (x *VisNode) GetId() int32 {
@@ -2408,7 +2512,7 @@ type VisEdge struct {
 
 func (x *VisEdge) Reset() {
 	*x = VisEdge{}
-	mi := &file_ollqd_v1_processing_proto_msgTypes[36]
+	mi := &file_ollqd_v1_processing_proto_msgTypes[38]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2420,7 +2524,7 @@ func (x *VisEdge) String() string {
 func (*VisEdge) ProtoMessage() {}
 
 func (x *VisEdge) ProtoReflect() protoreflect.Message {
-	mi := &file_ollqd_v1_processing_proto_msgTypes[36]
+	mi := &file_ollqd_v1_processing_proto_msgTypes[38]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2433,7 +2537,7 @@ func (x *VisEdge) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use VisEdge.ProtoReflect.Descriptor instead.
 func (*VisEdge) Descriptor() ([]byte, []int) {
-	return file_ollqd_v1_processing_proto_rawDescGZIP(), []int{36}
+	return file_ollqd_v1_processing_proto_rawDescGZIP(), []int{38}
 }
 
 func (x *VisEdge) GetFrom() int32 {
@@ -2461,7 +2565,7 @@ type OverviewStats struct {
 
 func (x *OverviewStats) Reset() {
 	*x = OverviewStats{}
-	mi := &file_ollqd_v1_processing_proto_msgTypes[37]
+	mi := &file_ollqd_v1_processing_proto_msgTypes[39]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2473,7 +2577,7 @@ func (x *OverviewStats) String() string {
 func (*OverviewStats) ProtoMessage() {}
 
 func (x *OverviewStats) ProtoReflect() protoreflect.Message {
-	mi := &file_ollqd_v1_processing_proto_msgTypes[37]
+	mi := &file_ollqd_v1_processing_proto_msgTypes[39]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2486,7 +2590,7 @@ func (x *OverviewStats) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use OverviewStats.ProtoReflect.Descriptor instead.
 func (*OverviewStats) Descriptor() ([]byte, []int) {
-	return file_ollqd_v1_processing_proto_rawDescGZIP(), []int{37}
+	return file_ollqd_v1_processing_proto_rawDescGZIP(), []int{39}
 }
 
 func (x *OverviewStats) GetTotalFiles() int32 {
@@ -2521,7 +2625,7 @@ type OverviewResponse struct {
 
 func (x *OverviewResponse) Reset() {
 	*x = OverviewResponse{}
-	mi := &file_ollqd_v1_processing_proto_msgTypes[38]
+	mi := &file_ollqd_v1_processing_proto_msgTypes[40]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2533,7 +2637,7 @@ func (x *OverviewResponse) String() string {
 func (*OverviewResponse) ProtoMessage() {}
 
 func (x *OverviewResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_ollqd_v1_processing_proto_msgTypes[38]
+	mi := &file_ollqd_v1_processing_proto_msgTypes[40]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2546,7 +2650,7 @@ func (x *OverviewResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use OverviewResponse.ProtoReflect.Descriptor instead.
 func (*OverviewResponse) Descriptor() ([]byte, []int) {
-	return file_ollqd_v1_processing_proto_rawDescGZIP(), []int{38}
+	return file_ollqd_v1_processing_proto_rawDescGZIP(), []int{40}
 }
 
 func (x *OverviewResponse) GetNodes() []*VisNode {
@@ -2580,7 +2684,7 @@ type FileTreeRequest struct {
 
 func (x *FileTreeRequest) Reset() {
 	*x = FileTreeRequest{}
-	mi := &file_ollqd_v1_processing_proto_msgTypes[39]
+	mi := &file_ollqd_v1_processing_proto_msgTypes[41]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2592,7 +2696,7 @@ func (x *FileTreeRequest) String() string {
 func (*FileTreeRequest) ProtoMessage() {}
 
 func (x *FileTreeRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_ollqd_v1_processing_proto_msgTypes[39]
+	mi := &file_ollqd_v1_processing_proto_msgTypes[41]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2605,7 +2709,7 @@ func (x *FileTreeRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FileTreeRequest.ProtoReflect.Descriptor instead.
 func (*FileTreeRequest) Descriptor() ([]byte, []int) {
-	return file_ollqd_v1_processing_proto_rawDescGZIP(), []int{39}
+	return file_ollqd_v1_processing_proto_rawDescGZIP(), []int{41}
 }
 
 func (x *FileTreeRequest) GetCollection() string {
@@ -2634,7 +2738,7 @@ type FileTreeResponse struct {
 
 func (x *FileTreeResponse) Reset() {
 	*x = FileTreeResponse{}
-	mi := &file_ollqd_v1_processing_proto_msgTypes[40]
+	mi := &file_ollqd_v1_processing_proto_msgTypes[42]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2646,7 +2750,7 @@ func (x *FileTreeResponse) String() string {
 func (*FileTreeResponse) ProtoMessage() {}
 
 func (x *FileTreeResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_ollqd_v1_processing_proto_msgTypes[40]
+	mi := &file_ollqd_v1_processing_proto_msgTypes[42]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2659,7 +2763,7 @@ func (x *FileTreeResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FileTreeResponse.ProtoReflect.Descriptor instead.
 func (*FileTreeResponse) Descriptor() ([]byte, []int) {
-	return file_ollqd_v1_processing_proto_rawDescGZIP(), []int{40}
+	return file_ollqd_v1_processing_proto_rawDescGZIP(), []int{42}
 }
 
 func (x *FileTreeResponse) GetNodes() []*VisNode {
@@ -2702,7 +2806,7 @@ type VectorsRequest struct {
 
 func (x *VectorsRequest) Reset() {
 	*x = VectorsRequest{}
-	mi := &file_ollqd_v1_processing_proto_msgTypes[41]
+	mi := &file_ollqd_v1_processing_proto_msgTypes[43]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2714,7 +2818,7 @@ func (x *VectorsRequest) String() string {
 func (*VectorsRequest) ProtoMessage() {}
 
 func (x *VectorsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_ollqd_v1_processing_proto_msgTypes[41]
+	mi := &file_ollqd_v1_processing_proto_msgTypes[43]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2727,7 +2831,7 @@ func (x *VectorsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use VectorsRequest.ProtoReflect.Descriptor instead.
 func (*VectorsRequest) Descriptor() ([]byte, []int) {
-	return file_ollqd_v1_processing_proto_rawDescGZIP(), []int{41}
+	return file_ollqd_v1_processing_proto_rawDescGZIP(), []int{43}
 }
 
 func (x *VectorsRequest) GetCollection() string {
@@ -2773,7 +2877,7 @@ type VectorPoint struct {
 
 func (x *VectorPoint) Reset() {
 	*x = VectorPoint{}
-	mi := &file_ollqd_v1_processing_proto_msgTypes[42]
+	mi := &file_ollqd_v1_processing_proto_msgTypes[44]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2785,7 +2889,7 @@ func (x *VectorPoint) String() string {
 func (*VectorPoint) ProtoMessage() {}
 
 func (x *VectorPoint) ProtoReflect() protoreflect.Message {
-	mi := &file_ollqd_v1_processing_proto_msgTypes[42]
+	mi := &file_ollqd_v1_processing_proto_msgTypes[44]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2798,7 +2902,7 @@ func (x *VectorPoint) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use VectorPoint.ProtoReflect.Descriptor instead.
 func (*VectorPoint) Descriptor() ([]byte, []int) {
-	return file_ollqd_v1_processing_proto_rawDescGZIP(), []int{42}
+	return file_ollqd_v1_processing_proto_rawDescGZIP(), []int{44}
 }
 
 func (x *VectorPoint) GetX() float64 {
@@ -2863,7 +2967,7 @@ type VectorsResponse struct {
 
 func (x *VectorsResponse) Reset() {
 	*x = VectorsResponse{}
-	mi := &file_ollqd_v1_processing_proto_msgTypes[43]
+	mi := &file_ollqd_v1_processing_proto_msgTypes[45]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2875,7 +2979,7 @@ func (x *VectorsResponse) String() string {
 func (*VectorsResponse) ProtoMessage() {}
 
 func (x *VectorsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_ollqd_v1_processing_proto_msgTypes[43]
+	mi := &file_ollqd_v1_processing_proto_msgTypes[45]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2888,7 +2992,7 @@ func (x *VectorsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use VectorsResponse.ProtoReflect.Descriptor instead.
 func (*VectorsResponse) Descriptor() ([]byte, []int) {
-	return file_ollqd_v1_processing_proto_rawDescGZIP(), []int{43}
+	return file_ollqd_v1_processing_proto_rawDescGZIP(), []int{45}
 }
 
 func (x *VectorsResponse) GetPoints() []*VectorPoint {
@@ -2940,7 +3044,7 @@ type SMBTestRequest struct {
 
 func (x *SMBTestRequest) Reset() {
 	*x = SMBTestRequest{}
-	mi := &file_ollqd_v1_processing_proto_msgTypes[44]
+	mi := &file_ollqd_v1_processing_proto_msgTypes[46]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2952,7 +3056,7 @@ func (x *SMBTestRequest) String() string {
 func (*SMBTestRequest) ProtoMessage() {}
 
 func (x *SMBTestRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_ollqd_v1_processing_proto_msgTypes[44]
+	mi := &file_ollqd_v1_processing_proto_msgTypes[46]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2965,7 +3069,7 @@ func (x *SMBTestRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SMBTestRequest.ProtoReflect.Descriptor instead.
 func (*SMBTestRequest) Descriptor() ([]byte, []int) {
-	return file_ollqd_v1_processing_proto_rawDescGZIP(), []int{44}
+	return file_ollqd_v1_processing_proto_rawDescGZIP(), []int{46}
 }
 
 func (x *SMBTestRequest) GetServer() string {
@@ -3020,7 +3124,7 @@ type SMBTestResponse struct {
 
 func (x *SMBTestResponse) Reset() {
 	*x = SMBTestResponse{}
-	mi := &file_ollqd_v1_processing_proto_msgTypes[45]
+	mi := &file_ollqd_v1_processing_proto_msgTypes[47]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3032,7 +3136,7 @@ func (x *SMBTestResponse) String() string {
 func (*SMBTestResponse) ProtoMessage() {}
 
 func (x *SMBTestResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_ollqd_v1_processing_proto_msgTypes[45]
+	mi := &file_ollqd_v1_processing_proto_msgTypes[47]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3045,7 +3149,7 @@ func (x *SMBTestResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SMBTestResponse.ProtoReflect.Descriptor instead.
 func (*SMBTestResponse) Descriptor() ([]byte, []int) {
-	return file_ollqd_v1_processing_proto_rawDescGZIP(), []int{45}
+	return file_ollqd_v1_processing_proto_rawDescGZIP(), []int{47}
 }
 
 func (x *SMBTestResponse) GetOk() bool {
@@ -3077,7 +3181,7 @@ type SMBBrowseRequest struct {
 
 func (x *SMBBrowseRequest) Reset() {
 	*x = SMBBrowseRequest{}
-	mi := &file_ollqd_v1_processing_proto_msgTypes[46]
+	mi := &file_ollqd_v1_processing_proto_msgTypes[48]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3089,7 +3193,7 @@ func (x *SMBBrowseRequest) String() string {
 func (*SMBBrowseRequest) ProtoMessage() {}
 
 func (x *SMBBrowseRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_ollqd_v1_processing_proto_msgTypes[46]
+	mi := &file_ollqd_v1_processing_proto_msgTypes[48]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3102,7 +3206,7 @@ func (x *SMBBrowseRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SMBBrowseRequest.ProtoReflect.Descriptor instead.
 func (*SMBBrowseRequest) Descriptor() ([]byte, []int) {
-	return file_ollqd_v1_processing_proto_rawDescGZIP(), []int{46}
+	return file_ollqd_v1_processing_proto_rawDescGZIP(), []int{48}
 }
 
 func (x *SMBBrowseRequest) GetServer() string {
@@ -3166,7 +3270,7 @@ type SMBFileEntry struct {
 
 func (x *SMBFileEntry) Reset() {
 	*x = SMBFileEntry{}
-	mi := &file_ollqd_v1_processing_proto_msgTypes[47]
+	mi := &file_ollqd_v1_processing_proto_msgTypes[49]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3178,7 +3282,7 @@ func (x *SMBFileEntry) String() string {
 func (*SMBFileEntry) ProtoMessage() {}
 
 func (x *SMBFileEntry) ProtoReflect() protoreflect.Message {
-	mi := &file_ollqd_v1_processing_proto_msgTypes[47]
+	mi := &file_ollqd_v1_processing_proto_msgTypes[49]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3191,7 +3295,7 @@ func (x *SMBFileEntry) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SMBFileEntry.ProtoReflect.Descriptor instead.
 func (*SMBFileEntry) Descriptor() ([]byte, []int) {
-	return file_ollqd_v1_processing_proto_rawDescGZIP(), []int{47}
+	return file_ollqd_v1_processing_proto_rawDescGZIP(), []int{49}
 }
 
 func (x *SMBFileEntry) GetName() string {
@@ -3232,7 +3336,7 @@ type SMBBrowseResponse struct {
 
 func (x *SMBBrowseResponse) Reset() {
 	*x = SMBBrowseResponse{}
-	mi := &file_ollqd_v1_processing_proto_msgTypes[48]
+	mi := &file_ollqd_v1_processing_proto_msgTypes[50]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3244,7 +3348,7 @@ func (x *SMBBrowseResponse) String() string {
 func (*SMBBrowseResponse) ProtoMessage() {}
 
 func (x *SMBBrowseResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_ollqd_v1_processing_proto_msgTypes[48]
+	mi := &file_ollqd_v1_processing_proto_msgTypes[50]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3257,7 +3361,7 @@ func (x *SMBBrowseResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SMBBrowseResponse.ProtoReflect.Descriptor instead.
 func (*SMBBrowseResponse) Descriptor() ([]byte, []int) {
-	return file_ollqd_v1_processing_proto_rawDescGZIP(), []int{48}
+	return file_ollqd_v1_processing_proto_rawDescGZIP(), []int{50}
 }
 
 func (x *SMBBrowseResponse) GetFiles() []*SMBFileEntry {
@@ -3482,7 +3586,14 @@ const file_ollqd_v1_processing_proto_rawDesc = "" +
 	"\bdistance\x18\x01 \x01(\tR\bdistance\x12\x1a\n" +
 	"\bprevious\x18\x02 \x01(\tR\bprevious\"\x15\n" +
 	"\x13GetPIIConfigRequest\"\x19\n" +
-	"\x17GetDoclingConfigRequest\"G\n" +
+	"\x17GetDoclingConfigRequest\"B\n" +
+	"\x12ResetConfigRequest\x12\x18\n" +
+	"\asection\x18\x01 \x01(\tR\asection\x12\x12\n" +
+	"\x04keys\x18\x02 \x03(\tR\x04keys\"N\n" +
+	"\x13ResetConfigResponse\x12\x18\n" +
+	"\asection\x18\x01 \x01(\tR\asection\x12\x1d\n" +
+	"\n" +
+	"reset_keys\x18\x02 \x03(\tR\tresetKeys\"G\n" +
 	"\x0fOverviewRequest\x12\x1e\n" +
 	"\n" +
 	"collection\x18\x01 \x01(\tR\n" +
@@ -3591,7 +3702,7 @@ const file_ollqd_v1_processing_proto_rawDesc = "" +
 	"\bSetModel\x12\x1e.ollqd.v1.SetEmbedModelRequest\x1a\x1f.ollqd.v1.EmbeddingInfoResponse2X\n" +
 	"\n" +
 	"PIIService\x12J\n" +
-	"\vTestMasking\x12\x1c.ollqd.v1.TestMaskingRequest\x1a\x1d.ollqd.v1.TestMaskingResponse2\xbf\x04\n" +
+	"\vTestMasking\x12\x1c.ollqd.v1.TestMaskingRequest\x1a\x1d.ollqd.v1.TestMaskingResponse2\x8b\x05\n" +
 	"\rConfigService\x12<\n" +
 	"\tGetConfig\x12\x1a.ollqd.v1.GetConfigRequest\x1a\x13.ollqd.v1.AppConfig\x12_\n" +
 	"\x12UpdateMountedPaths\x12#.ollqd.v1.UpdateMountedPathsRequest\x1a$.ollqd.v1.UpdateMountedPathsResponse\x12D\n" +
@@ -3599,7 +3710,8 @@ const file_ollqd_v1_processing_proto_rawDesc = "" +
 	"\rUpdateDocling\x12\x1e.ollqd.v1.UpdateDoclingRequest\x1a\x1f.ollqd.v1.DoclingConfigResponse\x12S\n" +
 	"\x0eUpdateDistance\x12\x1f.ollqd.v1.UpdateDistanceRequest\x1a .ollqd.v1.UpdateDistanceResponse\x12J\n" +
 	"\fGetPIIConfig\x12\x1d.ollqd.v1.GetPIIConfigRequest\x1a\x1b.ollqd.v1.PIIConfigResponse\x12V\n" +
-	"\x10GetDoclingConfig\x12!.ollqd.v1.GetDoclingConfigRequest\x1a\x1f.ollqd.v1.DoclingConfigResponse2\xdc\x01\n" +
+	"\x10GetDoclingConfig\x12!.ollqd.v1.GetDoclingConfigRequest\x1a\x1f.ollqd.v1.DoclingConfigResponse\x12J\n" +
+	"\vResetConfig\x12\x1c.ollqd.v1.ResetConfigRequest\x1a\x1d.ollqd.v1.ResetConfigResponse2\xdc\x01\n" +
 	"\x14VisualizationService\x12A\n" +
 	"\bOverview\x12\x19.ollqd.v1.OverviewRequest\x1a\x1a.ollqd.v1.OverviewResponse\x12A\n" +
 	"\bFileTree\x12\x19.ollqd.v1.FileTreeRequest\x1a\x1a.ollqd.v1.FileTreeResponse\x12>\n" +
@@ -3621,7 +3733,7 @@ func file_ollqd_v1_processing_proto_rawDescGZIP() []byte {
 	return file_ollqd_v1_processing_proto_rawDescData
 }
 
-var file_ollqd_v1_processing_proto_msgTypes = make([]protoimpl.MessageInfo, 49)
+var file_ollqd_v1_processing_proto_msgTypes = make([]protoimpl.MessageInfo, 51)
 var file_ollqd_v1_processing_proto_goTypes = []any{
 	(*IndexCodebaseRequest)(nil),       // 0: ollqd.v1.IndexCodebaseRequest
 	(*IndexDocumentsRequest)(nil),      // 1: ollqd.v1.IndexDocumentsRequest
@@ -3657,38 +3769,40 @@ var file_ollqd_v1_processing_proto_goTypes = []any{
 	(*UpdateDistanceResponse)(nil),     // 31: ollqd.v1.UpdateDistanceResponse
 	(*GetPIIConfigRequest)(nil),        // 32: ollqd.v1.GetPIIConfigRequest
 	(*GetDoclingConfigRequest)(nil),    // 33: ollqd.v1.GetDoclingConfigRequest
-	(*OverviewRequest)(nil),            // 34: ollqd.v1.OverviewRequest
-	(*VisNode)(nil),                    // 35: ollqd.v1.VisNode
-	(*VisEdge)(nil),                    // 36: ollqd.v1.VisEdge
-	(*OverviewStats)(nil),              // 37: ollqd.v1.OverviewStats
-	(*OverviewResponse)(nil),           // 38: ollqd.v1.OverviewResponse
-	(*FileTreeRequest)(nil),            // 39: ollqd.v1.FileTreeRequest
-	(*FileTreeResponse)(nil),           // 40: ollqd.v1.FileTreeResponse
-	(*VectorsRequest)(nil),             // 41: ollqd.v1.VectorsRequest
-	(*VectorPoint)(nil),                // 42: ollqd.v1.VectorPoint
-	(*VectorsResponse)(nil),            // 43: ollqd.v1.VectorsResponse
-	(*SMBTestRequest)(nil),             // 44: ollqd.v1.SMBTestRequest
-	(*SMBTestResponse)(nil),            // 45: ollqd.v1.SMBTestResponse
-	(*SMBBrowseRequest)(nil),           // 46: ollqd.v1.SMBBrowseRequest
-	(*SMBFileEntry)(nil),               // 47: ollqd.v1.SMBFileEntry
-	(*SMBBrowseResponse)(nil),          // 48: ollqd.v1.SMBBrowseResponse
-	(*SearchHit)(nil),                  // 49: ollqd.v1.SearchHit
-	(*TaskProgress)(nil),               // 50: ollqd.v1.TaskProgress
-	(*AppConfig)(nil),                  // 51: ollqd.v1.AppConfig
+	(*ResetConfigRequest)(nil),         // 34: ollqd.v1.ResetConfigRequest
+	(*ResetConfigResponse)(nil),        // 35: ollqd.v1.ResetConfigResponse
+	(*OverviewRequest)(nil),            // 36: ollqd.v1.OverviewRequest
+	(*VisNode)(nil),                    // 37: ollqd.v1.VisNode
+	(*VisEdge)(nil),                    // 38: ollqd.v1.VisEdge
+	(*OverviewStats)(nil),              // 39: ollqd.v1.OverviewStats
+	(*OverviewResponse)(nil),           // 40: ollqd.v1.OverviewResponse
+	(*FileTreeRequest)(nil),            // 41: ollqd.v1.FileTreeRequest
+	(*FileTreeResponse)(nil),           // 42: ollqd.v1.FileTreeResponse
+	(*VectorsRequest)(nil),             // 43: ollqd.v1.VectorsRequest
+	(*VectorPoint)(nil),                // 44: ollqd.v1.VectorPoint
+	(*VectorsResponse)(nil),            // 45: ollqd.v1.VectorsResponse
+	(*SMBTestRequest)(nil),             // 46: ollqd.v1.SMBTestRequest
+	(*SMBTestResponse)(nil),            // 47: ollqd.v1.SMBTestResponse
+	(*SMBBrowseRequest)(nil),           // 48: ollqd.v1.SMBBrowseRequest
+	(*SMBFileEntry)(nil),               // 49: ollqd.v1.SMBFileEntry
+	(*SMBBrowseResponse)(nil),          // 50: ollqd.v1.SMBBrowseResponse
+	(*SearchHit)(nil),                  // 51: ollqd.v1.SearchHit
+	(*TaskProgress)(nil),               // 52: ollqd.v1.TaskProgress
+	(*AppConfig)(nil),                  // 53: ollqd.v1.AppConfig
 }
 var file_ollqd_v1_processing_proto_depIdxs = []int32{
-	49, // 0: ollqd.v1.SearchResponse.results:type_name -> ollqd.v1.SearchHit
-	49, // 1: ollqd.v1.ChatEvent.sources:type_name -> ollqd.v1.SearchHit
+	51, // 0: ollqd.v1.SearchResponse.results:type_name -> ollqd.v1.SearchHit
+	51, // 1: ollqd.v1.ChatEvent.sources:type_name -> ollqd.v1.SearchHit
 	17, // 2: ollqd.v1.CompareModelsResponse.model1:type_name -> ollqd.v1.ModelTestResult
 	17, // 3: ollqd.v1.CompareModelsResponse.model2:type_name -> ollqd.v1.ModelTestResult
 	21, // 4: ollqd.v1.TestMaskingResponse.entities:type_name -> ollqd.v1.PIIEntity
-	35, // 5: ollqd.v1.OverviewResponse.nodes:type_name -> ollqd.v1.VisNode
-	36, // 6: ollqd.v1.OverviewResponse.edges:type_name -> ollqd.v1.VisEdge
-	37, // 7: ollqd.v1.OverviewResponse.stats:type_name -> ollqd.v1.OverviewStats
-	35, // 8: ollqd.v1.FileTreeResponse.nodes:type_name -> ollqd.v1.VisNode
-	36, // 9: ollqd.v1.FileTreeResponse.edges:type_name -> ollqd.v1.VisEdge
-	42, // 10: ollqd.v1.VectorsResponse.points:type_name -> ollqd.v1.VectorPoint
-	47, // 11: ollqd.v1.SMBBrowseResponse.files:type_name -> ollqd.v1.SMBFileEntry
+	37, // 5: ollqd.v1.OverviewResponse.nodes:type_name -> ollqd.v1.VisNode
+	38, // 6: ollqd.v1.OverviewResponse.edges:type_name -> ollqd.v1.VisEdge
+	39, // 7: ollqd.v1.OverviewResponse.stats:type_name -> ollqd.v1.OverviewStats
+	37, // 8: ollqd.v1.FileTreeResponse.nodes:type_name -> ollqd.v1.VisNode
+	38, // 9: ollqd.v1.FileTreeResponse.edges:type_name -> ollqd.v1.VisEdge
+	44, // 10: ollqd.v1.VectorsResponse.points:type_name -> ollqd.v1.VectorPoint
+	49, // 11: ollqd.v1.SMBBrowseResponse.files:type_name -> ollqd.v1.SMBFileEntry
 	0,  // 12: ollqd.v1.IndexingService.IndexCodebase:input_type -> ollqd.v1.IndexCodebaseRequest
 	1,  // 13: ollqd.v1.IndexingService.IndexDocuments:input_type -> ollqd.v1.IndexDocumentsRequest
 	2,  // 14: ollqd.v1.IndexingService.IndexImages:input_type -> ollqd.v1.IndexImagesRequest
@@ -3710,39 +3824,41 @@ var file_ollqd_v1_processing_proto_depIdxs = []int32{
 	30, // 30: ollqd.v1.ConfigService.UpdateDistance:input_type -> ollqd.v1.UpdateDistanceRequest
 	32, // 31: ollqd.v1.ConfigService.GetPIIConfig:input_type -> ollqd.v1.GetPIIConfigRequest
 	33, // 32: ollqd.v1.ConfigService.GetDoclingConfig:input_type -> ollqd.v1.GetDoclingConfigRequest
-	34, // 33: ollqd.v1.VisualizationService.Overview:input_type -> ollqd.v1.OverviewRequest
-	39, // 34: ollqd.v1.VisualizationService.FileTree:input_type -> ollqd.v1.FileTreeRequest
-	41, // 35: ollqd.v1.VisualizationService.Vectors:input_type -> ollqd.v1.VectorsRequest
-	44, // 36: ollqd.v1.SMBService.TestConnection:input_type -> ollqd.v1.SMBTestRequest
-	46, // 37: ollqd.v1.SMBService.Browse:input_type -> ollqd.v1.SMBBrowseRequest
-	50, // 38: ollqd.v1.IndexingService.IndexCodebase:output_type -> ollqd.v1.TaskProgress
-	50, // 39: ollqd.v1.IndexingService.IndexDocuments:output_type -> ollqd.v1.TaskProgress
-	50, // 40: ollqd.v1.IndexingService.IndexImages:output_type -> ollqd.v1.TaskProgress
-	50, // 41: ollqd.v1.IndexingService.IndexUploads:output_type -> ollqd.v1.TaskProgress
-	50, // 42: ollqd.v1.IndexingService.IndexSMBFiles:output_type -> ollqd.v1.TaskProgress
-	6,  // 43: ollqd.v1.IndexingService.CancelTask:output_type -> ollqd.v1.CancelTaskResponse
-	9,  // 44: ollqd.v1.SearchService.Search:output_type -> ollqd.v1.SearchResponse
-	9,  // 45: ollqd.v1.SearchService.SearchCollection:output_type -> ollqd.v1.SearchResponse
-	11, // 46: ollqd.v1.ChatService.Chat:output_type -> ollqd.v1.ChatEvent
-	13, // 47: ollqd.v1.EmbeddingService.GetInfo:output_type -> ollqd.v1.EmbeddingInfoResponse
-	15, // 48: ollqd.v1.EmbeddingService.TestEmbed:output_type -> ollqd.v1.TestEmbedResponse
-	18, // 49: ollqd.v1.EmbeddingService.CompareModels:output_type -> ollqd.v1.CompareModelsResponse
-	13, // 50: ollqd.v1.EmbeddingService.SetModel:output_type -> ollqd.v1.EmbeddingInfoResponse
-	22, // 51: ollqd.v1.PIIService.TestMasking:output_type -> ollqd.v1.TestMaskingResponse
-	51, // 52: ollqd.v1.ConfigService.GetConfig:output_type -> ollqd.v1.AppConfig
-	25, // 53: ollqd.v1.ConfigService.UpdateMountedPaths:output_type -> ollqd.v1.UpdateMountedPathsResponse
-	27, // 54: ollqd.v1.ConfigService.UpdatePII:output_type -> ollqd.v1.PIIConfigResponse
-	29, // 55: ollqd.v1.ConfigService.UpdateDocling:output_type -> ollqd.v1.DoclingConfigResponse
-	31, // 56: ollqd.v1.ConfigService.UpdateDistance:output_type -> ollqd.v1.UpdateDistanceResponse
-	27, // 57: ollqd.v1.ConfigService.GetPIIConfig:output_type -> ollqd.v1.PIIConfigResponse
-	29, // 58: ollqd.v1.ConfigService.GetDoclingConfig:output_type -> ollqd.v1.DoclingConfigResponse
-	38, // 59: ollqd.v1.VisualizationService.Overview:output_type -> ollqd.v1.OverviewResponse
-	40, // 60: ollqd.v1.VisualizationService.FileTree:output_type -> ollqd.v1.FileTreeResponse
-	43, // 61: ollqd.v1.VisualizationService.Vectors:output_type -> ollqd.v1.VectorsResponse
-	45, // 62: ollqd.v1.SMBService.TestConnection:output_type -> ollqd.v1.SMBTestResponse
-	48, // 63: ollqd.v1.SMBService.Browse:output_type -> ollqd.v1.SMBBrowseResponse
-	38, // [38:64] is the sub-list for method output_type
-	12, // [12:38] is the sub-list for method input_type
+	34, // 33: ollqd.v1.ConfigService.ResetConfig:input_type -> ollqd.v1.ResetConfigRequest
+	36, // 34: ollqd.v1.VisualizationService.Overview:input_type -> ollqd.v1.OverviewRequest
+	41, // 35: ollqd.v1.VisualizationService.FileTree:input_type -> ollqd.v1.FileTreeRequest
+	43, // 36: ollqd.v1.VisualizationService.Vectors:input_type -> ollqd.v1.VectorsRequest
+	46, // 37: ollqd.v1.SMBService.TestConnection:input_type -> ollqd.v1.SMBTestRequest
+	48, // 38: ollqd.v1.SMBService.Browse:input_type -> ollqd.v1.SMBBrowseRequest
+	52, // 39: ollqd.v1.IndexingService.IndexCodebase:output_type -> ollqd.v1.TaskProgress
+	52, // 40: ollqd.v1.IndexingService.IndexDocuments:output_type -> ollqd.v1.TaskProgress
+	52, // 41: ollqd.v1.IndexingService.IndexImages:output_type -> ollqd.v1.TaskProgress
+	52, // 42: ollqd.v1.IndexingService.IndexUploads:output_type -> ollqd.v1.TaskProgress
+	52, // 43: ollqd.v1.IndexingService.IndexSMBFiles:output_type -> ollqd.v1.TaskProgress
+	6,  // 44: ollqd.v1.IndexingService.CancelTask:output_type -> ollqd.v1.CancelTaskResponse
+	9,  // 45: ollqd.v1.SearchService.Search:output_type -> ollqd.v1.SearchResponse
+	9,  // 46: ollqd.v1.SearchService.SearchCollection:output_type -> ollqd.v1.SearchResponse
+	11, // 47: ollqd.v1.ChatService.Chat:output_type -> ollqd.v1.ChatEvent
+	13, // 48: ollqd.v1.EmbeddingService.GetInfo:output_type -> ollqd.v1.EmbeddingInfoResponse
+	15, // 49: ollqd.v1.EmbeddingService.TestEmbed:output_type -> ollqd.v1.TestEmbedResponse
+	18, // 50: ollqd.v1.EmbeddingService.CompareModels:output_type -> ollqd.v1.CompareModelsResponse
+	13, // 51: ollqd.v1.EmbeddingService.SetModel:output_type -> ollqd.v1.EmbeddingInfoResponse
+	22, // 52: ollqd.v1.PIIService.TestMasking:output_type -> ollqd.v1.TestMaskingResponse
+	53, // 53: ollqd.v1.ConfigService.GetConfig:output_type -> ollqd.v1.AppConfig
+	25, // 54: ollqd.v1.ConfigService.UpdateMountedPaths:output_type -> ollqd.v1.UpdateMountedPathsResponse
+	27, // 55: ollqd.v1.ConfigService.UpdatePII:output_type -> ollqd.v1.PIIConfigResponse
+	29, // 56: ollqd.v1.ConfigService.UpdateDocling:output_type -> ollqd.v1.DoclingConfigResponse
+	31, // 57: ollqd.v1.ConfigService.UpdateDistance:output_type -> ollqd.v1.UpdateDistanceResponse
+	27, // 58: ollqd.v1.ConfigService.GetPIIConfig:output_type -> ollqd.v1.PIIConfigResponse
+	29, // 59: ollqd.v1.ConfigService.GetDoclingConfig:output_type -> ollqd.v1.DoclingConfigResponse
+	35, // 60: ollqd.v1.ConfigService.ResetConfig:output_type -> ollqd.v1.ResetConfigResponse
+	40, // 61: ollqd.v1.VisualizationService.Overview:output_type -> ollqd.v1.OverviewResponse
+	42, // 62: ollqd.v1.VisualizationService.FileTree:output_type -> ollqd.v1.FileTreeResponse
+	45, // 63: ollqd.v1.VisualizationService.Vectors:output_type -> ollqd.v1.VectorsResponse
+	47, // 64: ollqd.v1.SMBService.TestConnection:output_type -> ollqd.v1.SMBTestResponse
+	50, // 65: ollqd.v1.SMBService.Browse:output_type -> ollqd.v1.SMBBrowseResponse
+	39, // [39:66] is the sub-list for method output_type
+	12, // [12:39] is the sub-list for method input_type
 	12, // [12:12] is the sub-list for extension type_name
 	12, // [12:12] is the sub-list for extension extendee
 	0,  // [0:12] is the sub-list for field type_name
@@ -3762,7 +3878,7 @@ func file_ollqd_v1_processing_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_ollqd_v1_processing_proto_rawDesc), len(file_ollqd_v1_processing_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   49,
+			NumMessages:   51,
 			NumExtensions: 0,
 			NumServices:   8,
 		},

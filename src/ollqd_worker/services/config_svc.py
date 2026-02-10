@@ -5,7 +5,7 @@ import logging
 
 import grpc
 
-from ..config import get_config
+from ..config import get_config, reset_config
 from .. import config_db
 from ..processing.docling_converter import DOCLING_EXTENSIONS, is_available as docling_is_available
 
@@ -278,3 +278,27 @@ class ConfigServiceServicer:
             def __init__(self, **kw):
                 self.__dict__.update(kw)
         return _Resp(**result)
+
+    async def ResetConfig(self, request, context):
+        """Delete persisted config overrides and revert to env-var defaults."""
+        valid_sections = {"pii", "docling", "qdrant", "app", ""}
+        section = request.section if hasattr(request, "section") else ""
+        keys = list(request.keys) if hasattr(request, "keys") and request.keys else []
+
+        if section and section not in valid_sections:
+            await context.abort(
+                grpc.StatusCode.INVALID_ARGUMENT,
+                f"Invalid section: {section}. Must be one of {valid_sections - {''}}",
+            )
+
+        removed = config_db.delete_overrides(section, keys or None)
+        reset_config()
+        log.info("Reset config: section=%r keys=%s removed=%s", section or "*", keys or "all", removed)
+
+        if _STUBS_AVAILABLE:
+            return config_pb2.ResetConfigResponse(section=section or "all", reset_keys=removed)
+
+        class _Resp:
+            def __init__(self, **kw):
+                self.__dict__.update(kw)
+        return _Resp(section=section or "all", reset_keys=removed)

@@ -997,6 +997,22 @@ function app() {
       }
     },
 
+    async resetConfig(section) {
+      const label = section === 'all' ? 'ALL settings' : section + ' settings';
+      if (!confirm(`Reset ${label} to defaults? This removes all saved overrides.`)) return;
+      try {
+        const r = await fetch(`/api/system/config/${section}`, { method: "DELETE" });
+        if (!r.ok) throw new Error((await r.json()).detail);
+        const d = await r.json();
+        alert(`Reset ${d.section}: ${(d.reset_keys || []).length} override(s) removed`);
+        await this.loadSettings();
+        if (section === 'pii' || section === 'all') await this.loadPIIConfig();
+        if (section === 'docling' || section === 'all') await this.loadDoclingConfig();
+      } catch (e) {
+        alert("Reset failed: " + e.message);
+      }
+    },
+
     async testPIIMasking() {
       if (!this.piiTestText.trim()) return;
       this.piiTestResult = null;

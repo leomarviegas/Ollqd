@@ -897,6 +897,7 @@ const (
 	ConfigService_UpdateDistance_FullMethodName     = "/ollqd.v1.ConfigService/UpdateDistance"
 	ConfigService_GetPIIConfig_FullMethodName       = "/ollqd.v1.ConfigService/GetPIIConfig"
 	ConfigService_GetDoclingConfig_FullMethodName   = "/ollqd.v1.ConfigService/GetDoclingConfig"
+	ConfigService_ResetConfig_FullMethodName        = "/ollqd.v1.ConfigService/ResetConfig"
 )
 
 // ConfigServiceClient is the client API for ConfigService service.
@@ -910,6 +911,7 @@ type ConfigServiceClient interface {
 	UpdateDistance(ctx context.Context, in *UpdateDistanceRequest, opts ...grpc.CallOption) (*UpdateDistanceResponse, error)
 	GetPIIConfig(ctx context.Context, in *GetPIIConfigRequest, opts ...grpc.CallOption) (*PIIConfigResponse, error)
 	GetDoclingConfig(ctx context.Context, in *GetDoclingConfigRequest, opts ...grpc.CallOption) (*DoclingConfigResponse, error)
+	ResetConfig(ctx context.Context, in *ResetConfigRequest, opts ...grpc.CallOption) (*ResetConfigResponse, error)
 }
 
 type configServiceClient struct {
@@ -990,6 +992,16 @@ func (c *configServiceClient) GetDoclingConfig(ctx context.Context, in *GetDocli
 	return out, nil
 }
 
+func (c *configServiceClient) ResetConfig(ctx context.Context, in *ResetConfigRequest, opts ...grpc.CallOption) (*ResetConfigResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ResetConfigResponse)
+	err := c.cc.Invoke(ctx, ConfigService_ResetConfig_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ConfigServiceServer is the server API for ConfigService service.
 // All implementations must embed UnimplementedConfigServiceServer
 // for forward compatibility.
@@ -1001,6 +1013,7 @@ type ConfigServiceServer interface {
 	UpdateDistance(context.Context, *UpdateDistanceRequest) (*UpdateDistanceResponse, error)
 	GetPIIConfig(context.Context, *GetPIIConfigRequest) (*PIIConfigResponse, error)
 	GetDoclingConfig(context.Context, *GetDoclingConfigRequest) (*DoclingConfigResponse, error)
+	ResetConfig(context.Context, *ResetConfigRequest) (*ResetConfigResponse, error)
 	mustEmbedUnimplementedConfigServiceServer()
 }
 
@@ -1031,6 +1044,9 @@ func (UnimplementedConfigServiceServer) GetPIIConfig(context.Context, *GetPIICon
 }
 func (UnimplementedConfigServiceServer) GetDoclingConfig(context.Context, *GetDoclingConfigRequest) (*DoclingConfigResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetDoclingConfig not implemented")
+}
+func (UnimplementedConfigServiceServer) ResetConfig(context.Context, *ResetConfigRequest) (*ResetConfigResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ResetConfig not implemented")
 }
 func (UnimplementedConfigServiceServer) mustEmbedUnimplementedConfigServiceServer() {}
 func (UnimplementedConfigServiceServer) testEmbeddedByValue()                       {}
@@ -1179,6 +1195,24 @@ func _ConfigService_GetDoclingConfig_Handler(srv interface{}, ctx context.Contex
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ConfigService_ResetConfig_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ResetConfigRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ConfigServiceServer).ResetConfig(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ConfigService_ResetConfig_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ConfigServiceServer).ResetConfig(ctx, req.(*ResetConfigRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ConfigService_ServiceDesc is the grpc.ServiceDesc for ConfigService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -1213,6 +1247,10 @@ var ConfigService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetDoclingConfig",
 			Handler:    _ConfigService_GetDoclingConfig_Handler,
+		},
+		{
+			MethodName: "ResetConfig",
+			Handler:    _ConfigService_ResetConfig_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

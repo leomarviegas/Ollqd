@@ -44,6 +44,7 @@ func (h *SystemHandler) Routes(r chi.Router) {
 	r.Get("/config/docling", h.GetDoclingConfig)
 	r.Put("/config/docling", h.UpdateDocling)
 	r.Put("/config/distance", h.UpdateDistance)
+	r.Delete("/config/{section}", h.ResetConfig)
 }
 
 // serviceStatus is used by the Health endpoint to report the health of
@@ -351,6 +352,29 @@ func (h *SystemHandler) UpdateDistance(w http.ResponseWriter, r *http.Request) {
 
 	resp, err := h.grpc.Config.UpdateDistance(r.Context(), &grpcclient.UpdateDistanceRequest{
 		Distance: req.Distance,
+	})
+	if err != nil {
+		writeError(w, http.StatusBadGateway, fmt.Sprintf("grpc error: %v", err))
+		return
+	}
+
+	writeJSON(w, http.StatusOK, resp)
+}
+
+// ResetConfig deletes persisted config overrides for a section, reverting to defaults.
+func (h *SystemHandler) ResetConfig(w http.ResponseWriter, r *http.Request) {
+	if h.grpc.Config == nil {
+		writeError(w, http.StatusServiceUnavailable, "config service not available")
+		return
+	}
+
+	section := chi.URLParam(r, "section")
+	if section == "all" {
+		section = ""
+	}
+
+	resp, err := h.grpc.Config.ResetConfig(r.Context(), &grpcclient.ResetConfigRequest{
+		Section: section,
 	})
 	if err != nil {
 		writeError(w, http.StatusBadGateway, fmt.Sprintf("grpc error: %v", err))
