@@ -46,7 +46,7 @@ func New(cfg *config.Config, gc *grpcclient.Client, tm *tasks.Manager) (http.Han
 
 	// ── Handlers ────────────────────────────────────────────
 	systemH := handlers.NewSystemHandler(cfg, gc)
-	ollamaH := handlers.NewOllamaHandler(ollamaProxy)
+	ollamaH := handlers.NewOllamaHandler(ollamaProxy, cfg.OllamaURL)
 	qdrantH := handlers.NewQdrantHandler(qdrantProxy)
 	ragH := handlers.NewRAGHandler(gc, tm)
 	tasksH := handlers.NewTasksHandler(gc, tm)

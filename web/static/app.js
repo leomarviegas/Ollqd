@@ -221,8 +221,8 @@ function app() {
       try {
         const r = await fetch("/api/system/health");
         const d = await r.json();
-        this.health.ollama = d.ollama === "ok" || d.ollama === true;
-        this.health.qdrant = d.qdrant === "ok" || d.qdrant === true;
+        this.health.ollama = d.ollama?.status === "ok";
+        this.health.qdrant = d.qdrant?.status === "ok";
       } catch {
         this.health.ollama = false;
         this.health.qdrant = false;
@@ -427,7 +427,7 @@ function app() {
     ensureWebSocket() {
       if (this._ws && this._ws.readyState <= 1) return;
       const proto = location.protocol === "https:" ? "wss:" : "ws:";
-      this._ws = new WebSocket(`${proto}//${location.host}/api/rag/ws/chat`);
+      this._ws = new WebSocket(`${proto}//${location.host}/api/rag/ws`);
 
       this._ws.onmessage = (ev) => {
         const data = JSON.parse(ev.data);
