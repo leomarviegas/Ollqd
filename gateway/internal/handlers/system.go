@@ -44,6 +44,10 @@ func (h *SystemHandler) Routes(r chi.Router) {
 	r.Get("/config/docling", h.GetDoclingConfig)
 	r.Put("/config/docling", h.UpdateDocling)
 	r.Put("/config/distance", h.UpdateDistance)
+	r.Put("/config/ollama", h.UpdateOllama)
+	r.Put("/config/qdrant", h.UpdateQdrant)
+	r.Put("/config/chunking", h.UpdateChunking)
+	r.Put("/config/image", h.UpdateImage)
 	r.Delete("/config/{section}", h.ResetConfig)
 }
 
@@ -366,6 +370,94 @@ func (h *SystemHandler) UpdateDistance(w http.ResponseWriter, r *http.Request) {
 	resp, err := h.grpc.Config.UpdateDistance(r.Context(), &grpcclient.UpdateDistanceRequest{
 		Distance: req.Distance,
 	})
+	if err != nil {
+		writeError(w, http.StatusBadGateway, fmt.Sprintf("grpc error: %v", err))
+		return
+	}
+
+	writeJSON(w, http.StatusOK, resp)
+}
+
+// UpdateOllama updates the Ollama configuration.
+func (h *SystemHandler) UpdateOllama(w http.ResponseWriter, r *http.Request) {
+	if h.grpc.Config == nil {
+		writeError(w, http.StatusServiceUnavailable, "config service not available")
+		return
+	}
+
+	var req grpcclient.UpdateOllamaRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		writeError(w, http.StatusBadRequest, "invalid JSON body")
+		return
+	}
+
+	resp, err := h.grpc.Config.UpdateOllama(r.Context(), &req)
+	if err != nil {
+		writeError(w, http.StatusBadGateway, fmt.Sprintf("grpc error: %v", err))
+		return
+	}
+
+	writeJSON(w, http.StatusOK, resp)
+}
+
+// UpdateQdrant updates the Qdrant configuration.
+func (h *SystemHandler) UpdateQdrant(w http.ResponseWriter, r *http.Request) {
+	if h.grpc.Config == nil {
+		writeError(w, http.StatusServiceUnavailable, "config service not available")
+		return
+	}
+
+	var req grpcclient.UpdateQdrantRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		writeError(w, http.StatusBadRequest, "invalid JSON body")
+		return
+	}
+
+	resp, err := h.grpc.Config.UpdateQdrant(r.Context(), &req)
+	if err != nil {
+		writeError(w, http.StatusBadGateway, fmt.Sprintf("grpc error: %v", err))
+		return
+	}
+
+	writeJSON(w, http.StatusOK, resp)
+}
+
+// UpdateChunking updates the chunking configuration.
+func (h *SystemHandler) UpdateChunking(w http.ResponseWriter, r *http.Request) {
+	if h.grpc.Config == nil {
+		writeError(w, http.StatusServiceUnavailable, "config service not available")
+		return
+	}
+
+	var req grpcclient.UpdateChunkingRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		writeError(w, http.StatusBadRequest, "invalid JSON body")
+		return
+	}
+
+	resp, err := h.grpc.Config.UpdateChunking(r.Context(), &req)
+	if err != nil {
+		writeError(w, http.StatusBadGateway, fmt.Sprintf("grpc error: %v", err))
+		return
+	}
+
+	writeJSON(w, http.StatusOK, resp)
+}
+
+// UpdateImage updates the image configuration.
+func (h *SystemHandler) UpdateImage(w http.ResponseWriter, r *http.Request) {
+	if h.grpc.Config == nil {
+		writeError(w, http.StatusServiceUnavailable, "config service not available")
+		return
+	}
+
+	var req grpcclient.UpdateImageRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		writeError(w, http.StatusBadRequest, "invalid JSON body")
+		return
+	}
+
+	resp, err := h.grpc.Config.UpdateImage(r.Context(), &req)
 	if err != nil {
 		writeError(w, http.StatusBadGateway, fmt.Sprintf("grpc error: %v", err))
 		return

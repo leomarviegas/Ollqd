@@ -874,8 +874,8 @@
       <!-- ═══ Settings ═══ -->
       <div x-show="view === 'settings'" x-cloak class="fade-in">
         <h2 class="text-2xl font-bold text-gray-900 mb-2">Settings</h2>
-        <div class="mb-4 bg-amber-50 border border-amber-200 rounded-lg p-2 text-xs text-amber-800">
-          <i class="fa-solid fa-triangle-exclamation mr-1"></i> Changes are in-memory only. Restart server to reset to defaults.
+        <div class="mb-4 bg-blue-50 border border-blue-200 rounded-lg p-2 text-xs text-blue-800">
+          <i class="fa-solid fa-circle-info mr-1"></i> Settings are persisted to the database and survive restarts. Use Reset to revert to env-var defaults.
         </div>
 
         <!-- Settings Sub-tabs -->
@@ -906,17 +906,54 @@
                   class="px-3 py-2 text-sm font-medium border-b-2 -mb-px"><i class="fa-solid fa-shield-halved mr-1"></i>Privacy</button>
         </div>
 
-        <!-- General -->
+        <!-- General (Ollama + Qdrant) -->
         <div x-show="settingsTab === 'general' && settingsConfig" class="space-y-4">
+          <!-- Ollama Settings -->
           <div class="bg-white rounded-lg shadow p-4">
-            <h4 class="font-medium text-gray-900 mb-3">Connection Info</h4>
+            <h4 class="font-medium text-gray-900 mb-3">Ollama Settings</h4>
             <div class="grid grid-cols-2 gap-4 text-sm">
-              <div><span class="text-gray-500">Ollama URL:</span> <code class="text-gray-900" x-text="settingsConfig?.ollama?.url"></code></div>
-              <div><span class="text-gray-500">Qdrant URL:</span> <code class="text-gray-900" x-text="settingsConfig?.qdrant?.url"></code></div>
-              <div><span class="text-gray-500">Chat Model:</span> <code class="text-gray-900" x-text="settingsConfig?.ollama?.chat_model"></code></div>
-              <div><span class="text-gray-500">Embed Model:</span> <code class="text-gray-900" x-text="settingsConfig?.ollama?.embed_model"></code></div>
-              <div><span class="text-gray-500">Vision Model:</span> <code class="text-gray-900" x-text="settingsConfig?.ollama?.vision_model"></code></div>
-              <div><span class="text-gray-500">Timeout:</span> <code class="text-gray-900" x-text="settingsConfig?.ollama?.timeout_s + 's'"></code></div>
+              <div>
+                <label class="block text-xs text-gray-500 mb-1">Base URL</label>
+                <input x-model="settingsConfig.ollama.base_url" type="text" class="w-full border border-gray-300 rounded px-3 py-2 text-sm">
+              </div>
+              <div>
+                <label class="block text-xs text-gray-500 mb-1">Chat Model</label>
+                <input x-model="settingsConfig.ollama.chat_model" type="text" class="w-full border border-gray-300 rounded px-3 py-2 text-sm">
+              </div>
+              <div>
+                <label class="block text-xs text-gray-500 mb-1">Embed Model</label>
+                <input x-model="settingsConfig.ollama.embed_model" type="text" class="w-full border border-gray-300 rounded px-3 py-2 text-sm">
+              </div>
+              <div>
+                <label class="block text-xs text-gray-500 mb-1">Vision Model</label>
+                <input x-model="settingsConfig.ollama.vision_model" type="text" class="w-full border border-gray-300 rounded px-3 py-2 text-sm">
+              </div>
+              <div>
+                <label class="block text-xs text-gray-500 mb-1">Timeout (s)</label>
+                <input x-model.number="settingsConfig.ollama.timeout_s" type="number" min="1" step="1" class="w-full border border-gray-300 rounded px-3 py-2 text-sm">
+              </div>
+            </div>
+            <div class="flex gap-2 mt-4">
+              <button @click="saveOllamaConfig()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm">Save</button>
+              <button @click="resetConfig('ollama')" class="border border-gray-300 hover:bg-red-50 hover:border-red-300 text-gray-600 hover:text-red-600 px-3 py-2 rounded text-sm">Reset</button>
+            </div>
+          </div>
+          <!-- Qdrant Settings -->
+          <div class="bg-white rounded-lg shadow p-4">
+            <h4 class="font-medium text-gray-900 mb-3">Qdrant Settings</h4>
+            <div class="grid grid-cols-2 gap-4 text-sm">
+              <div>
+                <label class="block text-xs text-gray-500 mb-1">URL</label>
+                <input x-model="settingsConfig.qdrant.url" type="text" class="w-full border border-gray-300 rounded px-3 py-2 text-sm">
+              </div>
+              <div>
+                <label class="block text-xs text-gray-500 mb-1">Default Collection</label>
+                <input x-model="settingsConfig.qdrant.default_collection" type="text" class="w-full border border-gray-300 rounded px-3 py-2 text-sm">
+              </div>
+            </div>
+            <div class="flex gap-2 mt-4">
+              <button @click="saveQdrantConfig()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm">Save</button>
+              <button @click="resetConfig('qdrant')" class="border border-gray-300 hover:bg-red-50 hover:border-red-300 text-gray-600 hover:text-red-600 px-3 py-2 rounded text-sm">Reset</button>
             </div>
           </div>
         </div>
@@ -1083,16 +1120,20 @@
             <div class="grid grid-cols-3 gap-4 text-sm">
               <div>
                 <label class="block text-xs text-gray-500 mb-1">Chunk Size</label>
-                <p class="font-medium" x-text="settingsConfig?.chunking?.chunk_size"></p>
+                <input x-model.number="settingsConfig.chunking.chunk_size" type="number" min="1" class="w-full border border-gray-300 rounded px-3 py-2 text-sm">
               </div>
               <div>
                 <label class="block text-xs text-gray-500 mb-1">Chunk Overlap</label>
-                <p class="font-medium" x-text="settingsConfig?.chunking?.chunk_overlap"></p>
+                <input x-model.number="settingsConfig.chunking.chunk_overlap" type="number" min="0" class="w-full border border-gray-300 rounded px-3 py-2 text-sm">
               </div>
               <div>
                 <label class="block text-xs text-gray-500 mb-1">Max File Size (KB)</label>
-                <p class="font-medium" x-text="settingsConfig?.chunking?.max_file_size_kb"></p>
+                <input x-model.number="settingsConfig.chunking.max_file_size_kb" type="number" min="1" class="w-full border border-gray-300 rounded px-3 py-2 text-sm">
               </div>
+            </div>
+            <div class="flex gap-2 mt-4">
+              <button @click="saveChunkingConfig()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm">Save</button>
+              <button @click="resetConfig('chunking')" class="border border-gray-300 hover:bg-red-50 hover:border-red-300 text-gray-600 hover:text-red-600 px-3 py-2 rounded text-sm">Reset</button>
             </div>
           </div>
         </div>
@@ -1104,16 +1145,21 @@
             <div class="space-y-3 text-sm">
               <div>
                 <label class="block text-xs text-gray-500 mb-1">Vision Model</label>
-                <p class="font-medium" x-text="settingsConfig?.ollama?.vision_model"></p>
+                <p class="font-medium text-gray-400 text-xs">(Configured in General &gt; Ollama Settings)</p>
+                <code class="text-gray-900" x-text="settingsConfig?.ollama?.vision_model"></code>
               </div>
               <div>
                 <label class="block text-xs text-gray-500 mb-1">Max Image Size (KB)</label>
-                <p class="font-medium" x-text="settingsConfig?.image?.max_image_size_kb"></p>
+                <input x-model.number="settingsConfig.image.max_image_size_kb" type="number" min="1" class="w-full border border-gray-300 rounded px-3 py-2 text-sm">
               </div>
               <div>
                 <label class="block text-xs text-gray-500 mb-1">Caption Prompt</label>
-                <p class="text-xs text-gray-600 bg-gray-50 p-2 rounded" x-text="settingsConfig?.image?.caption_prompt"></p>
+                <textarea x-model="settingsConfig.image.caption_prompt" rows="3" class="w-full border border-gray-300 rounded px-3 py-2 text-sm"></textarea>
               </div>
+            </div>
+            <div class="flex gap-2 mt-4">
+              <button @click="saveImageConfig()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm">Save</button>
+              <button @click="resetConfig('image')" class="border border-gray-300 hover:bg-red-50 hover:border-red-300 text-gray-600 hover:text-red-600 px-3 py-2 rounded text-sm">Reset</button>
             </div>
           </div>
         </div>

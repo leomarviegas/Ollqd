@@ -916,6 +916,91 @@ function app() {
       }
     },
 
+    async saveOllamaConfig() {
+      if (!this.settingsConfig) return;
+      try {
+        const r = await fetch("/api/system/config/ollama", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            base_url: this.settingsConfig.ollama.base_url,
+            chat_model: this.settingsConfig.ollama.chat_model,
+            embed_model: this.settingsConfig.ollama.embed_model,
+            vision_model: this.settingsConfig.ollama.vision_model,
+            timeout_s: this.settingsConfig.ollama.timeout_s,
+          }),
+        });
+        if (!r.ok) throw new Error((await r.json()).detail);
+        const d = await r.json();
+        this.settingsConfig.ollama = { ...this.settingsConfig.ollama, ...d };
+        alert("Ollama settings saved");
+      } catch (e) {
+        alert("Save failed: " + e.message);
+      }
+    },
+
+    async saveQdrantConfig() {
+      if (!this.settingsConfig) return;
+      try {
+        const r = await fetch("/api/system/config/qdrant", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            url: this.settingsConfig.qdrant.url,
+            default_collection: this.settingsConfig.qdrant.default_collection,
+            default_distance: this.settingsConfig.qdrant.default_distance,
+          }),
+        });
+        if (!r.ok) throw new Error((await r.json()).detail);
+        const d = await r.json();
+        this.settingsConfig.qdrant = { ...this.settingsConfig.qdrant, ...d };
+        alert("Qdrant settings saved");
+      } catch (e) {
+        alert("Save failed: " + e.message);
+      }
+    },
+
+    async saveChunkingConfig() {
+      if (!this.settingsConfig) return;
+      try {
+        const r = await fetch("/api/system/config/chunking", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            chunk_size: this.settingsConfig.chunking.chunk_size,
+            chunk_overlap: this.settingsConfig.chunking.chunk_overlap,
+            max_file_size_kb: this.settingsConfig.chunking.max_file_size_kb,
+          }),
+        });
+        if (!r.ok) throw new Error((await r.json()).detail);
+        const d = await r.json();
+        this.settingsConfig.chunking = { ...this.settingsConfig.chunking, ...d };
+        alert("Chunking settings saved");
+      } catch (e) {
+        alert("Save failed: " + e.message);
+      }
+    },
+
+    async saveImageConfig() {
+      if (!this.settingsConfig) return;
+      try {
+        const r = await fetch("/api/system/config/image", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            max_image_size_kb: this.settingsConfig.image.max_image_size_kb,
+            caption_prompt: this.settingsConfig.image.caption_prompt,
+          }),
+        });
+        if (!r.ok) throw new Error((await r.json()).detail);
+        const d = await r.json();
+        this.settingsConfig.image = { ...this.settingsConfig.image, ...d };
+        alert("Image settings saved");
+      } catch (e) {
+        alert("Save failed: " + e.message);
+      }
+    },
+
     async saveDistanceMetric() {
       if (!this.settingsConfig) return;
       try {

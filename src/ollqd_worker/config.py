@@ -142,9 +142,39 @@ def _apply_db_overrides(cfg: AppConfig) -> None:
     if "timeout_s" in docling:
         cfg.docling.timeout_s = _to_float(docling["timeout_s"])
 
+    ollama = overrides.get("ollama", {})
+    if "base_url" in ollama:
+        cfg.ollama.base_url = ollama["base_url"]
+    if "chat_model" in ollama:
+        cfg.ollama.chat_model = ollama["chat_model"]
+    if "embed_model" in ollama:
+        cfg.ollama.embed_model = ollama["embed_model"]
+    if "vision_model" in ollama:
+        cfg.ollama.vision_model = ollama["vision_model"]
+    if "timeout_s" in ollama:
+        cfg.ollama.timeout_s = _to_float(ollama["timeout_s"])
+
     qdrant = overrides.get("qdrant", {})
+    if "url" in qdrant:
+        cfg.qdrant.url = qdrant["url"]
+    if "default_collection" in qdrant:
+        cfg.qdrant.default_collection = qdrant["default_collection"]
     if "default_distance" in qdrant:
         cfg.qdrant.default_distance = qdrant["default_distance"]
+
+    chunking = overrides.get("chunking", {})
+    if "chunk_size" in chunking:
+        cfg.chunking.chunk_size = int(chunking["chunk_size"])
+    if "chunk_overlap" in chunking:
+        cfg.chunking.chunk_overlap = int(chunking["chunk_overlap"])
+    if "max_file_size_kb" in chunking:
+        cfg.chunking.max_file_size_kb = int(chunking["max_file_size_kb"])
+
+    image = overrides.get("image", {})
+    if "max_image_size_kb" in image:
+        cfg.image.max_image_size_kb = int(image["max_image_size_kb"])
+    if "caption_prompt" in image:
+        cfg.image.caption_prompt = image["caption_prompt"]
 
     app = overrides.get("app", {})
     if "mounted_paths" in app:

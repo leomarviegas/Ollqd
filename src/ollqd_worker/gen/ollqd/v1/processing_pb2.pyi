@@ -381,6 +381,90 @@ class UpdateDistanceResponse(_message.Message):
     previous: str
     def __init__(self, distance: _Optional[str] = ..., previous: _Optional[str] = ...) -> None: ...
 
+class UpdateOllamaRequest(_message.Message):
+    __slots__ = ("base_url", "chat_model", "embed_model", "vision_model", "timeout_s")
+    BASE_URL_FIELD_NUMBER: _ClassVar[int]
+    CHAT_MODEL_FIELD_NUMBER: _ClassVar[int]
+    EMBED_MODEL_FIELD_NUMBER: _ClassVar[int]
+    VISION_MODEL_FIELD_NUMBER: _ClassVar[int]
+    TIMEOUT_S_FIELD_NUMBER: _ClassVar[int]
+    base_url: str
+    chat_model: str
+    embed_model: str
+    vision_model: str
+    timeout_s: float
+    def __init__(self, base_url: _Optional[str] = ..., chat_model: _Optional[str] = ..., embed_model: _Optional[str] = ..., vision_model: _Optional[str] = ..., timeout_s: _Optional[float] = ...) -> None: ...
+
+class OllamaConfigResponse(_message.Message):
+    __slots__ = ("base_url", "chat_model", "embed_model", "vision_model", "timeout_s")
+    BASE_URL_FIELD_NUMBER: _ClassVar[int]
+    CHAT_MODEL_FIELD_NUMBER: _ClassVar[int]
+    EMBED_MODEL_FIELD_NUMBER: _ClassVar[int]
+    VISION_MODEL_FIELD_NUMBER: _ClassVar[int]
+    TIMEOUT_S_FIELD_NUMBER: _ClassVar[int]
+    base_url: str
+    chat_model: str
+    embed_model: str
+    vision_model: str
+    timeout_s: float
+    def __init__(self, base_url: _Optional[str] = ..., chat_model: _Optional[str] = ..., embed_model: _Optional[str] = ..., vision_model: _Optional[str] = ..., timeout_s: _Optional[float] = ...) -> None: ...
+
+class UpdateQdrantRequest(_message.Message):
+    __slots__ = ("url", "default_collection", "default_distance")
+    URL_FIELD_NUMBER: _ClassVar[int]
+    DEFAULT_COLLECTION_FIELD_NUMBER: _ClassVar[int]
+    DEFAULT_DISTANCE_FIELD_NUMBER: _ClassVar[int]
+    url: str
+    default_collection: str
+    default_distance: str
+    def __init__(self, url: _Optional[str] = ..., default_collection: _Optional[str] = ..., default_distance: _Optional[str] = ...) -> None: ...
+
+class QdrantConfigResponse(_message.Message):
+    __slots__ = ("url", "default_collection", "default_distance")
+    URL_FIELD_NUMBER: _ClassVar[int]
+    DEFAULT_COLLECTION_FIELD_NUMBER: _ClassVar[int]
+    DEFAULT_DISTANCE_FIELD_NUMBER: _ClassVar[int]
+    url: str
+    default_collection: str
+    default_distance: str
+    def __init__(self, url: _Optional[str] = ..., default_collection: _Optional[str] = ..., default_distance: _Optional[str] = ...) -> None: ...
+
+class UpdateChunkingRequest(_message.Message):
+    __slots__ = ("chunk_size", "chunk_overlap", "max_file_size_kb")
+    CHUNK_SIZE_FIELD_NUMBER: _ClassVar[int]
+    CHUNK_OVERLAP_FIELD_NUMBER: _ClassVar[int]
+    MAX_FILE_SIZE_KB_FIELD_NUMBER: _ClassVar[int]
+    chunk_size: int
+    chunk_overlap: int
+    max_file_size_kb: int
+    def __init__(self, chunk_size: _Optional[int] = ..., chunk_overlap: _Optional[int] = ..., max_file_size_kb: _Optional[int] = ...) -> None: ...
+
+class ChunkingConfigResponse(_message.Message):
+    __slots__ = ("chunk_size", "chunk_overlap", "max_file_size_kb")
+    CHUNK_SIZE_FIELD_NUMBER: _ClassVar[int]
+    CHUNK_OVERLAP_FIELD_NUMBER: _ClassVar[int]
+    MAX_FILE_SIZE_KB_FIELD_NUMBER: _ClassVar[int]
+    chunk_size: int
+    chunk_overlap: int
+    max_file_size_kb: int
+    def __init__(self, chunk_size: _Optional[int] = ..., chunk_overlap: _Optional[int] = ..., max_file_size_kb: _Optional[int] = ...) -> None: ...
+
+class UpdateImageRequest(_message.Message):
+    __slots__ = ("max_image_size_kb", "caption_prompt")
+    MAX_IMAGE_SIZE_KB_FIELD_NUMBER: _ClassVar[int]
+    CAPTION_PROMPT_FIELD_NUMBER: _ClassVar[int]
+    max_image_size_kb: int
+    caption_prompt: str
+    def __init__(self, max_image_size_kb: _Optional[int] = ..., caption_prompt: _Optional[str] = ...) -> None: ...
+
+class ImageConfigResponse(_message.Message):
+    __slots__ = ("max_image_size_kb", "caption_prompt")
+    MAX_IMAGE_SIZE_KB_FIELD_NUMBER: _ClassVar[int]
+    CAPTION_PROMPT_FIELD_NUMBER: _ClassVar[int]
+    max_image_size_kb: int
+    caption_prompt: str
+    def __init__(self, max_image_size_kb: _Optional[int] = ..., caption_prompt: _Optional[str] = ...) -> None: ...
+
 class GetPIIConfigRequest(_message.Message):
     __slots__ = ()
     def __init__(self) -> None: ...

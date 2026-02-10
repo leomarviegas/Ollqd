@@ -895,6 +895,10 @@ const (
 	ConfigService_UpdatePII_FullMethodName          = "/ollqd.v1.ConfigService/UpdatePII"
 	ConfigService_UpdateDocling_FullMethodName      = "/ollqd.v1.ConfigService/UpdateDocling"
 	ConfigService_UpdateDistance_FullMethodName     = "/ollqd.v1.ConfigService/UpdateDistance"
+	ConfigService_UpdateOllama_FullMethodName       = "/ollqd.v1.ConfigService/UpdateOllama"
+	ConfigService_UpdateQdrant_FullMethodName       = "/ollqd.v1.ConfigService/UpdateQdrant"
+	ConfigService_UpdateChunking_FullMethodName     = "/ollqd.v1.ConfigService/UpdateChunking"
+	ConfigService_UpdateImage_FullMethodName        = "/ollqd.v1.ConfigService/UpdateImage"
 	ConfigService_GetPIIConfig_FullMethodName       = "/ollqd.v1.ConfigService/GetPIIConfig"
 	ConfigService_GetDoclingConfig_FullMethodName   = "/ollqd.v1.ConfigService/GetDoclingConfig"
 	ConfigService_ResetConfig_FullMethodName        = "/ollqd.v1.ConfigService/ResetConfig"
@@ -909,6 +913,10 @@ type ConfigServiceClient interface {
 	UpdatePII(ctx context.Context, in *UpdatePIIRequest, opts ...grpc.CallOption) (*PIIConfigResponse, error)
 	UpdateDocling(ctx context.Context, in *UpdateDoclingRequest, opts ...grpc.CallOption) (*DoclingConfigResponse, error)
 	UpdateDistance(ctx context.Context, in *UpdateDistanceRequest, opts ...grpc.CallOption) (*UpdateDistanceResponse, error)
+	UpdateOllama(ctx context.Context, in *UpdateOllamaRequest, opts ...grpc.CallOption) (*OllamaConfigResponse, error)
+	UpdateQdrant(ctx context.Context, in *UpdateQdrantRequest, opts ...grpc.CallOption) (*QdrantConfigResponse, error)
+	UpdateChunking(ctx context.Context, in *UpdateChunkingRequest, opts ...grpc.CallOption) (*ChunkingConfigResponse, error)
+	UpdateImage(ctx context.Context, in *UpdateImageRequest, opts ...grpc.CallOption) (*ImageConfigResponse, error)
 	GetPIIConfig(ctx context.Context, in *GetPIIConfigRequest, opts ...grpc.CallOption) (*PIIConfigResponse, error)
 	GetDoclingConfig(ctx context.Context, in *GetDoclingConfigRequest, opts ...grpc.CallOption) (*DoclingConfigResponse, error)
 	ResetConfig(ctx context.Context, in *ResetConfigRequest, opts ...grpc.CallOption) (*ResetConfigResponse, error)
@@ -972,6 +980,46 @@ func (c *configServiceClient) UpdateDistance(ctx context.Context, in *UpdateDist
 	return out, nil
 }
 
+func (c *configServiceClient) UpdateOllama(ctx context.Context, in *UpdateOllamaRequest, opts ...grpc.CallOption) (*OllamaConfigResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(OllamaConfigResponse)
+	err := c.cc.Invoke(ctx, ConfigService_UpdateOllama_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *configServiceClient) UpdateQdrant(ctx context.Context, in *UpdateQdrantRequest, opts ...grpc.CallOption) (*QdrantConfigResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(QdrantConfigResponse)
+	err := c.cc.Invoke(ctx, ConfigService_UpdateQdrant_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *configServiceClient) UpdateChunking(ctx context.Context, in *UpdateChunkingRequest, opts ...grpc.CallOption) (*ChunkingConfigResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ChunkingConfigResponse)
+	err := c.cc.Invoke(ctx, ConfigService_UpdateChunking_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *configServiceClient) UpdateImage(ctx context.Context, in *UpdateImageRequest, opts ...grpc.CallOption) (*ImageConfigResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ImageConfigResponse)
+	err := c.cc.Invoke(ctx, ConfigService_UpdateImage_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *configServiceClient) GetPIIConfig(ctx context.Context, in *GetPIIConfigRequest, opts ...grpc.CallOption) (*PIIConfigResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(PIIConfigResponse)
@@ -1011,6 +1059,10 @@ type ConfigServiceServer interface {
 	UpdatePII(context.Context, *UpdatePIIRequest) (*PIIConfigResponse, error)
 	UpdateDocling(context.Context, *UpdateDoclingRequest) (*DoclingConfigResponse, error)
 	UpdateDistance(context.Context, *UpdateDistanceRequest) (*UpdateDistanceResponse, error)
+	UpdateOllama(context.Context, *UpdateOllamaRequest) (*OllamaConfigResponse, error)
+	UpdateQdrant(context.Context, *UpdateQdrantRequest) (*QdrantConfigResponse, error)
+	UpdateChunking(context.Context, *UpdateChunkingRequest) (*ChunkingConfigResponse, error)
+	UpdateImage(context.Context, *UpdateImageRequest) (*ImageConfigResponse, error)
 	GetPIIConfig(context.Context, *GetPIIConfigRequest) (*PIIConfigResponse, error)
 	GetDoclingConfig(context.Context, *GetDoclingConfigRequest) (*DoclingConfigResponse, error)
 	ResetConfig(context.Context, *ResetConfigRequest) (*ResetConfigResponse, error)
@@ -1038,6 +1090,18 @@ func (UnimplementedConfigServiceServer) UpdateDocling(context.Context, *UpdateDo
 }
 func (UnimplementedConfigServiceServer) UpdateDistance(context.Context, *UpdateDistanceRequest) (*UpdateDistanceResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method UpdateDistance not implemented")
+}
+func (UnimplementedConfigServiceServer) UpdateOllama(context.Context, *UpdateOllamaRequest) (*OllamaConfigResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method UpdateOllama not implemented")
+}
+func (UnimplementedConfigServiceServer) UpdateQdrant(context.Context, *UpdateQdrantRequest) (*QdrantConfigResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method UpdateQdrant not implemented")
+}
+func (UnimplementedConfigServiceServer) UpdateChunking(context.Context, *UpdateChunkingRequest) (*ChunkingConfigResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method UpdateChunking not implemented")
+}
+func (UnimplementedConfigServiceServer) UpdateImage(context.Context, *UpdateImageRequest) (*ImageConfigResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method UpdateImage not implemented")
 }
 func (UnimplementedConfigServiceServer) GetPIIConfig(context.Context, *GetPIIConfigRequest) (*PIIConfigResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetPIIConfig not implemented")
@@ -1159,6 +1223,78 @@ func _ConfigService_UpdateDistance_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ConfigService_UpdateOllama_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateOllamaRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ConfigServiceServer).UpdateOllama(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ConfigService_UpdateOllama_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ConfigServiceServer).UpdateOllama(ctx, req.(*UpdateOllamaRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ConfigService_UpdateQdrant_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateQdrantRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ConfigServiceServer).UpdateQdrant(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ConfigService_UpdateQdrant_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ConfigServiceServer).UpdateQdrant(ctx, req.(*UpdateQdrantRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ConfigService_UpdateChunking_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateChunkingRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ConfigServiceServer).UpdateChunking(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ConfigService_UpdateChunking_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ConfigServiceServer).UpdateChunking(ctx, req.(*UpdateChunkingRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ConfigService_UpdateImage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateImageRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ConfigServiceServer).UpdateImage(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ConfigService_UpdateImage_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ConfigServiceServer).UpdateImage(ctx, req.(*UpdateImageRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _ConfigService_GetPIIConfig_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetPIIConfigRequest)
 	if err := dec(in); err != nil {
@@ -1239,6 +1375,22 @@ var ConfigService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UpdateDistance",
 			Handler:    _ConfigService_UpdateDistance_Handler,
+		},
+		{
+			MethodName: "UpdateOllama",
+			Handler:    _ConfigService_UpdateOllama_Handler,
+		},
+		{
+			MethodName: "UpdateQdrant",
+			Handler:    _ConfigService_UpdateQdrant_Handler,
+		},
+		{
+			MethodName: "UpdateChunking",
+			Handler:    _ConfigService_UpdateChunking_Handler,
+		},
+		{
+			MethodName: "UpdateImage",
+			Handler:    _ConfigService_UpdateImage_Handler,
 		},
 		{
 			MethodName: "GetPIIConfig",

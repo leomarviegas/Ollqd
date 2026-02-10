@@ -236,6 +236,139 @@ class ConfigServiceServicer:
                 self.__dict__.update(kw)
         return _Resp(distance=distance, previous=old)
 
+    async def UpdateOllama(self, request, context):
+        """Update Ollama configuration fields."""
+        cfg = get_config()
+        if hasattr(request, "base_url") and request.base_url:
+            cfg.ollama.base_url = request.base_url
+        if hasattr(request, "chat_model") and request.chat_model:
+            cfg.ollama.chat_model = request.chat_model
+        if hasattr(request, "embed_model") and request.embed_model:
+            cfg.ollama.embed_model = request.embed_model
+        if hasattr(request, "vision_model") and request.vision_model:
+            cfg.ollama.vision_model = request.vision_model
+        if hasattr(request, "timeout_s") and request.HasField("timeout_s"):
+            if request.timeout_s <= 0:
+                await context.abort(grpc.StatusCode.INVALID_ARGUMENT, "timeout_s must be > 0")
+            cfg.ollama.timeout_s = request.timeout_s
+
+        result = {
+            "base_url": cfg.ollama.base_url,
+            "chat_model": cfg.ollama.chat_model,
+            "embed_model": cfg.ollama.embed_model,
+            "vision_model": cfg.ollama.vision_model,
+            "timeout_s": cfg.ollama.timeout_s,
+        }
+        config_db.save_overrides("ollama", {k: str(v) for k, v in result.items()})
+        log.info("Updated Ollama config: %s", result)
+
+        if _STUBS_AVAILABLE:
+            return config_pb2.OllamaConfigResponse(**result)
+
+        class _Resp:
+            def __init__(self, **kw):
+                self.__dict__.update(kw)
+        return _Resp(**result)
+
+    async def UpdateQdrant(self, request, context):
+        """Update Qdrant configuration fields."""
+        cfg = get_config()
+        if hasattr(request, "url") and request.url:
+            cfg.qdrant.url = request.url
+        if hasattr(request, "default_collection") and request.default_collection:
+            cfg.qdrant.default_collection = request.default_collection
+        if hasattr(request, "default_distance") and request.default_distance:
+            valid_distances = {"Cosine", "Euclid", "Dot", "Manhattan"}
+            if request.default_distance not in valid_distances:
+                await context.abort(
+                    grpc.StatusCode.INVALID_ARGUMENT,
+                    f"Invalid distance metric: {request.default_distance}. Must be one of {valid_distances}",
+                )
+            cfg.qdrant.default_distance = request.default_distance
+
+        result = {
+            "url": cfg.qdrant.url,
+            "default_collection": cfg.qdrant.default_collection,
+            "default_distance": cfg.qdrant.default_distance,
+        }
+        config_db.save_overrides("qdrant", result)
+        log.info("Updated Qdrant config: %s", result)
+
+        if _STUBS_AVAILABLE:
+            return config_pb2.QdrantConfigResponse(**result)
+
+        class _Resp:
+            def __init__(self, **kw):
+                self.__dict__.update(kw)
+        return _Resp(**result)
+
+    async def UpdateChunking(self, request, context):
+        """Update chunking configuration fields."""
+        cfg = get_config()
+        chunk_size = cfg.chunking.chunk_size
+        chunk_overlap = cfg.chunking.chunk_overlap
+
+        if hasattr(request, "chunk_size") and request.HasField("chunk_size"):
+            chunk_size = request.chunk_size
+        if hasattr(request, "chunk_overlap") and request.HasField("chunk_overlap"):
+            chunk_overlap = request.chunk_overlap
+
+        if chunk_size <= 0:
+            await context.abort(grpc.StatusCode.INVALID_ARGUMENT, "chunk_size must be > 0")
+        if chunk_overlap < 0:
+            await context.abort(grpc.StatusCode.INVALID_ARGUMENT, "chunk_overlap must be >= 0")
+        if chunk_overlap >= chunk_size:
+            await context.abort(grpc.StatusCode.INVALID_ARGUMENT, "chunk_overlap must be < chunk_size")
+
+        cfg.chunking.chunk_size = chunk_size
+        cfg.chunking.chunk_overlap = chunk_overlap
+
+        if hasattr(request, "max_file_size_kb") and request.HasField("max_file_size_kb"):
+            if request.max_file_size_kb <= 0:
+                await context.abort(grpc.StatusCode.INVALID_ARGUMENT, "max_file_size_kb must be > 0")
+            cfg.chunking.max_file_size_kb = request.max_file_size_kb
+
+        result = {
+            "chunk_size": cfg.chunking.chunk_size,
+            "chunk_overlap": cfg.chunking.chunk_overlap,
+            "max_file_size_kb": cfg.chunking.max_file_size_kb,
+        }
+        config_db.save_overrides("chunking", {k: str(v) for k, v in result.items()})
+        log.info("Updated Chunking config: %s", result)
+
+        if _STUBS_AVAILABLE:
+            return config_pb2.ChunkingConfigResponse(**result)
+
+        class _Resp:
+            def __init__(self, **kw):
+                self.__dict__.update(kw)
+        return _Resp(**result)
+
+    async def UpdateImage(self, request, context):
+        """Update image configuration fields."""
+        cfg = get_config()
+        if hasattr(request, "max_image_size_kb") and request.HasField("max_image_size_kb"):
+            if request.max_image_size_kb <= 0:
+                await context.abort(grpc.StatusCode.INVALID_ARGUMENT, "max_image_size_kb must be > 0")
+            cfg.image.max_image_size_kb = request.max_image_size_kb
+        if hasattr(request, "caption_prompt") and request.caption_prompt:
+            cfg.image.caption_prompt = request.caption_prompt
+
+        result = {
+            "max_image_size_kb": cfg.image.max_image_size_kb,
+            "caption_prompt": cfg.image.caption_prompt,
+        }
+        config_db.save_overrides("image", {k: str(v) for k, v in result.items()})
+        log.info("Updated Image config: %s", result)
+
+        if _STUBS_AVAILABLE:
+            return config_pb2.ImageConfigResponse(**result)
+
+        class _Resp:
+            def __init__(self, **kw):
+                self.__dict__.update(kw)
+        return _Resp(**result)
+
     async def GetPIIConfig(self, request, context):
         """Return PII-specific configuration plus spaCy availability."""
         cfg = get_config()
@@ -281,7 +414,7 @@ class ConfigServiceServicer:
 
     async def ResetConfig(self, request, context):
         """Delete persisted config overrides and revert to env-var defaults."""
-        valid_sections = {"pii", "docling", "qdrant", "app", ""}
+        valid_sections = {"pii", "docling", "qdrant", "ollama", "chunking", "image", "app", ""}
         section = request.section if hasattr(request, "section") else ""
         keys = list(request.keys) if hasattr(request, "keys") and request.keys else []
 

@@ -874,6 +874,26 @@ class ConfigServiceStub(object):
                 request_serializer=ollqd_dot_v1_dot_processing__pb2.UpdateDistanceRequest.SerializeToString,
                 response_deserializer=ollqd_dot_v1_dot_processing__pb2.UpdateDistanceResponse.FromString,
                 _registered_method=True)
+        self.UpdateOllama = channel.unary_unary(
+                '/ollqd.v1.ConfigService/UpdateOllama',
+                request_serializer=ollqd_dot_v1_dot_processing__pb2.UpdateOllamaRequest.SerializeToString,
+                response_deserializer=ollqd_dot_v1_dot_processing__pb2.OllamaConfigResponse.FromString,
+                _registered_method=True)
+        self.UpdateQdrant = channel.unary_unary(
+                '/ollqd.v1.ConfigService/UpdateQdrant',
+                request_serializer=ollqd_dot_v1_dot_processing__pb2.UpdateQdrantRequest.SerializeToString,
+                response_deserializer=ollqd_dot_v1_dot_processing__pb2.QdrantConfigResponse.FromString,
+                _registered_method=True)
+        self.UpdateChunking = channel.unary_unary(
+                '/ollqd.v1.ConfigService/UpdateChunking',
+                request_serializer=ollqd_dot_v1_dot_processing__pb2.UpdateChunkingRequest.SerializeToString,
+                response_deserializer=ollqd_dot_v1_dot_processing__pb2.ChunkingConfigResponse.FromString,
+                _registered_method=True)
+        self.UpdateImage = channel.unary_unary(
+                '/ollqd.v1.ConfigService/UpdateImage',
+                request_serializer=ollqd_dot_v1_dot_processing__pb2.UpdateImageRequest.SerializeToString,
+                response_deserializer=ollqd_dot_v1_dot_processing__pb2.ImageConfigResponse.FromString,
+                _registered_method=True)
         self.GetPIIConfig = channel.unary_unary(
                 '/ollqd.v1.ConfigService/GetPIIConfig',
                 request_serializer=ollqd_dot_v1_dot_processing__pb2.GetPIIConfigRequest.SerializeToString,
@@ -928,6 +948,30 @@ class ConfigServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def UpdateOllama(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def UpdateQdrant(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def UpdateChunking(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def UpdateImage(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
     def GetPIIConfig(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
@@ -973,6 +1017,26 @@ def add_ConfigServiceServicer_to_server(servicer, server):
                     servicer.UpdateDistance,
                     request_deserializer=ollqd_dot_v1_dot_processing__pb2.UpdateDistanceRequest.FromString,
                     response_serializer=ollqd_dot_v1_dot_processing__pb2.UpdateDistanceResponse.SerializeToString,
+            ),
+            'UpdateOllama': grpc.unary_unary_rpc_method_handler(
+                    servicer.UpdateOllama,
+                    request_deserializer=ollqd_dot_v1_dot_processing__pb2.UpdateOllamaRequest.FromString,
+                    response_serializer=ollqd_dot_v1_dot_processing__pb2.OllamaConfigResponse.SerializeToString,
+            ),
+            'UpdateQdrant': grpc.unary_unary_rpc_method_handler(
+                    servicer.UpdateQdrant,
+                    request_deserializer=ollqd_dot_v1_dot_processing__pb2.UpdateQdrantRequest.FromString,
+                    response_serializer=ollqd_dot_v1_dot_processing__pb2.QdrantConfigResponse.SerializeToString,
+            ),
+            'UpdateChunking': grpc.unary_unary_rpc_method_handler(
+                    servicer.UpdateChunking,
+                    request_deserializer=ollqd_dot_v1_dot_processing__pb2.UpdateChunkingRequest.FromString,
+                    response_serializer=ollqd_dot_v1_dot_processing__pb2.ChunkingConfigResponse.SerializeToString,
+            ),
+            'UpdateImage': grpc.unary_unary_rpc_method_handler(
+                    servicer.UpdateImage,
+                    request_deserializer=ollqd_dot_v1_dot_processing__pb2.UpdateImageRequest.FromString,
+                    response_serializer=ollqd_dot_v1_dot_processing__pb2.ImageConfigResponse.SerializeToString,
             ),
             'GetPIIConfig': grpc.unary_unary_rpc_method_handler(
                     servicer.GetPIIConfig,
@@ -1129,6 +1193,114 @@ class ConfigService(object):
             '/ollqd.v1.ConfigService/UpdateDistance',
             ollqd_dot_v1_dot_processing__pb2.UpdateDistanceRequest.SerializeToString,
             ollqd_dot_v1_dot_processing__pb2.UpdateDistanceResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def UpdateOllama(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/ollqd.v1.ConfigService/UpdateOllama',
+            ollqd_dot_v1_dot_processing__pb2.UpdateOllamaRequest.SerializeToString,
+            ollqd_dot_v1_dot_processing__pb2.OllamaConfigResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def UpdateQdrant(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/ollqd.v1.ConfigService/UpdateQdrant',
+            ollqd_dot_v1_dot_processing__pb2.UpdateQdrantRequest.SerializeToString,
+            ollqd_dot_v1_dot_processing__pb2.QdrantConfigResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def UpdateChunking(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/ollqd.v1.ConfigService/UpdateChunking',
+            ollqd_dot_v1_dot_processing__pb2.UpdateChunkingRequest.SerializeToString,
+            ollqd_dot_v1_dot_processing__pb2.ChunkingConfigResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def UpdateImage(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/ollqd.v1.ConfigService/UpdateImage',
+            ollqd_dot_v1_dot_processing__pb2.UpdateImageRequest.SerializeToString,
+            ollqd_dot_v1_dot_processing__pb2.ImageConfigResponse.FromString,
             options,
             channel_credentials,
             insecure,

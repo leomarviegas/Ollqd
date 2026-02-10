@@ -83,6 +83,14 @@ type UpdateDistanceRequest = pb.UpdateDistanceRequest
 type UpdateDistanceResponse = pb.UpdateDistanceResponse
 type GetPIIConfigRequest = pb.GetPIIConfigRequest
 type GetDoclingConfigRequest = pb.GetDoclingConfigRequest
+type UpdateOllamaRequest = pb.UpdateOllamaRequest
+type OllamaConfigResponse = pb.OllamaConfigResponse
+type UpdateQdrantRequest = pb.UpdateQdrantRequest
+type QdrantConfigResponse = pb.QdrantConfigResponse
+type UpdateChunkingRequest = pb.UpdateChunkingRequest
+type ChunkingConfigResponse = pb.ChunkingConfigResponse
+type UpdateImageRequest = pb.UpdateImageRequest
+type ImageConfigResponse = pb.ImageConfigResponse
 type ResetConfigRequest = pb.ResetConfigRequest
 type ResetConfigResponse = pb.ResetConfigResponse
 
@@ -203,6 +211,10 @@ type ConfigServiceClient interface {
 	UpdatePII(ctx context.Context, req *UpdatePIIRequest) (*PIIConfigResponse, error)
 	UpdateDocling(ctx context.Context, req *UpdateDoclingRequest) (*DoclingConfigResponse, error)
 	UpdateDistance(ctx context.Context, req *UpdateDistanceRequest) (*UpdateDistanceResponse, error)
+	UpdateOllama(ctx context.Context, req *UpdateOllamaRequest) (*OllamaConfigResponse, error)
+	UpdateQdrant(ctx context.Context, req *UpdateQdrantRequest) (*QdrantConfigResponse, error)
+	UpdateChunking(ctx context.Context, req *UpdateChunkingRequest) (*ChunkingConfigResponse, error)
+	UpdateImage(ctx context.Context, req *UpdateImageRequest) (*ImageConfigResponse, error)
 	GetPIIConfig(ctx context.Context) (*PIIConfigResponse, error)
 	GetDoclingConfig(ctx context.Context) (*DoclingConfigResponse, error)
 	ResetConfig(ctx context.Context, req *ResetConfigRequest) (*ResetConfigResponse, error)
@@ -363,6 +375,22 @@ func (a *configAdapter) UpdateDocling(ctx context.Context, req *UpdateDoclingReq
 
 func (a *configAdapter) UpdateDistance(ctx context.Context, req *UpdateDistanceRequest) (*UpdateDistanceResponse, error) {
 	return a.inner.UpdateDistance(ctx, req)
+}
+
+func (a *configAdapter) UpdateOllama(ctx context.Context, req *UpdateOllamaRequest) (*OllamaConfigResponse, error) {
+	return a.inner.UpdateOllama(ctx, req)
+}
+
+func (a *configAdapter) UpdateQdrant(ctx context.Context, req *UpdateQdrantRequest) (*QdrantConfigResponse, error) {
+	return a.inner.UpdateQdrant(ctx, req)
+}
+
+func (a *configAdapter) UpdateChunking(ctx context.Context, req *UpdateChunkingRequest) (*ChunkingConfigResponse, error) {
+	return a.inner.UpdateChunking(ctx, req)
+}
+
+func (a *configAdapter) UpdateImage(ctx context.Context, req *UpdateImageRequest) (*ImageConfigResponse, error) {
+	return a.inner.UpdateImage(ctx, req)
 }
 
 func (a *configAdapter) GetPIIConfig(ctx context.Context) (*PIIConfigResponse, error) {

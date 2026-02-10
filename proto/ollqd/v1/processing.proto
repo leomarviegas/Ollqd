@@ -231,6 +231,10 @@ service ConfigService {
   rpc UpdatePII(UpdatePIIRequest)                returns (PIIConfigResponse);
   rpc UpdateDocling(UpdateDoclingRequest)         returns (DoclingConfigResponse);
   rpc UpdateDistance(UpdateDistanceRequest)       returns (UpdateDistanceResponse);
+  rpc UpdateOllama(UpdateOllamaRequest)          returns (OllamaConfigResponse);
+  rpc UpdateQdrant(UpdateQdrantRequest)          returns (QdrantConfigResponse);
+  rpc UpdateChunking(UpdateChunkingRequest)      returns (ChunkingConfigResponse);
+  rpc UpdateImage(UpdateImageRequest)            returns (ImageConfigResponse);
   rpc GetPIIConfig(GetPIIConfigRequest)          returns (PIIConfigResponse);
   rpc GetDoclingConfig(GetDoclingConfigRequest)   returns (DoclingConfigResponse);
   rpc ResetConfig(ResetConfigRequest)            returns (ResetConfigResponse);
@@ -288,11 +292,61 @@ message UpdateDistanceResponse {
   string previous = 2;
 }
 
+message UpdateOllamaRequest {
+  optional string base_url = 1;
+  optional string chat_model = 2;
+  optional string embed_model = 3;
+  optional string vision_model = 4;
+  optional double timeout_s = 5;
+}
+
+message OllamaConfigResponse {
+  string base_url = 1;
+  string chat_model = 2;
+  string embed_model = 3;
+  string vision_model = 4;
+  double timeout_s = 5;
+}
+
+message UpdateQdrantRequest {
+  optional string url = 1;
+  optional string default_collection = 2;
+  optional string default_distance = 3;
+}
+
+message QdrantConfigResponse {
+  string url = 1;
+  string default_collection = 2;
+  string default_distance = 3;
+}
+
+message UpdateChunkingRequest {
+  optional int32 chunk_size = 1;
+  optional int32 chunk_overlap = 2;
+  optional int32 max_file_size_kb = 3;
+}
+
+message ChunkingConfigResponse {
+  int32 chunk_size = 1;
+  int32 chunk_overlap = 2;
+  int32 max_file_size_kb = 3;
+}
+
+message UpdateImageRequest {
+  optional int32  max_image_size_kb = 1;
+  optional string caption_prompt = 2;
+}
+
+message ImageConfigResponse {
+  int32  max_image_size_kb = 1;
+  string caption_prompt = 2;
+}
+
 message GetPIIConfigRequest {}
 message GetDoclingConfigRequest {}
 
 message ResetConfigRequest {
-  string section = 1;          // "pii", "docling", "qdrant", "app", or "" for all
+  string section = 1;          // "pii", "docling", "qdrant", "ollama", "chunking", "image", "app", or "" for all
   repeated string keys = 2;    // specific keys to reset; empty = entire section
 }
 
