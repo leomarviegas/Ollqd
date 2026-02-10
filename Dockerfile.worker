@@ -1,0 +1,39 @@
+FROM python:3.12-slim
+
+WORKDIR /app
+
+COPY pyproject.toml .
+COPY src/ src/
+COPY proto/ proto/
+
+# Install worker dependencies (includes grpcio)
+RUN pip install --no-cache-dir ".[worker]"
+
+# Generate Python gRPC stubs
+RUN python -m grpc_tools.protoc \
+      --proto_path=proto \
+      --python_out=src/ollqd_worker/gen \
+      --grpc_python_out=src/ollqd_worker/gen \
+      --pyi_out=src/ollqd_worker/gen \
+      proto/ollqd/v1/types.proto proto/ollqd/v1/processing.proto
+
+# spaCy model for PII NER
+RUN python -m spacy download en_core_web_sm
+
+# Docling (opt-in via build arg, uses CPU-only PyTorch)
+ARG INSTALL_DOCLING=true
+RUN if [ "$INSTALL_DOCLING" = "true" ]; then \
+      pip install --no-cache-dir \
+        --extra-index-url https://download.pytorch.org/whl/cpu \
+        "docling>=2.0"; \
+    fi
+
+RUN mkdir -p /uploads
+
+# Generated stubs use absolute imports like "from ollqd.v1 import processing_pb2"
+# so the gen directory must be on the Python path.
+ENV PYTHONPATH="/app/src/ollqd_worker/gen:${PYTHONPATH}"
+
+EXPOSE 50051
+
+CMD ["python", "-m", "ollqd_worker.main"]

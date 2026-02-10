@@ -12,6 +12,7 @@ from ..models import (
     TestEmbedRequest,
     TestPIIMaskingRequest,
     UpdateDistanceConfigRequest,
+    UpdateDoclingConfigRequest,
     UpdateEmbedModelRequest,
     UpdateMountedPathsRequest,
     UpdatePIIConfigRequest,
@@ -77,6 +78,13 @@ async def get_system_config():
             "use_spacy": cfg.pii.use_spacy,
             "mask_embeddings": cfg.pii.mask_embeddings,
             "enabled_types": cfg.pii.enabled_types,
+        },
+        "docling": {
+            "enabled": cfg.docling.enabled,
+            "ocr_enabled": cfg.docling.ocr_enabled,
+            "ocr_engine": cfg.docling.ocr_engine,
+            "table_structure": cfg.docling.table_structure,
+            "timeout_s": cfg.docling.timeout_s,
         },
     }
 
@@ -247,6 +255,43 @@ def update_pii_config(req: UpdatePIIConfigRequest):
         "use_spacy": cfg.pii.use_spacy,
         "mask_embeddings": cfg.pii.mask_embeddings,
         "enabled_types": cfg.pii.enabled_types,
+    }
+
+
+@router.get("/config/docling")
+def get_docling_config():
+    cfg = get_config()
+    from ...docling_converter import DOCLING_EXTENSIONS, is_available
+    return {
+        "enabled": cfg.docling.enabled,
+        "ocr_enabled": cfg.docling.ocr_enabled,
+        "ocr_engine": cfg.docling.ocr_engine,
+        "table_structure": cfg.docling.table_structure,
+        "timeout_s": cfg.docling.timeout_s,
+        "available": is_available(),
+        "supported_extensions": sorted(DOCLING_EXTENSIONS),
+    }
+
+
+@router.put("/config/docling")
+def update_docling_config(req: UpdateDoclingConfigRequest):
+    cfg = get_config()
+    if req.enabled is not None:
+        cfg.docling.enabled = req.enabled
+    if req.ocr_enabled is not None:
+        cfg.docling.ocr_enabled = req.ocr_enabled
+    if req.ocr_engine is not None:
+        cfg.docling.ocr_engine = req.ocr_engine
+    if req.table_structure is not None:
+        cfg.docling.table_structure = req.table_structure
+    if req.timeout_s is not None:
+        cfg.docling.timeout_s = req.timeout_s
+    return {
+        "enabled": cfg.docling.enabled,
+        "ocr_enabled": cfg.docling.ocr_enabled,
+        "ocr_engine": cfg.docling.ocr_engine,
+        "table_structure": cfg.docling.table_structure,
+        "timeout_s": cfg.docling.timeout_s,
     }
 
 

@@ -118,6 +118,16 @@ class TestPIIMaskingRequest(BaseModel):
     text: str = Field(..., min_length=1)
 
 
+# ── Docling ──────────────────────────────────────────────
+
+class UpdateDoclingConfigRequest(BaseModel):
+    enabled: Optional[bool] = None
+    ocr_enabled: Optional[bool] = None
+    ocr_engine: Optional[str] = None
+    table_structure: Optional[bool] = None
+    timeout_s: Optional[float] = None
+
+
 # ── SMB/CIFS ──────────────────────────────────────────────
 
 class SMBShareCreateRequest(BaseModel):

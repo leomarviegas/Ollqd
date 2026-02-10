@@ -1,9 +1,14 @@
 """Code-aware and document chunking strategies."""
 
+from __future__ import annotations
+
+import logging
 from pathlib import Path
 from typing import Optional
 
 from .models import Chunk, FileInfo
+
+log = logging.getLogger("ollqd.chunking")
 
 
 def chunk_pdf(
@@ -141,6 +146,45 @@ def chunk_pptx(
         file_path=file_path,
         content=full_text,
         language="text",
+        chunk_size=chunk_size,
+        chunk_overlap=chunk_overlap,
+        content_hash=content_hash,
+    )
+
+
+def chunk_with_docling(
+    file_path: str,
+    file_bytes: bytes,
+    chunk_size: int = 512,
+    chunk_overlap: int = 64,
+    content_hash: str = "",
+    ocr_enabled: bool = True,
+    ocr_engine: str = "easyocr",
+    table_structure: bool = True,
+    timeout_s: float = 300,
+) -> list[Chunk] | None:
+    """Try to convert a file via docling and chunk the resulting markdown.
+
+    Returns a list of chunks on success, or None if docling is unavailable
+    or conversion failed (caller should fall back to legacy parsers).
+    """
+    from .docling_converter import convert_to_markdown
+
+    md = convert_to_markdown(
+        file_path=file_path,
+        file_bytes=file_bytes,
+        ocr_enabled=ocr_enabled,
+        ocr_engine=ocr_engine,
+        table_structure=table_structure,
+        timeout_s=timeout_s,
+    )
+    if md is None:
+        return None
+
+    return chunk_document(
+        file_path=file_path,
+        content=md,
+        language="markdown",
         chunk_size=chunk_size,
         chunk_overlap=chunk_overlap,
         content_hash=content_hash,

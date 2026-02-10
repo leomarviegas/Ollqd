@@ -22,13 +22,30 @@ services:
       - ./ollama-entrypoint.sh:/ollama-entrypoint.sh:ro
     environment:
       - OLLAMA_KEEP_ALIVE=24h
+    # GPU: Uncomment on Linux with NVIDIA drivers
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: all
+    #           capabilities: [gpu]
     restart: unless-stopped
 
+  # Static SPA served by nginx (decoupled from API gateway)
   web:
-    build: .
+    build: ./web
     container_name: ollqd-web
     ports:
-      - "8000:8000"
+      - "3000:80"
+    restart: unless-stopped
+
+  # Legacy FastAPI web service (kept for reference)
+  web-legacy:
+    build: .
+    container_name: ollqd-web-legacy
+    ports:
+      - "8001:8000"
     volumes:
       - /Users/alfagnish/VSCode:/Users/alfagnish/VSCode:ro
       - /tmp:/tmp
@@ -40,12 +57,67 @@ services:
       - UPLOAD_DIR=/uploads
       - PII_MASKING_ENABLED=false
       - PII_USE_SPACY=true
+      - DOCLING_ENABLED=true
     depends_on:
       - qdrant
       - ollama
+    restart: unless-stopped
+    profiles:
+      - legacy
+
+  # Python gRPC processing worker (headless, internal only)
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.worker
+    container_name: ollqd-worker
+    expose:
+      - "50051"
+    volumes:
+      - /Users/alfagnish/VSCode:/Users/alfagnish/VSCode:ro
+      - /tmp:/tmp
+      - uploads_data:/uploads
+      - config_data:/data
+    environment:
+      - OLLAMA_URL=http://ollama:11434
+      - QDRANT_URL=http://qdrant:6333
+      - MOUNTED_PATHS=/Users/alfagnish/VSCode,/tmp
+      - UPLOAD_DIR=/uploads
+      - PII_MASKING_ENABLED=false
+      - PII_USE_SPACY=true
+      - DOCLING_ENABLED=true
+      - GRPC_PORT=50051
+      - CONFIG_DB_PATH=/data/config.sqlite
+    depends_on:
+      - qdrant
+      - ollama
+    restart: unless-stopped
+
+  # Go API gateway (public-facing, all REST + WebSocket endpoints)
+  gateway:
+    build:
+      context: ./gateway
+      dockerfile: Dockerfile.gateway
+    container_name: ollqd-gateway
+    ports:
+      - "8000:8000"
+    volumes:
+      - uploads_data:/uploads
+    environment:
+      - LISTEN_ADDR=:8000
+      - WORKER_ADDR=worker:50051
+      - OLLAMA_URL=http://ollama:11434
+      - QDRANT_URL=http://qdrant:6333
+      - UPLOAD_DIR=/uploads
+      - MAX_UPLOAD_SIZE_MB=50
+    depends_on:
+      - worker
+      - ollama
+      - qdrant
     restart: unless-stopped
 
 volumes:
   qdrant_data:
   ollama_data:
   uploads_data:
+  config_data:

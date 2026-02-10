@@ -1,0 +1,418 @@
+syntax = "proto3";
+package ollqd.v1;
+
+option go_package = "github.com/alfagnish/ollqd-gateway/gen/ollqd/v1;ollqdv1";
+
+import "ollqd/v1/types.proto";
+
+// ═══════════════════════════════════════════════════════════
+// IndexingService — file discovery, chunking, embedding, upsert
+// All indexing RPCs return a stream of TaskProgress messages.
+// ═══════════════════════════════════════════════════════════
+
+service IndexingService {
+  rpc IndexCodebase(IndexCodebaseRequest)   returns (stream TaskProgress);
+  rpc IndexDocuments(IndexDocumentsRequest)  returns (stream TaskProgress);
+  rpc IndexImages(IndexImagesRequest)        returns (stream TaskProgress);
+  rpc IndexUploads(IndexUploadsRequest)      returns (stream TaskProgress);
+  rpc IndexSMBFiles(IndexSMBFilesRequest)    returns (stream TaskProgress);
+  rpc CancelTask(CancelTaskRequest)          returns (CancelTaskResponse);
+}
+
+message IndexCodebaseRequest {
+  string root_path = 1;
+  string collection = 2;
+  bool   incremental = 3;
+  int32  chunk_size = 4;
+  int32  chunk_overlap = 5;
+  repeated string extra_skip_dirs = 6;
+}
+
+message IndexDocumentsRequest {
+  repeated string paths = 1;
+  string collection = 2;
+  int32  chunk_size = 3;
+  int32  chunk_overlap = 4;
+  string source_tag = 5;
+}
+
+message IndexImagesRequest {
+  string root_path = 1;
+  string collection = 2;
+  string vision_model = 3;
+  string caption_prompt = 4;
+  bool   incremental = 5;
+  int32  max_image_size_kb = 6;
+  repeated string extra_skip_dirs = 7;
+}
+
+message IndexUploadsRequest {
+  repeated string saved_paths = 1;
+  string collection = 2;
+  int32  chunk_size = 3;
+  int32  chunk_overlap = 4;
+  string source_tag = 5;
+  string vision_model = 6;
+  string caption_prompt = 7;
+}
+
+message IndexSMBFilesRequest {
+  string share_id = 1;
+  repeated string remote_paths = 2;
+  string collection = 3;
+  int32  chunk_size = 4;
+  int32  chunk_overlap = 5;
+  string source_tag = 6;
+  // SMB connection info
+  string server = 7;
+  string share = 8;
+  string username = 9;
+  string password = 10;
+  string domain = 11;
+  int32  port = 12;
+}
+
+message CancelTaskRequest {
+  string task_id = 1;
+}
+
+message CancelTaskResponse {
+  bool   cancelled = 1;
+  string message = 2;
+}
+
+// ═══════════════════════════════════════════════════════════
+// SearchService — embed query, search Qdrant, return results
+// ═══════════════════════════════════════════════════════════
+
+service SearchService {
+  rpc Search(SearchRequest)                       returns (SearchResponse);
+  rpc SearchCollection(SearchCollectionRequest)   returns (SearchResponse);
+}
+
+message SearchRequest {
+  string query = 1;
+  int32  top_k = 2;
+  string language = 3;
+  string file_path = 4;
+}
+
+message SearchCollectionRequest {
+  string collection = 1;
+  string query = 2;
+  int32  top_k = 3;
+  string language = 4;
+  string file_path = 5;
+}
+
+message SearchResponse {
+  string status = 1;
+  string query = 2;
+  string collection = 3;
+  repeated SearchHit results = 4;
+}
+
+// ═══════════════════════════════════════════════════════════
+// ChatService — RAG chat with context search, PII, streaming
+// ═══════════════════════════════════════════════════════════
+
+service ChatService {
+  rpc Chat(ChatRequest) returns (stream ChatEvent);
+}
+
+message ChatRequest {
+  string message = 1;
+  string collection = 2;
+  string model = 3;
+  bool   pii_enabled = 4;
+}
+
+message ChatEvent {
+  string type = 1;              // chunk, sources, done, error
+  string content = 2;
+  repeated SearchHit sources = 3;
+  bool   pii_masked = 4;
+  int32  pii_entities_count = 5;
+}
+
+// ═══════════════════════════════════════════════════════════
+// EmbeddingService — embedding model info, testing, comparison
+// ═══════════════════════════════════════════════════════════
+
+service EmbeddingService {
+  rpc GetInfo(GetEmbeddingInfoRequest)     returns (EmbeddingInfoResponse);
+  rpc TestEmbed(TestEmbedRequest)          returns (TestEmbedResponse);
+  rpc CompareModels(CompareModelsRequest)  returns (CompareModelsResponse);
+  rpc SetModel(SetEmbedModelRequest)       returns (EmbeddingInfoResponse);
+}
+
+message GetEmbeddingInfoRequest {}
+
+message EmbeddingInfoResponse {
+  string model = 1;
+  int32  dimension = 2;
+  int32  latency_ms = 3;
+  string previous_model = 4;
+}
+
+message TestEmbedRequest {
+  string text = 1;
+}
+
+message TestEmbedResponse {
+  int32  dimension = 1;
+  double min = 2;
+  double max = 3;
+  double mean = 4;
+  double stdev = 5;
+  double norm = 6;
+  int32  latency_ms = 7;
+}
+
+message CompareModelsRequest {
+  string text = 1;
+  string model1 = 2;
+  string model2 = 3;
+}
+
+message ModelTestResult {
+  string model = 1;
+  int32  dimension = 2;
+  double min = 3;
+  double max = 4;
+  double mean = 5;
+  double stdev = 6;
+  double norm = 7;
+  int32  latency_ms = 8;
+  string error = 9;
+}
+
+message CompareModelsResponse {
+  ModelTestResult model1 = 1;
+  ModelTestResult model2 = 2;
+  string text = 3;
+}
+
+message SetEmbedModelRequest {
+  string model = 1;
+}
+
+// ═══════════════════════════════════════════════════════════
+// PIIService — PII masking test
+// ═══════════════════════════════════════════════════════════
+
+service PIIService {
+  rpc TestMasking(TestMaskingRequest) returns (TestMaskingResponse);
+}
+
+message TestMaskingRequest {
+  string text = 1;
+}
+
+message PIIEntity {
+  string token = 1;
+  string original = 2;
+}
+
+message TestMaskingResponse {
+  string original = 1;
+  string masked = 2;
+  repeated PIIEntity entities = 3;
+  int32  entity_count = 4;
+}
+
+// ═══════════════════════════════════════════════════════════
+// ConfigService — get/update application configuration
+// ═══════════════════════════════════════════════════════════
+
+service ConfigService {
+  rpc GetConfig(GetConfigRequest)                returns (AppConfig);
+  rpc UpdateMountedPaths(UpdateMountedPathsRequest) returns (UpdateMountedPathsResponse);
+  rpc UpdatePII(UpdatePIIRequest)                returns (PIIConfigResponse);
+  rpc UpdateDocling(UpdateDoclingRequest)         returns (DoclingConfigResponse);
+  rpc UpdateDistance(UpdateDistanceRequest)       returns (UpdateDistanceResponse);
+  rpc GetPIIConfig(GetPIIConfigRequest)          returns (PIIConfigResponse);
+  rpc GetDoclingConfig(GetDoclingConfigRequest)   returns (DoclingConfigResponse);
+}
+
+message GetConfigRequest {}
+
+message UpdateMountedPathsRequest {
+  repeated string paths = 1;
+}
+
+message UpdateMountedPathsResponse {
+  repeated string mounted_paths = 1;
+}
+
+message UpdatePIIRequest {
+  optional bool   enabled = 1;
+  optional bool   use_spacy = 2;
+  optional bool   mask_embeddings = 3;
+  optional string enabled_types = 4;
+}
+
+message PIIConfigResponse {
+  bool   enabled = 1;
+  bool   use_spacy = 2;
+  bool   mask_embeddings = 3;
+  string enabled_types = 4;
+  bool   spacy_available = 5;
+}
+
+message UpdateDoclingRequest {
+  optional bool   enabled = 1;
+  optional bool   ocr_enabled = 2;
+  optional string ocr_engine = 3;
+  optional bool   table_structure = 4;
+  optional double timeout_s = 5;
+}
+
+message DoclingConfigResponse {
+  bool   enabled = 1;
+  bool   ocr_enabled = 2;
+  string ocr_engine = 3;
+  bool   table_structure = 4;
+  double timeout_s = 5;
+  bool   available = 6;
+  repeated string supported_extensions = 7;
+}
+
+message UpdateDistanceRequest {
+  string distance = 1;
+}
+
+message UpdateDistanceResponse {
+  string distance = 1;
+  string previous = 2;
+}
+
+message GetPIIConfigRequest {}
+message GetDoclingConfigRequest {}
+
+// ═══════════════════════════════════════════════════════════
+// VisualizationService — force graph, file tree, PCA/t-SNE
+// ═══════════════════════════════════════════════════════════
+
+service VisualizationService {
+  rpc Overview(OverviewRequest)    returns (OverviewResponse);
+  rpc FileTree(FileTreeRequest)    returns (FileTreeResponse);
+  rpc Vectors(VectorsRequest)      returns (VectorsResponse);
+}
+
+message OverviewRequest {
+  string collection = 1;
+  int32  limit = 2;
+}
+
+message VisNode {
+  int32  id = 1;
+  string label = 2;
+  string title = 3;
+  string color = 4;
+  int32  size = 5;
+  string shape = 6;
+  string file_path = 7;
+  string language = 8;
+  int32  chunks = 9;
+  int32  level = 10;
+}
+
+message VisEdge {
+  int32 from = 1;
+  int32 to = 2;
+}
+
+message OverviewStats {
+  int32  total_files = 1;
+  int32  total_chunks = 2;
+  string collection = 3;
+}
+
+message OverviewResponse {
+  repeated VisNode nodes = 1;
+  repeated VisEdge edges = 2;
+  OverviewStats stats = 3;
+}
+
+message FileTreeRequest {
+  string collection = 1;
+  string file_path = 2;
+}
+
+message FileTreeResponse {
+  repeated VisNode nodes = 1;
+  repeated VisEdge edges = 2;
+  string file_path = 3;
+  int32  total_chunks = 4;
+}
+
+message VectorsRequest {
+  string collection = 1;
+  string method = 2;           // pca or tsne
+  int32  dims = 3;             // 2 or 3
+  int32  limit = 4;
+}
+
+message VectorPoint {
+  double x = 1;
+  double y = 2;
+  double z = 3;
+  string file = 4;
+  string language = 5;
+  int32  chunk = 6;
+  string color = 7;
+}
+
+message VectorsResponse {
+  repeated VectorPoint points = 1;
+  string method = 2;
+  int32  dims = 3;
+  int32  original_dims = 4;
+  int32  total_points = 5;
+}
+
+// ═══════════════════════════════════════════════════════════
+// SMBService — test connection and browse remote shares
+// ═══════════════════════════════════════════════════════════
+
+service SMBService {
+  rpc TestConnection(SMBTestRequest) returns (SMBTestResponse);
+  rpc Browse(SMBBrowseRequest)       returns (SMBBrowseResponse);
+}
+
+message SMBTestRequest {
+  string server = 1;
+  string share = 2;
+  string username = 3;
+  string password = 4;
+  string domain = 5;
+  int32  port = 6;
+}
+
+message SMBTestResponse {
+  bool   ok = 1;
+  string message = 2;
+}
+
+message SMBBrowseRequest {
+  string server = 1;
+  string share = 2;
+  string username = 3;
+  string password = 4;
+  string domain = 5;
+  int32  port = 6;
+  string path = 7;
+}
+
+message SMBFileEntry {
+  string name = 1;
+  bool   is_dir = 2;
+  int64  size = 3;
+  string path = 4;
+}
+
+message SMBBrowseResponse {
+  repeated SMBFileEntry files = 1;
+  string path = 2;
+}

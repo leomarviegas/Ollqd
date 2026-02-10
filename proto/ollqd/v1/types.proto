@@ -1,0 +1,100 @@
+syntax = "proto3";
+package ollqd.v1;
+
+option go_package = "github.com/alfagnish/ollqd-gateway/gen/ollqd/v1;ollqdv1";
+
+// ── Shared Data Types ───────────────────────────────────
+
+message Chunk {
+  string file_path = 1;
+  string language = 2;
+  int32  chunk_index = 3;
+  int32  total_chunks = 4;
+  int32  start_line = 5;
+  int32  end_line = 6;
+  string content = 7;
+  string content_hash = 8;
+  string point_id = 9;
+  string source_tag = 10;
+}
+
+message SearchHit {
+  float  score = 1;
+  string file_path = 2;
+  string language = 3;
+  string lines = 4;
+  string chunk_info = 5;
+  string content = 6;
+  string abs_path = 7;
+  string caption = 8;
+  string image_type = 9;
+  int32  width = 10;
+  int32  height = 11;
+}
+
+message TaskProgress {
+  string task_id = 1;
+  float  progress = 2;
+  string status = 3;       // running, completed, failed, cancelled
+  string error = 4;
+  map<string, string> result = 5;
+}
+
+// ── Configuration Messages ──────────────────────────────
+
+message OllamaConfig {
+  string base_url = 1;
+  string chat_model = 2;
+  string embed_model = 3;
+  string vision_model = 4;
+  double timeout_s = 5;
+}
+
+message QdrantConfig {
+  string url = 1;
+  string default_collection = 2;
+  string default_distance = 3;
+}
+
+message ChunkingConfig {
+  int32 chunk_size = 1;
+  int32 chunk_overlap = 2;
+  int32 max_file_size_kb = 3;
+}
+
+message ImageConfig {
+  int32  max_image_size_kb = 1;
+  string caption_prompt = 2;
+}
+
+message UploadConfig {
+  string upload_dir = 1;
+  int32  max_file_size_mb = 2;
+  repeated string allowed_extensions = 3;
+}
+
+message PIIConfig {
+  bool   enabled = 1;
+  bool   use_spacy = 2;
+  bool   mask_embeddings = 3;
+  string enabled_types = 4;
+}
+
+message DoclingConfig {
+  bool   enabled = 1;
+  bool   ocr_enabled = 2;
+  string ocr_engine = 3;
+  bool   table_structure = 4;
+  double timeout_s = 5;
+}
+
+message AppConfig {
+  OllamaConfig   ollama = 1;
+  QdrantConfig   qdrant = 2;
+  ChunkingConfig chunking = 3;
+  ImageConfig    image = 4;
+  UploadConfig   upload = 5;
+  PIIConfig      pii = 6;
+  DoclingConfig  docling = 7;
+  repeated string mounted_paths = 8;
+}

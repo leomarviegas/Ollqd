@@ -41,6 +41,7 @@ class UploadConfig:
     allowed_extensions: tuple = (
         ".md", ".txt", ".rst", ".html", ".pdf",
         ".docx", ".xlsx", ".pptx",
+        ".csv", ".adoc", ".asciidoc",
         ".png", ".jpg", ".jpeg", ".gif", ".webp", ".bmp", ".tiff",
     )
 
@@ -51,6 +52,15 @@ class PIIConfig:
     use_spacy: bool = field(default_factory=lambda: os.getenv("PII_USE_SPACY", "true").lower() == "true")
     mask_embeddings: bool = field(default_factory=lambda: os.getenv("PII_MASK_EMBEDDINGS", "false").lower() == "true")
     enabled_types: str = field(default_factory=lambda: os.getenv("PII_ENABLED_TYPES", "all"))
+
+
+@dataclass(slots=True)
+class DoclingConfig:
+    enabled: bool = field(default_factory=lambda: os.getenv("DOCLING_ENABLED", "true").lower() == "true")
+    ocr_enabled: bool = field(default_factory=lambda: os.getenv("DOCLING_OCR_ENABLED", "true").lower() == "true")
+    ocr_engine: str = field(default_factory=lambda: os.getenv("DOCLING_OCR_ENGINE", "easyocr"))
+    table_structure: bool = field(default_factory=lambda: os.getenv("DOCLING_TABLE_STRUCTURE", "true").lower() == "true")
+    timeout_s: float = field(default_factory=lambda: float(os.getenv("DOCLING_TIMEOUT_S", "300")))
 
 
 @dataclass(slots=True)
@@ -72,6 +82,7 @@ class AppConfig:
     image: ImageConfig = field(default_factory=ImageConfig)
     upload: UploadConfig = field(default_factory=UploadConfig)
     pii: PIIConfig = field(default_factory=PIIConfig)
+    docling: DoclingConfig = field(default_factory=DoclingConfig)
     server: ServerConfig = field(default_factory=ServerConfig)
     client: ClientConfig = field(default_factory=ClientConfig)
     mounted_paths: list[str] = field(

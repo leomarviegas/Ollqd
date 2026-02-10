@@ -26,6 +26,20 @@ web = [
     "pysmb>=1.2.9",
     "spacy>=3.7,<4.0",
 ]
+worker = [
+    "grpcio>=1.62",
+    "grpcio-tools>=1.62",
+    "protobuf>=4.25",
+    "pymupdf>=1.25",
+    "python-docx>=1.1",
+    "openpyxl>=3.1",
+    "python-pptx>=1.0",
+    "pysmb>=1.2.9",
+    "spacy>=3.7,<4.0",
+]
+docling = [
+    "docling>=2.0",
+]
 dev = [
     "pytest>=8.0",
     "pytest-asyncio>=0.24",
@@ -46,4 +60,4 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/ollqd", "codebase_indexer.py", "codebase_search.py"]
+packages = ["src/ollqd", "src/ollqd_worker", "codebase_indexer.py", "codebase_search.py"]

@@ -13,7 +13,7 @@ from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, Upload
 from fastapi.responses import FileResponse
 from qdrant_client.models import PointStruct
 
-from ...chunking import chunk_document, chunk_docx, chunk_file, chunk_pdf, chunk_pptx, chunk_xlsx
+from ...chunking import chunk_document, chunk_docx, chunk_file, chunk_pdf, chunk_pptx, chunk_xlsx, chunk_with_docling
 from ...discovery import discover_files, discover_images
 from ...embedder import OllamaEmbedder
 from ...errors import EmbeddingError, VectorStoreError
@@ -335,18 +335,39 @@ def _run_upload_index(
             raw = fp.read_bytes()
             content_hash = hashlib.sha256(raw).hexdigest()
 
-            if ext == ".pdf":
-                chunks = chunk_pdf(str(fp), raw, chunk_size, chunk_overlap, content_hash)
-            elif ext == ".docx":
-                chunks = chunk_docx(str(fp), raw, chunk_size, chunk_overlap, content_hash)
-            elif ext == ".xlsx":
-                chunks = chunk_xlsx(str(fp), raw, chunk_size, chunk_overlap, content_hash)
-            elif ext == ".pptx":
-                chunks = chunk_pptx(str(fp), raw, chunk_size, chunk_overlap, content_hash)
-            else:
-                content = raw.decode("utf-8", errors="replace")
-                lang = "markdown" if ext in (".md", ".rst") else "text"
-                chunks = chunk_document(str(fp), content, lang, chunk_size, chunk_overlap, content_hash)
+            chunks = None
+
+            # Try docling first if enabled
+            if cfg.docling.enabled:
+                chunks = chunk_with_docling(
+                    file_path=str(fp),
+                    file_bytes=raw,
+                    chunk_size=chunk_size,
+                    chunk_overlap=chunk_overlap,
+                    content_hash=content_hash,
+                    ocr_enabled=cfg.docling.ocr_enabled,
+                    ocr_engine=cfg.docling.ocr_engine,
+                    table_structure=cfg.docling.table_structure,
+                    timeout_s=cfg.docling.timeout_s,
+                )
+
+            # Fallback to legacy parsers
+            if chunks is None:
+                if ext == ".pdf":
+                    chunks = chunk_pdf(str(fp), raw, chunk_size, chunk_overlap, content_hash)
+                elif ext == ".docx":
+                    chunks = chunk_docx(str(fp), raw, chunk_size, chunk_overlap, content_hash)
+                elif ext == ".xlsx":
+                    chunks = chunk_xlsx(str(fp), raw, chunk_size, chunk_overlap, content_hash)
+                elif ext == ".pptx":
+                    chunks = chunk_pptx(str(fp), raw, chunk_size, chunk_overlap, content_hash)
+                elif ext in (".csv", ".adoc", ".asciidoc"):
+                    content = raw.decode("utf-8", errors="replace")
+                    chunks = chunk_document(str(fp), content, "text", chunk_size, chunk_overlap, content_hash)
+                else:
+                    content = raw.decode("utf-8", errors="replace")
+                    lang = "markdown" if ext in (".md", ".rst") else "text"
+                    chunks = chunk_document(str(fp), content, lang, chunk_size, chunk_overlap, content_hash)
 
             all_chunks.extend(chunks)
             files_processed += 1
