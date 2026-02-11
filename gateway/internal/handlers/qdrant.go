@@ -80,9 +80,7 @@ func (h *QdrantHandler) ListCollections(w http.ResponseWriter, r *http.Request) 
 		}
 
 		// Fetch per-collection info for points_count, status, config
-		infoResp, err := h.client.Get(h.baseURL + "/collections/" + url.PathEscape(name))
-		if err == nil {
-			defer infoResp.Body.Close()
+		if infoResp, err := h.client.Get(h.baseURL + "/collections/" + url.PathEscape(name)); err == nil {
 			var info map[string]interface{}
 			if json.NewDecoder(infoResp.Body).Decode(&info) == nil {
 				if res, ok := info["result"].(map[string]interface{}); ok {
@@ -104,6 +102,7 @@ func (h *QdrantHandler) ListCollections(w http.ResponseWriter, r *http.Request) 
 					}
 				}
 			}
+			infoResp.Body.Close()
 		}
 
 		enriched = append(enriched, entry)

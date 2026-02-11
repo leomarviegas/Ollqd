@@ -192,7 +192,7 @@
             <div class="bg-white rounded-lg shadow p-4 flex items-center justify-between">
               <div>
                 <p class="font-medium text-gray-900" x-text="c.name"></p>
-                <p class="text-sm text-gray-500"><span x-text="(c.points_count || 0).toLocaleString()"></span> points &middot; <span x-text="c.config?.size"></span>d &middot; <span x-text="c.config?.distance"></span></p>
+                <p class="text-sm text-gray-500"><span x-text="(c.points_count || 0).toLocaleString()"></span> points &middot; <span x-text="(c.config?.size || '—') + 'd'"></span> &middot; <span x-text="c.config?.distance || '—'"></span></p>
               </div>
               <div class="flex gap-2">
                 <button @click="browseCollection(c.name)" class="text-sm text-blue-600 hover:text-blue-800 px-3 py-1 rounded border border-blue-200 hover:bg-blue-50">Browse</button>
