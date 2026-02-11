@@ -8,3 +8,5 @@ build/
 .DS_Store
 .pytest_cache/
 *.sqlite
+node_modules/
+artifacts/
