@@ -43,6 +43,8 @@ docling = [
 dev = [
     "pytest>=8.0",
     "pytest-asyncio>=0.24",
+    "requests>=2.31",
+    "websockets>=12.0",
 ]
 
 [project.scripts]
@@ -54,6 +56,17 @@ ollqd-server = "ollqd.server.main:main"
 ollqd-chat = "ollqd.client.main:main"
 # WebUI
 ollqd-web = "ollqd.web.app:main"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "session"
+asyncio_default_test_loop_scope = "session"
+markers = [
+    "requires_ollama: test needs Ollama with a loaded model",
+    "requires_indexed: test needs pre-indexed data in Qdrant",
+    "requires_smb: test needs SMB share configuration",
+]
 
 [build-system]
 requires = ["hatchling"]

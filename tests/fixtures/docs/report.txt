@@ -1,0 +1,36 @@
+Quarterly Engineering Report - Q4 2025
+=======================================
+
+Executive Summary
+-----------------
+The engineering team delivered three major features this quarter:
+vector search improvements, PII masking, and SMB file integration.
+Overall system uptime was 99.7% with zero critical incidents.
+
+Performance Metrics
+-------------------
+Average query latency: 45ms (p50), 120ms (p99)
+Indexing throughput: 1,200 documents per minute
+Embedding generation: 850 vectors per second at batch size 32
+Storage efficiency improved by 23% after implementing deduplication.
+
+Architecture Decisions
+----------------------
+We adopted gRPC for internal service communication between the
+Go gateway and Python worker. This replaced the previous REST-based
+approach and reduced latency by 40% for streaming operations.
+
+The PII masking pipeline was redesigned to operate at the token
+level, enabling real-time unmasking during chat response streaming.
+
+Known Issues
+------------
+1. Large PDF files (>50MB) may timeout during OCR processing
+2. SMB connections occasionally drop on unstable networks
+3. t-SNE visualization is slow for collections over 10,000 vectors
+
+Next Steps
+----------
+- Implement incremental re-indexing with content hashing
+- Add support for additional document formats (EPUB, HTML)
+- Improve PII detection accuracy with fine-tuned NER models

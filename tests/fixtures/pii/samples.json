@@ -1,0 +1,61 @@
+{
+  "description": "PII test samples with known entities for deterministic validation",
+  "samples": [
+    {
+      "id": "email_simple",
+      "text": "Please contact John Smith at john.smith@example.com for details.",
+      "expected_entities": ["PERSON", "EMAIL"],
+      "expected_masked_contains": ["<PERSON_1>", "<EMAIL_1>"],
+      "expected_masked_not_contains": ["John Smith", "john.smith@example.com"]
+    },
+    {
+      "id": "phone_us",
+      "text": "Call Sarah Johnson at +1-555-867-5309 to schedule a meeting.",
+      "expected_entities": ["PERSON", "PHONE"],
+      "expected_masked_contains": ["<PERSON_1>", "<PHONE_1>"],
+      "expected_masked_not_contains": ["Sarah Johnson", "555-867-5309"]
+    },
+    {
+      "id": "multi_entity",
+      "text": "Employee Jane Doe (jane.doe@company.org, 202-555-0147) reported to Michael Brown at the New York office.",
+      "expected_entities": ["PERSON", "EMAIL", "PHONE", "PERSON", "LOCATION"],
+      "expected_masked_not_contains": ["Jane Doe", "jane.doe@company.org", "202-555-0147", "Michael Brown"]
+    },
+    {
+      "id": "iban",
+      "text": "Wire transfer to DE89 3704 0044 0532 0130 00 for account holder Hans Mueller.",
+      "expected_entities": ["IBAN", "PERSON"],
+      "expected_masked_not_contains": ["DE89 3704 0044 0532 0130 00", "Hans Mueller"]
+    },
+    {
+      "id": "ssn",
+      "text": "Social security number for Lisa Wang is 123-45-6789.",
+      "expected_entities": ["PERSON", "SSN"],
+      "expected_masked_not_contains": ["Lisa Wang", "123-45-6789"]
+    },
+    {
+      "id": "credit_card",
+      "text": "Payment processed for card 4111-1111-1111-1111 belonging to Robert Chen.",
+      "expected_entities": ["CREDIT_CARD", "PERSON"],
+      "expected_masked_not_contains": ["4111-1111-1111-1111", "Robert Chen"]
+    },
+    {
+      "id": "ip_address",
+      "text": "Login attempt from IP 192.168.1.100 by user admin@internal.net.",
+      "expected_entities": ["IP_ADDRESS", "EMAIL"],
+      "expected_masked_not_contains": ["192.168.1.100", "admin@internal.net"]
+    },
+    {
+      "id": "no_pii",
+      "text": "The system processes data in batches of 32 using vector embeddings.",
+      "expected_entities": [],
+      "expected_masked_equals_original": true
+    },
+    {
+      "id": "token_boundary",
+      "text": "Contact alice@test.com or bob@test.com for the project led by Dr. Alice Thompson.",
+      "expected_entities": ["EMAIL", "EMAIL", "PERSON"],
+      "description": "Tests token-boundary unmasking with multiple entities of same type"
+    }
+  ]
+}

@@ -749,9 +749,12 @@ class IndexingServiceServicer:
         log.info("Task %s marked for cancellation", task_id)
 
         if _STUBS_AVAILABLE:
-            return indexing_pb2.CancelTaskResponse(task_id=task_id, status="cancelling")
+            return indexing_pb2.CancelTaskResponse(
+                cancelled=True,
+                message=f"Task {task_id} marked for cancellation",
+            )
 
         class _Resp:
             def __init__(self, **kw):
                 self.__dict__.update(kw)
-        return _Resp(task_id=task_id, status="cancelling")
+        return _Resp(cancelled=True, message=f"Task {task_id} marked for cancellation")

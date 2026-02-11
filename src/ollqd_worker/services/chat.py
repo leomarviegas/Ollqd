@@ -71,7 +71,7 @@ class ChatServiceServicer:
         pii_svc = _get_pii_service()
 
         # Parse request fields
-        query = request.query if hasattr(request, "query") else ""
+        query = request.message if hasattr(request, "message") else ""
         collection = request.collection if hasattr(request, "collection") and request.collection else "codebase"
         model = request.model if hasattr(request, "model") and request.model else cfg.ollama.chat_model
         pii_enabled = request.pii_enabled if hasattr(request, "pii_enabled") else cfg.pii.enabled

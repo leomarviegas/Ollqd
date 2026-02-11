@@ -1,0 +1,26 @@
+# Application configuration for testing.
+# Known keys: server.port, database.url, logging.level
+
+server:
+  port: 8080
+  host: "0.0.0.0"
+  read_timeout: 30s
+  write_timeout: 30s
+  max_request_size: 10MB
+
+database:
+  url: "postgres://user:pass@localhost:5432/appdb"
+  max_connections: 25
+  idle_timeout: 5m
+  migrations_dir: "./migrations"
+
+logging:
+  level: "info"
+  format: "json"
+  output: "stdout"
+
+features:
+  enable_cache: true
+  cache_ttl: 300
+  rate_limit: 100
+  enable_metrics: true

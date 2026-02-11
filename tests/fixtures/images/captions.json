@@ -1,0 +1,25 @@
+{
+  "description": "Expected captions/labels for test images used in vision indexing validation",
+  "images": [
+    {
+      "file": "red_square.png",
+      "expected_keywords": ["red", "square"],
+      "description": "Solid red 64x64 square"
+    },
+    {
+      "file": "green_square.png",
+      "expected_keywords": ["green", "square"],
+      "description": "Solid green 64x64 square"
+    },
+    {
+      "file": "blue_square.png",
+      "expected_keywords": ["blue", "square"],
+      "description": "Solid blue 64x64 square"
+    },
+    {
+      "file": "orange_rect.png",
+      "expected_keywords": ["orange", "rectangle"],
+      "description": "Solid orange 80x40 rectangle"
+    }
+  ]
+}

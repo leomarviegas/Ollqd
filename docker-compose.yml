@@ -75,6 +75,8 @@ services:
     container_name: ollqd-worker
     expose:
       - "50051"
+    ports:
+      - "50051:50051"
     volumes:
       - /Users/alfagnish/VSCode:/Users/alfagnish/VSCode:ro
       - /tmp:/tmp
