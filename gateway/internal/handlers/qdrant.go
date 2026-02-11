@@ -46,7 +46,8 @@ func (h *QdrantHandler) Routes(r chi.Router) {
 	})
 }
 
-// ListCollections returns all collections from Qdrant.
+// ListCollections returns all collections from Qdrant, enriched with
+// points_count, status, and vector config from per-collection info.
 func (h *QdrantHandler) ListCollections(w http.ResponseWriter, r *http.Request) {
 	resp, err := h.client.Get(h.baseURL + "/collections")
 	if err != nil {
@@ -61,11 +62,55 @@ func (h *QdrantHandler) ListCollections(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	// Flatten: Qdrant returns {result: {collections: [...]}} → we return {collections: [...]}
 	result, _ := raw["result"].(map[string]interface{})
 	collections, _ := result["collections"].([]interface{})
+
+	enriched := make([]map[string]interface{}, 0, len(collections))
+	for _, c := range collections {
+		cm, ok := c.(map[string]interface{})
+		if !ok {
+			continue
+		}
+		name, _ := cm["name"].(string)
+		entry := map[string]interface{}{
+			"name":         name,
+			"points_count": 0,
+			"status":       "unknown",
+			"config":       map[string]interface{}{},
+		}
+
+		// Fetch per-collection info for points_count, status, config
+		infoResp, err := h.client.Get(h.baseURL + "/collections/" + url.PathEscape(name))
+		if err == nil {
+			defer infoResp.Body.Close()
+			var info map[string]interface{}
+			if json.NewDecoder(infoResp.Body).Decode(&info) == nil {
+				if res, ok := info["result"].(map[string]interface{}); ok {
+					if pc, ok := res["points_count"].(float64); ok {
+						entry["points_count"] = int(pc)
+					}
+					if st, ok := res["status"].(string); ok {
+						entry["status"] = st
+					}
+					if cfg, ok := res["config"].(map[string]interface{}); ok {
+						if params, ok := cfg["params"].(map[string]interface{}); ok {
+							if vectors, ok := params["vectors"].(map[string]interface{}); ok {
+								entry["config"] = map[string]interface{}{
+									"size":     vectors["size"],
+									"distance": vectors["distance"],
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
+		enriched = append(enriched, entry)
+	}
+
 	writeJSON(w, http.StatusOK, map[string]interface{}{
-		"collections": collections,
+		"collections": enriched,
 	})
 }
 

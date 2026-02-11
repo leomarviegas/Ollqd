@@ -147,7 +147,7 @@
           </div>
           <div class="bg-white rounded-lg shadow p-5">
             <p class="text-sm text-gray-500">Total Vectors</p>
-            <p class="text-3xl font-bold mt-1" x-text="collections.reduce((s,c) => s + c.points_count, 0).toLocaleString()"></p>
+            <p class="text-3xl font-bold mt-1" x-text="collections.reduce((s,c) => s + (c.points_count || 0), 0).toLocaleString()"></p>
           </div>
           <div class="bg-white rounded-lg shadow p-5">
             <p class="text-sm text-gray-500">Models</p>
@@ -170,7 +170,7 @@
               <template x-for="c in collections" :key="c.name">
                 <tr class="hover:bg-gray-50">
                   <td class="px-4 py-3 text-sm font-medium text-blue-600" x-text="c.name"></td>
-                  <td class="px-4 py-3 text-sm text-gray-700" x-text="c.points_count.toLocaleString()"></td>
+                  <td class="px-4 py-3 text-sm text-gray-700" x-text="(c.points_count || 0).toLocaleString()"></td>
                   <td class="px-4 py-3 text-sm text-gray-700" x-text="c.config?.size || '—'"></td>
                   <td class="px-4 py-3 text-sm text-gray-700" x-text="c.config?.distance || '—'"></td>
                   <td class="px-4 py-3"><span class="text-xs px-2 py-0.5 rounded-full bg-green-100 text-green-700" x-text="c.status"></span></td>
@@ -192,7 +192,7 @@
             <div class="bg-white rounded-lg shadow p-4 flex items-center justify-between">
               <div>
                 <p class="font-medium text-gray-900" x-text="c.name"></p>
-                <p class="text-sm text-gray-500"><span x-text="c.points_count.toLocaleString()"></span> points &middot; <span x-text="c.config?.size"></span>d &middot; <span x-text="c.config?.distance"></span></p>
+                <p class="text-sm text-gray-500"><span x-text="(c.points_count || 0).toLocaleString()"></span> points &middot; <span x-text="c.config?.size"></span>d &middot; <span x-text="c.config?.distance"></span></p>
               </div>
               <div class="flex gap-2">
                 <button @click="browseCollection(c.name)" class="text-sm text-blue-600 hover:text-blue-800 px-3 py-1 rounded border border-blue-200 hover:bg-blue-50">Browse</button>
