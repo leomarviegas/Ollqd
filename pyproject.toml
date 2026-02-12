@@ -27,6 +27,7 @@ web = [
     "spacy>=3.7,<4.0",
 ]
 worker = [
+    "bcrypt>=4.0",
     "grpcio>=1.62",
     "grpcio-tools>=1.62",
     "protobuf>=4.25",

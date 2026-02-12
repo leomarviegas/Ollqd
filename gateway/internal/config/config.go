@@ -1,6 +1,8 @@
 package config
 
 import (
+	"crypto/rand"
+	"encoding/hex"
 	"os"
 	"strconv"
 )
@@ -14,6 +16,7 @@ type Config struct {
 	UploadDir       string // Directory for uploaded files
 	MaxUploadSizeMB int64  // Maximum upload size in megabytes
 	DockerSocket    string // Docker socket path for container management
+	JWTSecret       string // Secret key for signing JWT tokens
 }
 
 // Load reads configuration from environment variables, falling back to defaults.
@@ -26,7 +29,14 @@ func Load() *Config {
 		UploadDir:       envOrDefault("UPLOAD_DIR", "/uploads"),
 		MaxUploadSizeMB: envOrDefaultInt64("MAX_UPLOAD_SIZE_MB", 50),
 		DockerSocket:    envOrDefault("DOCKER_SOCKET", "/var/run/docker.sock"),
+		JWTSecret:       envOrDefault("JWT_SECRET", randomSecret()),
 	}
+}
+
+func randomSecret() string {
+	b := make([]byte, 32)
+	rand.Read(b)
+	return hex.EncodeToString(b)
 }
 
 func envOrDefault(key, fallback string) string {

@@ -14,6 +14,7 @@ import grpc
 from grpc import aio as grpc_aio
 
 from . import config_db
+from .services.auth import AuthServiceServicer
 from .services.chat import ChatServiceServicer
 from .services.config_svc import ConfigServiceServicer
 from .services.embedding import EmbeddingServiceServicer
@@ -44,6 +45,7 @@ def _register_servicers(server: grpc_aio.Server) -> list[str]:
 
     registered = []
     svc_map = [
+        ("AuthService", AuthServiceServicer(), _pb2_grpc.add_AuthServiceServicer_to_server),
         ("ConfigService", ConfigServiceServicer(), _pb2_grpc.add_ConfigServiceServicer_to_server),
         ("EmbeddingService", EmbeddingServiceServicer(), _pb2_grpc.add_EmbeddingServiceServicer_to_server),
         ("PIIService", PIIServiceServicer(), _pb2_grpc.add_PIIServiceServicer_to_server),

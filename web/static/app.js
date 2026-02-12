@@ -5,9 +5,16 @@ function app() {
     loggedIn: false,
     loginForm: { username: "", password: "" },
     loginError: "",
+    loginLoading: false,
+    user: null,
     view: "dashboard",
     showModal: null,
     health: { ollama: false, qdrant: false },
+
+    // User management (admin only)
+    userList: [],
+    newUserForm: { username: "", password: "", role: "user" },
+    newUserError: "",
 
     // Data
     collections: [],
@@ -141,30 +148,102 @@ function app() {
         { id: "smb",         icon: "fa-solid fa-network-wired", label: "SMB Shares",  load: () => this.loadSMBShares() },
         { id: "settings",    icon: "fa-solid fa-gear",          label: "Settings",    load: () => this.loadSettings() },
       ];
-      // Check if already logged in
-      if (sessionStorage.getItem("ollqd_logged_in")) {
-        this.loggedIn = true;
-        await this.loadDashboard();
-      }
+      // Check if already logged in (cookie-based)
+      try {
+        const r = await fetch("/api/auth/me");
+        if (r.ok) {
+          this.user = await r.json();
+          this.loggedIn = true;
+          await this.loadDashboard();
+        }
+      } catch {}
     },
 
-    handleLogin() {
-      if (!this.loginForm.username.trim()) {
-        this.loginError = "Please enter a username";
+    async handleLogin() {
+      if (!this.loginForm.username.trim() || !this.loginForm.password.trim()) {
+        this.loginError = "Please enter username and password";
         return;
       }
       this.loginError = "";
-      this.loggedIn = true;
-      sessionStorage.setItem("ollqd_logged_in", "1");
-      sessionStorage.setItem("ollqd_user", this.loginForm.username);
-      this.loadDashboard();
+      this.loginLoading = true;
+      try {
+        const r = await fetch("/api/auth/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(this.loginForm),
+        });
+        const data = await r.json();
+        if (!r.ok) {
+          this.loginError = data.detail || "Login failed";
+          return;
+        }
+        this.user = { username: data.username, role: data.role };
+        this.loggedIn = true;
+        this.loginForm = { username: "", password: "" };
+        await this.loadDashboard();
+      } catch (e) {
+        this.loginError = "Connection error — is the server running?";
+      } finally {
+        this.loginLoading = false;
+      }
     },
 
-    handleLogout() {
+    async handleLogout() {
+      try { await fetch("/api/auth/logout", { method: "POST" }); } catch {}
       this.loggedIn = false;
+      this.user = null;
       this.loginForm = { username: "", password: "" };
-      sessionStorage.removeItem("ollqd_logged_in");
-      sessionStorage.removeItem("ollqd_user");
+    },
+
+    // ── User Management (admin) ──────────────────────────────
+
+    async loadUsers() {
+      try {
+        const r = await fetch("/api/users");
+        if (r.ok) {
+          const data = await r.json();
+          this.userList = data.users || [];
+        }
+      } catch {}
+    },
+
+    async createUser() {
+      this.newUserError = "";
+      if (!this.newUserForm.username.trim() || !this.newUserForm.password.trim()) {
+        this.newUserError = "Username and password are required";
+        return;
+      }
+      try {
+        const r = await fetch("/api/users", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(this.newUserForm),
+        });
+        if (!r.ok) {
+          const data = await r.json();
+          this.newUserError = data.detail || "Failed to create user";
+          return;
+        }
+        this.newUserForm = { username: "", password: "", role: "user" };
+        await this.loadUsers();
+      } catch (e) {
+        this.newUserError = "Connection error";
+      }
+    },
+
+    async deleteUser(username) {
+      if (!confirm(`Delete user "${username}"?`)) return;
+      try {
+        const r = await fetch(`/api/users/${encodeURIComponent(username)}`, { method: "DELETE" });
+        if (!r.ok) {
+          const data = await r.json();
+          alert(data.detail || "Failed to delete user");
+          return;
+        }
+        await this.loadUsers();
+      } catch (e) {
+        alert("Connection error");
+      }
     },
 
     async loadDashboard() {

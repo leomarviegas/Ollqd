@@ -73,9 +73,10 @@
 
         <div x-show="loginError" x-cloak class="text-sm text-red-600 bg-red-50 rounded-lg p-2 text-center" x-text="loginError"></div>
 
-        <button type="submit"
-                class="w-full bg-gradient-to-r from-blue-600 via-purple-600 to-teal-500 hover:from-blue-700 hover:via-purple-700 hover:to-teal-600 text-white py-2.5 rounded-lg text-sm font-semibold shadow-lg hover:shadow-xl transition-all duration-200">
-          Sign In
+        <button type="submit" :disabled="loginLoading"
+                class="w-full bg-gradient-to-r from-blue-600 via-purple-600 to-teal-500 hover:from-blue-700 hover:via-purple-700 hover:to-teal-600 disabled:opacity-50 text-white py-2.5 rounded-lg text-sm font-semibold shadow-lg hover:shadow-xl transition-all duration-200">
+          <span x-show="!loginLoading">Sign In</span>
+          <span x-show="loginLoading" x-cloak><i class="fa-solid fa-spinner fa-spin mr-1"></i> Signing in...</span>
         </button>
       </form>
 
@@ -124,8 +125,17 @@
         </span>
       </div>
     </div>
-    <!-- Logout -->
+    <!-- User + Logout -->
     <div class="p-3 border-t border-gray-700">
+      <div class="flex items-center gap-2 px-3 py-1.5 mb-1">
+        <i class="fa-solid fa-user-circle text-gray-400"></i>
+        <div class="flex-1 min-w-0">
+          <span class="text-xs text-gray-200 block truncate" x-text="user?.username || 'Unknown'"></span>
+          <span class="text-[10px] px-1 py-0.5 rounded"
+                :class="user?.role === 'admin' ? 'bg-amber-600 text-white' : 'bg-gray-600 text-gray-300'"
+                x-text="user?.role || ''"></span>
+        </div>
+      </div>
       <button @click="handleLogout()" class="w-full flex items-center gap-2 px-3 py-2 text-xs text-gray-400 hover:text-white hover:bg-gray-800 rounded-md transition-colors">
         <i class="fa-solid fa-right-from-bracket w-4 text-center"></i>
         <span>Sign Out</span>
@@ -904,6 +914,11 @@
           <button @click="settingsTab = 'privacy'; loadPIIConfig()"
                   :class="settingsTab === 'privacy' ? 'border-purple-600 text-purple-600' : 'border-transparent text-gray-500'"
                   class="px-3 py-2 text-sm font-medium border-b-2 -mb-px"><i class="fa-solid fa-shield-halved mr-1"></i>Privacy</button>
+          <template x-if="user && user.role === 'admin'">
+            <button @click="settingsTab = 'users'; loadUsers()"
+                    :class="settingsTab === 'users' ? 'border-amber-600 text-amber-600' : 'border-transparent text-gray-500'"
+                    class="px-3 py-2 text-sm font-medium border-b-2 -mb-px"><i class="fa-solid fa-users mr-1"></i>Users</button>
+          </template>
         </div>
 
         <!-- General (Ollama + Qdrant) -->
@@ -1344,6 +1359,60 @@
               <div x-show="piiTestResult?.entity_count === 0" class="text-xs text-gray-400 italic">
                 No PII detected in the sample text.
               </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Users (admin only) -->
+        <div x-show="settingsTab === 'users'" class="space-y-4">
+          <div class="bg-white rounded-lg shadow p-4">
+            <h4 class="font-medium text-gray-900 mb-3"><i class="fa-solid fa-users mr-1"></i> User Management</h4>
+
+            <!-- User list -->
+            <div class="space-y-2 mb-4">
+              <template x-for="u in userList" :key="u.username">
+                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                  <div class="flex items-center gap-3">
+                    <i class="fa-solid fa-user-circle text-gray-400 text-lg"></i>
+                    <div>
+                      <span class="text-sm font-medium text-gray-900" x-text="u.username"></span>
+                      <span class="ml-2 text-xs px-1.5 py-0.5 rounded"
+                            :class="u.role === 'admin' ? 'bg-amber-100 text-amber-700' : 'bg-blue-100 text-blue-700'"
+                            x-text="u.role"></span>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span class="text-xs text-gray-400" x-text="u.created_at"></span>
+                    <button @click="deleteUser(u.username)"
+                            x-show="u.username !== user?.username"
+                            class="text-red-400 hover:text-red-600 text-sm px-2 py-1 rounded hover:bg-red-50"
+                            title="Delete user">
+                      <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                  </div>
+                </div>
+              </template>
+              <div x-show="userList.length === 0" class="text-sm text-gray-400 italic p-3">No users found.</div>
+            </div>
+
+            <!-- Create user form -->
+            <div class="border-t border-gray-200 pt-4">
+              <h5 class="text-sm font-medium text-gray-700 mb-2">Create New User</h5>
+              <div class="grid grid-cols-3 gap-2 mb-2">
+                <input x-model="newUserForm.username" type="text" placeholder="Username"
+                       class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-500">
+                <input x-model="newUserForm.password" type="password" placeholder="Password"
+                       class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-500">
+                <select x-model="newUserForm.role"
+                        class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-500">
+                  <option value="user">User</option>
+                  <option value="admin">Admin</option>
+                </select>
+              </div>
+              <div x-show="newUserError" x-cloak class="text-sm text-red-600 bg-red-50 rounded-lg p-2 mb-2" x-text="newUserError"></div>
+              <button @click="createUser()" class="bg-amber-600 hover:bg-amber-700 text-white py-2 px-4 rounded-lg text-sm font-medium w-full">
+                <i class="fa-solid fa-user-plus mr-1"></i> Create User
+              </button>
             </div>
           </div>
         </div>

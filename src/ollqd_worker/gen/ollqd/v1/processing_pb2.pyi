@@ -677,3 +677,79 @@ class SMBBrowseResponse(_message.Message):
     files: _containers.RepeatedCompositeFieldContainer[SMBFileEntry]
     path: str
     def __init__(self, files: _Optional[_Iterable[_Union[SMBFileEntry, _Mapping]]] = ..., path: _Optional[str] = ...) -> None: ...
+
+class LoginRequest(_message.Message):
+    __slots__ = ("username", "password")
+    USERNAME_FIELD_NUMBER: _ClassVar[int]
+    PASSWORD_FIELD_NUMBER: _ClassVar[int]
+    username: str
+    password: str
+    def __init__(self, username: _Optional[str] = ..., password: _Optional[str] = ...) -> None: ...
+
+class LoginResponse(_message.Message):
+    __slots__ = ("success", "error", "username", "role")
+    SUCCESS_FIELD_NUMBER: _ClassVar[int]
+    ERROR_FIELD_NUMBER: _ClassVar[int]
+    USERNAME_FIELD_NUMBER: _ClassVar[int]
+    ROLE_FIELD_NUMBER: _ClassVar[int]
+    success: bool
+    error: str
+    username: str
+    role: str
+    def __init__(self, success: bool = ..., error: _Optional[str] = ..., username: _Optional[str] = ..., role: _Optional[str] = ...) -> None: ...
+
+class ValidateTokenRequest(_message.Message):
+    __slots__ = ("token",)
+    TOKEN_FIELD_NUMBER: _ClassVar[int]
+    token: str
+    def __init__(self, token: _Optional[str] = ...) -> None: ...
+
+class ValidateTokenResponse(_message.Message):
+    __slots__ = ("valid", "username", "role")
+    VALID_FIELD_NUMBER: _ClassVar[int]
+    USERNAME_FIELD_NUMBER: _ClassVar[int]
+    ROLE_FIELD_NUMBER: _ClassVar[int]
+    valid: bool
+    username: str
+    role: str
+    def __init__(self, valid: bool = ..., username: _Optional[str] = ..., role: _Optional[str] = ...) -> None: ...
+
+class ListUsersRequest(_message.Message):
+    __slots__ = ()
+    def __init__(self) -> None: ...
+
+class ListUsersResponse(_message.Message):
+    __slots__ = ("users",)
+    USERS_FIELD_NUMBER: _ClassVar[int]
+    users: _containers.RepeatedCompositeFieldContainer[_types_pb2.User]
+    def __init__(self, users: _Optional[_Iterable[_Union[_types_pb2.User, _Mapping]]] = ...) -> None: ...
+
+class CreateUserRequest(_message.Message):
+    __slots__ = ("username", "password", "role")
+    USERNAME_FIELD_NUMBER: _ClassVar[int]
+    PASSWORD_FIELD_NUMBER: _ClassVar[int]
+    ROLE_FIELD_NUMBER: _ClassVar[int]
+    username: str
+    password: str
+    role: str
+    def __init__(self, username: _Optional[str] = ..., password: _Optional[str] = ..., role: _Optional[str] = ...) -> None: ...
+
+class CreateUserResponse(_message.Message):
+    __slots__ = ("user",)
+    USER_FIELD_NUMBER: _ClassVar[int]
+    user: _types_pb2.User
+    def __init__(self, user: _Optional[_Union[_types_pb2.User, _Mapping]] = ...) -> None: ...
+
+class DeleteUserRequest(_message.Message):
+    __slots__ = ("username",)
+    USERNAME_FIELD_NUMBER: _ClassVar[int]
+    username: str
+    def __init__(self, username: _Optional[str] = ...) -> None: ...
+
+class DeleteUserResponse(_message.Message):
+    __slots__ = ("deleted", "error")
+    DELETED_FIELD_NUMBER: _ClassVar[int]
+    ERROR_FIELD_NUMBER: _ClassVar[int]
+    deleted: bool
+    error: str
+    def __init__(self, deleted: bool = ..., error: _Optional[str] = ...) -> None: ...

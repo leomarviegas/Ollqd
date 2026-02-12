@@ -1688,3 +1688,259 @@ class SMBService(object):
             timeout,
             metadata,
             _registered_method=True)
+
+
+class AuthServiceStub(object):
+    """═══════════════════════════════════════════════════════════
+    AuthService — user authentication and management
+    ═══════════════════════════════════════════════════════════
+
+    """
+
+    def __init__(self, channel):
+        """Constructor.
+
+        Args:
+            channel: A grpc.Channel.
+        """
+        self.Login = channel.unary_unary(
+                '/ollqd.v1.AuthService/Login',
+                request_serializer=ollqd_dot_v1_dot_processing__pb2.LoginRequest.SerializeToString,
+                response_deserializer=ollqd_dot_v1_dot_processing__pb2.LoginResponse.FromString,
+                _registered_method=True)
+        self.ValidateToken = channel.unary_unary(
+                '/ollqd.v1.AuthService/ValidateToken',
+                request_serializer=ollqd_dot_v1_dot_processing__pb2.ValidateTokenRequest.SerializeToString,
+                response_deserializer=ollqd_dot_v1_dot_processing__pb2.ValidateTokenResponse.FromString,
+                _registered_method=True)
+        self.ListUsers = channel.unary_unary(
+                '/ollqd.v1.AuthService/ListUsers',
+                request_serializer=ollqd_dot_v1_dot_processing__pb2.ListUsersRequest.SerializeToString,
+                response_deserializer=ollqd_dot_v1_dot_processing__pb2.ListUsersResponse.FromString,
+                _registered_method=True)
+        self.CreateUser = channel.unary_unary(
+                '/ollqd.v1.AuthService/CreateUser',
+                request_serializer=ollqd_dot_v1_dot_processing__pb2.CreateUserRequest.SerializeToString,
+                response_deserializer=ollqd_dot_v1_dot_processing__pb2.CreateUserResponse.FromString,
+                _registered_method=True)
+        self.DeleteUser = channel.unary_unary(
+                '/ollqd.v1.AuthService/DeleteUser',
+                request_serializer=ollqd_dot_v1_dot_processing__pb2.DeleteUserRequest.SerializeToString,
+                response_deserializer=ollqd_dot_v1_dot_processing__pb2.DeleteUserResponse.FromString,
+                _registered_method=True)
+
+
+class AuthServiceServicer(object):
+    """═══════════════════════════════════════════════════════════
+    AuthService — user authentication and management
+    ═══════════════════════════════════════════════════════════
+
+    """
+
+    def Login(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def ValidateToken(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def ListUsers(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def CreateUser(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def DeleteUser(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+
+def add_AuthServiceServicer_to_server(servicer, server):
+    rpc_method_handlers = {
+            'Login': grpc.unary_unary_rpc_method_handler(
+                    servicer.Login,
+                    request_deserializer=ollqd_dot_v1_dot_processing__pb2.LoginRequest.FromString,
+                    response_serializer=ollqd_dot_v1_dot_processing__pb2.LoginResponse.SerializeToString,
+            ),
+            'ValidateToken': grpc.unary_unary_rpc_method_handler(
+                    servicer.ValidateToken,
+                    request_deserializer=ollqd_dot_v1_dot_processing__pb2.ValidateTokenRequest.FromString,
+                    response_serializer=ollqd_dot_v1_dot_processing__pb2.ValidateTokenResponse.SerializeToString,
+            ),
+            'ListUsers': grpc.unary_unary_rpc_method_handler(
+                    servicer.ListUsers,
+                    request_deserializer=ollqd_dot_v1_dot_processing__pb2.ListUsersRequest.FromString,
+                    response_serializer=ollqd_dot_v1_dot_processing__pb2.ListUsersResponse.SerializeToString,
+            ),
+            'CreateUser': grpc.unary_unary_rpc_method_handler(
+                    servicer.CreateUser,
+                    request_deserializer=ollqd_dot_v1_dot_processing__pb2.CreateUserRequest.FromString,
+                    response_serializer=ollqd_dot_v1_dot_processing__pb2.CreateUserResponse.SerializeToString,
+            ),
+            'DeleteUser': grpc.unary_unary_rpc_method_handler(
+                    servicer.DeleteUser,
+                    request_deserializer=ollqd_dot_v1_dot_processing__pb2.DeleteUserRequest.FromString,
+                    response_serializer=ollqd_dot_v1_dot_processing__pb2.DeleteUserResponse.SerializeToString,
+            ),
+    }
+    generic_handler = grpc.method_handlers_generic_handler(
+            'ollqd.v1.AuthService', rpc_method_handlers)
+    server.add_generic_rpc_handlers((generic_handler,))
+    server.add_registered_method_handlers('ollqd.v1.AuthService', rpc_method_handlers)
+
+
+ # This class is part of an EXPERIMENTAL API.
+class AuthService(object):
+    """═══════════════════════════════════════════════════════════
+    AuthService — user authentication and management
+    ═══════════════════════════════════════════════════════════
+
+    """
+
+    @staticmethod
+    def Login(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/ollqd.v1.AuthService/Login',
+            ollqd_dot_v1_dot_processing__pb2.LoginRequest.SerializeToString,
+            ollqd_dot_v1_dot_processing__pb2.LoginResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def ValidateToken(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/ollqd.v1.AuthService/ValidateToken',
+            ollqd_dot_v1_dot_processing__pb2.ValidateTokenRequest.SerializeToString,
+            ollqd_dot_v1_dot_processing__pb2.ValidateTokenResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def ListUsers(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/ollqd.v1.AuthService/ListUsers',
+            ollqd_dot_v1_dot_processing__pb2.ListUsersRequest.SerializeToString,
+            ollqd_dot_v1_dot_processing__pb2.ListUsersResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def CreateUser(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/ollqd.v1.AuthService/CreateUser',
+            ollqd_dot_v1_dot_processing__pb2.CreateUserRequest.SerializeToString,
+            ollqd_dot_v1_dot_processing__pb2.CreateUserResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def DeleteUser(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/ollqd.v1.AuthService/DeleteUser',
+            ollqd_dot_v1_dot_processing__pb2.DeleteUserRequest.SerializeToString,
+            ollqd_dot_v1_dot_processing__pb2.DeleteUserResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)

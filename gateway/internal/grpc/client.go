@@ -115,6 +115,20 @@ type SMBBrowseRequest = pb.SMBBrowseRequest
 type SMBFileEntry = pb.SMBFileEntry
 type SMBBrowseResponse = pb.SMBBrowseResponse
 
+// --- Auth types ---
+
+type User = pb.User
+type LoginRequest = pb.LoginRequest
+type LoginResponse = pb.LoginResponse
+type ValidateTokenRequest = pb.ValidateTokenRequest
+type ValidateTokenResponse = pb.ValidateTokenResponse
+type ListUsersRequest = pb.ListUsersRequest
+type ListUsersResponse = pb.ListUsersResponse
+type CreateUserRequest = pb.CreateUserRequest
+type CreateUserResponse = pb.CreateUserResponse
+type DeleteUserRequest = pb.DeleteUserRequest
+type DeleteUserResponse = pb.DeleteUserResponse
+
 // ──────────────────────────────────────────────────────────────
 // Stream interfaces.
 //
@@ -231,6 +245,14 @@ type VisualizationServiceClient interface {
 type SMBServiceClient interface {
 	TestConnection(ctx context.Context, req *SMBTestRequest) (*SMBTestResponse, error)
 	Browse(ctx context.Context, req *SMBBrowseRequest) (*SMBBrowseResponse, error)
+}
+
+// AuthServiceClient defines the AuthService RPC methods.
+type AuthServiceClient interface {
+	Login(ctx context.Context, req *LoginRequest) (*LoginResponse, error)
+	ListUsers(ctx context.Context) (*ListUsersResponse, error)
+	CreateUser(ctx context.Context, req *CreateUserRequest) (*CreateUserResponse, error)
+	DeleteUser(ctx context.Context, req *DeleteUserRequest) (*DeleteUserResponse, error)
 }
 
 // ──────────────────────────────────────────────────────────────
@@ -437,6 +459,28 @@ func (a *smbAdapter) Browse(ctx context.Context, req *SMBBrowseRequest) (*SMBBro
 	return a.inner.Browse(ctx, req)
 }
 
+// --- authAdapter ---
+
+type authAdapter struct {
+	inner pb.AuthServiceClient
+}
+
+func (a *authAdapter) Login(ctx context.Context, req *LoginRequest) (*LoginResponse, error) {
+	return a.inner.Login(ctx, req)
+}
+
+func (a *authAdapter) ListUsers(ctx context.Context) (*ListUsersResponse, error) {
+	return a.inner.ListUsers(ctx, &ListUsersRequest{})
+}
+
+func (a *authAdapter) CreateUser(ctx context.Context, req *CreateUserRequest) (*CreateUserResponse, error) {
+	return a.inner.CreateUser(ctx, req)
+}
+
+func (a *authAdapter) DeleteUser(ctx context.Context, req *DeleteUserRequest) (*DeleteUserResponse, error) {
+	return a.inner.DeleteUser(ctx, req)
+}
+
 // ──────────────────────────────────────────────────────────────
 // Client wraps the underlying gRPC connection and all service stubs.
 // ──────────────────────────────────────────────────────────────
@@ -445,7 +489,7 @@ func (a *smbAdapter) Browse(ctx context.Context, req *SMBBrowseRequest) (*SMBBro
 type Client struct {
 	conn *grpc.ClientConn
 
-	// Service stubs (all 8 services)
+	// Service stubs (all 9 services)
 	Indexing      IndexingServiceClient
 	Search        SearchServiceClient
 	Chat          ChatServiceClient
@@ -454,6 +498,7 @@ type Client struct {
 	Config        ConfigServiceClient
 	Visualization VisualizationServiceClient
 	SMB           SMBServiceClient
+	Auth          AuthServiceClient
 }
 
 // NewClient dials the gRPC worker at the given address and returns a Client
@@ -477,6 +522,7 @@ func NewClient(addr string) (*Client, error) {
 		Config:        &configAdapter{inner: pb.NewConfigServiceClient(conn)},
 		Visualization: &visualizationAdapter{inner: pb.NewVisualizationServiceClient(conn)},
 		SMB:           &smbAdapter{inner: pb.NewSMBServiceClient(conn)},
+		Auth:          &authAdapter{inner: pb.NewAuthServiceClient(conn)},
 	}
 
 	return c, nil

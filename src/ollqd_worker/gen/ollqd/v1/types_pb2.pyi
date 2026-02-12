@@ -157,6 +157,16 @@ class DoclingConfig(_message.Message):
     timeout_s: float
     def __init__(self, enabled: bool = ..., ocr_enabled: bool = ..., ocr_engine: _Optional[str] = ..., table_structure: bool = ..., timeout_s: _Optional[float] = ...) -> None: ...
 
+class User(_message.Message):
+    __slots__ = ("username", "role", "created_at")
+    USERNAME_FIELD_NUMBER: _ClassVar[int]
+    ROLE_FIELD_NUMBER: _ClassVar[int]
+    CREATED_AT_FIELD_NUMBER: _ClassVar[int]
+    username: str
+    role: str
+    created_at: str
+    def __init__(self, username: _Optional[str] = ..., role: _Optional[str] = ..., created_at: _Optional[str] = ...) -> None: ...
+
 class AppConfig(_message.Message):
     __slots__ = ("ollama", "qdrant", "chunking", "image", "upload", "pii", "docling", "mounted_paths")
     OLLAMA_FIELD_NUMBER: _ClassVar[int]

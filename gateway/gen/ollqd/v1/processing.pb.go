@@ -3890,6 +3890,510 @@ func (x *SMBBrowseResponse) GetPath() string {
 	return ""
 }
 
+type LoginRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Username      string                 `protobuf:"bytes,1,opt,name=username,proto3" json:"username,omitempty"`
+	Password      string                 `protobuf:"bytes,2,opt,name=password,proto3" json:"password,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *LoginRequest) Reset() {
+	*x = LoginRequest{}
+	mi := &file_ollqd_v1_processing_proto_msgTypes[59]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LoginRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LoginRequest) ProtoMessage() {}
+
+func (x *LoginRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_ollqd_v1_processing_proto_msgTypes[59]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use LoginRequest.ProtoReflect.Descriptor instead.
+func (*LoginRequest) Descriptor() ([]byte, []int) {
+	return file_ollqd_v1_processing_proto_rawDescGZIP(), []int{59}
+}
+
+func (x *LoginRequest) GetUsername() string {
+	if x != nil {
+		return x.Username
+	}
+	return ""
+}
+
+func (x *LoginRequest) GetPassword() string {
+	if x != nil {
+		return x.Password
+	}
+	return ""
+}
+
+type LoginResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
+	Error         string                 `protobuf:"bytes,2,opt,name=error,proto3" json:"error,omitempty"`
+	Username      string                 `protobuf:"bytes,3,opt,name=username,proto3" json:"username,omitempty"`
+	Role          string                 `protobuf:"bytes,4,opt,name=role,proto3" json:"role,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *LoginResponse) Reset() {
+	*x = LoginResponse{}
+	mi := &file_ollqd_v1_processing_proto_msgTypes[60]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LoginResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LoginResponse) ProtoMessage() {}
+
+func (x *LoginResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_ollqd_v1_processing_proto_msgTypes[60]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use LoginResponse.ProtoReflect.Descriptor instead.
+func (*LoginResponse) Descriptor() ([]byte, []int) {
+	return file_ollqd_v1_processing_proto_rawDescGZIP(), []int{60}
+}
+
+func (x *LoginResponse) GetSuccess() bool {
+	if x != nil {
+		return x.Success
+	}
+	return false
+}
+
+func (x *LoginResponse) GetError() string {
+	if x != nil {
+		return x.Error
+	}
+	return ""
+}
+
+func (x *LoginResponse) GetUsername() string {
+	if x != nil {
+		return x.Username
+	}
+	return ""
+}
+
+func (x *LoginResponse) GetRole() string {
+	if x != nil {
+		return x.Role
+	}
+	return ""
+}
+
+type ValidateTokenRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Token         string                 `protobuf:"bytes,1,opt,name=token,proto3" json:"token,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ValidateTokenRequest) Reset() {
+	*x = ValidateTokenRequest{}
+	mi := &file_ollqd_v1_processing_proto_msgTypes[61]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ValidateTokenRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ValidateTokenRequest) ProtoMessage() {}
+
+func (x *ValidateTokenRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_ollqd_v1_processing_proto_msgTypes[61]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ValidateTokenRequest.ProtoReflect.Descriptor instead.
+func (*ValidateTokenRequest) Descriptor() ([]byte, []int) {
+	return file_ollqd_v1_processing_proto_rawDescGZIP(), []int{61}
+}
+
+func (x *ValidateTokenRequest) GetToken() string {
+	if x != nil {
+		return x.Token
+	}
+	return ""
+}
+
+type ValidateTokenResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Valid         bool                   `protobuf:"varint,1,opt,name=valid,proto3" json:"valid,omitempty"`
+	Username      string                 `protobuf:"bytes,2,opt,name=username,proto3" json:"username,omitempty"`
+	Role          string                 `protobuf:"bytes,3,opt,name=role,proto3" json:"role,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ValidateTokenResponse) Reset() {
+	*x = ValidateTokenResponse{}
+	mi := &file_ollqd_v1_processing_proto_msgTypes[62]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ValidateTokenResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ValidateTokenResponse) ProtoMessage() {}
+
+func (x *ValidateTokenResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_ollqd_v1_processing_proto_msgTypes[62]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ValidateTokenResponse.ProtoReflect.Descriptor instead.
+func (*ValidateTokenResponse) Descriptor() ([]byte, []int) {
+	return file_ollqd_v1_processing_proto_rawDescGZIP(), []int{62}
+}
+
+func (x *ValidateTokenResponse) GetValid() bool {
+	if x != nil {
+		return x.Valid
+	}
+	return false
+}
+
+func (x *ValidateTokenResponse) GetUsername() string {
+	if x != nil {
+		return x.Username
+	}
+	return ""
+}
+
+func (x *ValidateTokenResponse) GetRole() string {
+	if x != nil {
+		return x.Role
+	}
+	return ""
+}
+
+type ListUsersRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListUsersRequest) Reset() {
+	*x = ListUsersRequest{}
+	mi := &file_ollqd_v1_processing_proto_msgTypes[63]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListUsersRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListUsersRequest) ProtoMessage() {}
+
+func (x *ListUsersRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_ollqd_v1_processing_proto_msgTypes[63]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListUsersRequest.ProtoReflect.Descriptor instead.
+func (*ListUsersRequest) Descriptor() ([]byte, []int) {
+	return file_ollqd_v1_processing_proto_rawDescGZIP(), []int{63}
+}
+
+type ListUsersResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Users         []*User                `protobuf:"bytes,1,rep,name=users,proto3" json:"users,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListUsersResponse) Reset() {
+	*x = ListUsersResponse{}
+	mi := &file_ollqd_v1_processing_proto_msgTypes[64]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListUsersResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListUsersResponse) ProtoMessage() {}
+
+func (x *ListUsersResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_ollqd_v1_processing_proto_msgTypes[64]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListUsersResponse.ProtoReflect.Descriptor instead.
+func (*ListUsersResponse) Descriptor() ([]byte, []int) {
+	return file_ollqd_v1_processing_proto_rawDescGZIP(), []int{64}
+}
+
+func (x *ListUsersResponse) GetUsers() []*User {
+	if x != nil {
+		return x.Users
+	}
+	return nil
+}
+
+type CreateUserRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Username      string                 `protobuf:"bytes,1,opt,name=username,proto3" json:"username,omitempty"`
+	Password      string                 `protobuf:"bytes,2,opt,name=password,proto3" json:"password,omitempty"`
+	Role          string                 `protobuf:"bytes,3,opt,name=role,proto3" json:"role,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreateUserRequest) Reset() {
+	*x = CreateUserRequest{}
+	mi := &file_ollqd_v1_processing_proto_msgTypes[65]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateUserRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateUserRequest) ProtoMessage() {}
+
+func (x *CreateUserRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_ollqd_v1_processing_proto_msgTypes[65]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateUserRequest.ProtoReflect.Descriptor instead.
+func (*CreateUserRequest) Descriptor() ([]byte, []int) {
+	return file_ollqd_v1_processing_proto_rawDescGZIP(), []int{65}
+}
+
+func (x *CreateUserRequest) GetUsername() string {
+	if x != nil {
+		return x.Username
+	}
+	return ""
+}
+
+func (x *CreateUserRequest) GetPassword() string {
+	if x != nil {
+		return x.Password
+	}
+	return ""
+}
+
+func (x *CreateUserRequest) GetRole() string {
+	if x != nil {
+		return x.Role
+	}
+	return ""
+}
+
+type CreateUserResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	User          *User                  `protobuf:"bytes,1,opt,name=user,proto3" json:"user,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreateUserResponse) Reset() {
+	*x = CreateUserResponse{}
+	mi := &file_ollqd_v1_processing_proto_msgTypes[66]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateUserResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateUserResponse) ProtoMessage() {}
+
+func (x *CreateUserResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_ollqd_v1_processing_proto_msgTypes[66]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateUserResponse.ProtoReflect.Descriptor instead.
+func (*CreateUserResponse) Descriptor() ([]byte, []int) {
+	return file_ollqd_v1_processing_proto_rawDescGZIP(), []int{66}
+}
+
+func (x *CreateUserResponse) GetUser() *User {
+	if x != nil {
+		return x.User
+	}
+	return nil
+}
+
+type DeleteUserRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Username      string                 `protobuf:"bytes,1,opt,name=username,proto3" json:"username,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeleteUserRequest) Reset() {
+	*x = DeleteUserRequest{}
+	mi := &file_ollqd_v1_processing_proto_msgTypes[67]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteUserRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteUserRequest) ProtoMessage() {}
+
+func (x *DeleteUserRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_ollqd_v1_processing_proto_msgTypes[67]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteUserRequest.ProtoReflect.Descriptor instead.
+func (*DeleteUserRequest) Descriptor() ([]byte, []int) {
+	return file_ollqd_v1_processing_proto_rawDescGZIP(), []int{67}
+}
+
+func (x *DeleteUserRequest) GetUsername() string {
+	if x != nil {
+		return x.Username
+	}
+	return ""
+}
+
+type DeleteUserResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Deleted       bool                   `protobuf:"varint,1,opt,name=deleted,proto3" json:"deleted,omitempty"`
+	Error         string                 `protobuf:"bytes,2,opt,name=error,proto3" json:"error,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeleteUserResponse) Reset() {
+	*x = DeleteUserResponse{}
+	mi := &file_ollqd_v1_processing_proto_msgTypes[68]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteUserResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteUserResponse) ProtoMessage() {}
+
+func (x *DeleteUserResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_ollqd_v1_processing_proto_msgTypes[68]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteUserResponse.ProtoReflect.Descriptor instead.
+func (*DeleteUserResponse) Descriptor() ([]byte, []int) {
+	return file_ollqd_v1_processing_proto_rawDescGZIP(), []int{68}
+}
+
+func (x *DeleteUserResponse) GetDeleted() bool {
+	if x != nil {
+		return x.Deleted
+	}
+	return false
+}
+
+func (x *DeleteUserResponse) GetError() string {
+	if x != nil {
+		return x.Error
+	}
+	return ""
+}
+
 var File_ollqd_v1_processing_proto protoreflect.FileDescriptor
 
 const file_ollqd_v1_processing_proto_rawDesc = "" +
@@ -4250,7 +4754,35 @@ const file_ollqd_v1_processing_proto_rawDesc = "" +
 	"\x04path\x18\x04 \x01(\tR\x04path\"U\n" +
 	"\x11SMBBrowseResponse\x12,\n" +
 	"\x05files\x18\x01 \x03(\v2\x16.ollqd.v1.SMBFileEntryR\x05files\x12\x12\n" +
-	"\x04path\x18\x02 \x01(\tR\x04path2\xcd\x03\n" +
+	"\x04path\x18\x02 \x01(\tR\x04path\"F\n" +
+	"\fLoginRequest\x12\x1a\n" +
+	"\busername\x18\x01 \x01(\tR\busername\x12\x1a\n" +
+	"\bpassword\x18\x02 \x01(\tR\bpassword\"o\n" +
+	"\rLoginResponse\x12\x18\n" +
+	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x14\n" +
+	"\x05error\x18\x02 \x01(\tR\x05error\x12\x1a\n" +
+	"\busername\x18\x03 \x01(\tR\busername\x12\x12\n" +
+	"\x04role\x18\x04 \x01(\tR\x04role\",\n" +
+	"\x14ValidateTokenRequest\x12\x14\n" +
+	"\x05token\x18\x01 \x01(\tR\x05token\"]\n" +
+	"\x15ValidateTokenResponse\x12\x14\n" +
+	"\x05valid\x18\x01 \x01(\bR\x05valid\x12\x1a\n" +
+	"\busername\x18\x02 \x01(\tR\busername\x12\x12\n" +
+	"\x04role\x18\x03 \x01(\tR\x04role\"\x12\n" +
+	"\x10ListUsersRequest\"9\n" +
+	"\x11ListUsersResponse\x12$\n" +
+	"\x05users\x18\x01 \x03(\v2\x0e.ollqd.v1.UserR\x05users\"_\n" +
+	"\x11CreateUserRequest\x12\x1a\n" +
+	"\busername\x18\x01 \x01(\tR\busername\x12\x1a\n" +
+	"\bpassword\x18\x02 \x01(\tR\bpassword\x12\x12\n" +
+	"\x04role\x18\x03 \x01(\tR\x04role\"8\n" +
+	"\x12CreateUserResponse\x12\"\n" +
+	"\x04user\x18\x01 \x01(\v2\x0e.ollqd.v1.UserR\x04user\"/\n" +
+	"\x11DeleteUserRequest\x12\x1a\n" +
+	"\busername\x18\x01 \x01(\tR\busername\"D\n" +
+	"\x12DeleteUserResponse\x12\x18\n" +
+	"\adeleted\x18\x01 \x01(\bR\adeleted\x12\x14\n" +
+	"\x05error\x18\x02 \x01(\tR\x05error2\xcd\x03\n" +
 	"\x0fIndexingService\x12I\n" +
 	"\rIndexCodebase\x12\x1e.ollqd.v1.IndexCodebaseRequest\x1a\x16.ollqd.v1.TaskProgress0\x01\x12K\n" +
 	"\x0eIndexDocuments\x12\x1f.ollqd.v1.IndexDocumentsRequest\x1a\x16.ollqd.v1.TaskProgress0\x01\x12E\n" +
@@ -4292,7 +4824,15 @@ const file_ollqd_v1_processing_proto_rawDesc = "" +
 	"\n" +
 	"SMBService\x12E\n" +
 	"\x0eTestConnection\x12\x18.ollqd.v1.SMBTestRequest\x1a\x19.ollqd.v1.SMBTestResponse\x12A\n" +
-	"\x06Browse\x12\x1a.ollqd.v1.SMBBrowseRequest\x1a\x1b.ollqd.v1.SMBBrowseResponseB9Z7github.com/alfagnish/ollqd-gateway/gen/ollqd/v1;ollqdv1b\x06proto3"
+	"\x06Browse\x12\x1a.ollqd.v1.SMBBrowseRequest\x1a\x1b.ollqd.v1.SMBBrowseResponse2\xf1\x02\n" +
+	"\vAuthService\x128\n" +
+	"\x05Login\x12\x16.ollqd.v1.LoginRequest\x1a\x17.ollqd.v1.LoginResponse\x12P\n" +
+	"\rValidateToken\x12\x1e.ollqd.v1.ValidateTokenRequest\x1a\x1f.ollqd.v1.ValidateTokenResponse\x12D\n" +
+	"\tListUsers\x12\x1a.ollqd.v1.ListUsersRequest\x1a\x1b.ollqd.v1.ListUsersResponse\x12G\n" +
+	"\n" +
+	"CreateUser\x12\x1b.ollqd.v1.CreateUserRequest\x1a\x1c.ollqd.v1.CreateUserResponse\x12G\n" +
+	"\n" +
+	"DeleteUser\x12\x1b.ollqd.v1.DeleteUserRequest\x1a\x1c.ollqd.v1.DeleteUserResponseB9Z7github.com/alfagnish/ollqd-gateway/gen/ollqd/v1;ollqdv1b\x06proto3"
 
 var (
 	file_ollqd_v1_processing_proto_rawDescOnce sync.Once
@@ -4306,7 +4846,7 @@ func file_ollqd_v1_processing_proto_rawDescGZIP() []byte {
 	return file_ollqd_v1_processing_proto_rawDescData
 }
 
-var file_ollqd_v1_processing_proto_msgTypes = make([]protoimpl.MessageInfo, 59)
+var file_ollqd_v1_processing_proto_msgTypes = make([]protoimpl.MessageInfo, 69)
 var file_ollqd_v1_processing_proto_goTypes = []any{
 	(*IndexCodebaseRequest)(nil),       // 0: ollqd.v1.IndexCodebaseRequest
 	(*IndexDocumentsRequest)(nil),      // 1: ollqd.v1.IndexDocumentsRequest
@@ -4367,13 +4907,24 @@ var file_ollqd_v1_processing_proto_goTypes = []any{
 	(*SMBBrowseRequest)(nil),           // 56: ollqd.v1.SMBBrowseRequest
 	(*SMBFileEntry)(nil),               // 57: ollqd.v1.SMBFileEntry
 	(*SMBBrowseResponse)(nil),          // 58: ollqd.v1.SMBBrowseResponse
-	(*SearchHit)(nil),                  // 59: ollqd.v1.SearchHit
-	(*TaskProgress)(nil),               // 60: ollqd.v1.TaskProgress
-	(*AppConfig)(nil),                  // 61: ollqd.v1.AppConfig
+	(*LoginRequest)(nil),               // 59: ollqd.v1.LoginRequest
+	(*LoginResponse)(nil),              // 60: ollqd.v1.LoginResponse
+	(*ValidateTokenRequest)(nil),       // 61: ollqd.v1.ValidateTokenRequest
+	(*ValidateTokenResponse)(nil),      // 62: ollqd.v1.ValidateTokenResponse
+	(*ListUsersRequest)(nil),           // 63: ollqd.v1.ListUsersRequest
+	(*ListUsersResponse)(nil),          // 64: ollqd.v1.ListUsersResponse
+	(*CreateUserRequest)(nil),          // 65: ollqd.v1.CreateUserRequest
+	(*CreateUserResponse)(nil),         // 66: ollqd.v1.CreateUserResponse
+	(*DeleteUserRequest)(nil),          // 67: ollqd.v1.DeleteUserRequest
+	(*DeleteUserResponse)(nil),         // 68: ollqd.v1.DeleteUserResponse
+	(*SearchHit)(nil),                  // 69: ollqd.v1.SearchHit
+	(*User)(nil),                       // 70: ollqd.v1.User
+	(*TaskProgress)(nil),               // 71: ollqd.v1.TaskProgress
+	(*AppConfig)(nil),                  // 72: ollqd.v1.AppConfig
 }
 var file_ollqd_v1_processing_proto_depIdxs = []int32{
-	59, // 0: ollqd.v1.SearchResponse.results:type_name -> ollqd.v1.SearchHit
-	59, // 1: ollqd.v1.ChatEvent.sources:type_name -> ollqd.v1.SearchHit
+	69, // 0: ollqd.v1.SearchResponse.results:type_name -> ollqd.v1.SearchHit
+	69, // 1: ollqd.v1.ChatEvent.sources:type_name -> ollqd.v1.SearchHit
 	17, // 2: ollqd.v1.CompareModelsResponse.model1:type_name -> ollqd.v1.ModelTestResult
 	17, // 3: ollqd.v1.CompareModelsResponse.model2:type_name -> ollqd.v1.ModelTestResult
 	21, // 4: ollqd.v1.TestMaskingResponse.entities:type_name -> ollqd.v1.PIIEntity
@@ -4384,73 +4935,85 @@ var file_ollqd_v1_processing_proto_depIdxs = []int32{
 	46, // 9: ollqd.v1.FileTreeResponse.edges:type_name -> ollqd.v1.VisEdge
 	52, // 10: ollqd.v1.VectorsResponse.points:type_name -> ollqd.v1.VectorPoint
 	57, // 11: ollqd.v1.SMBBrowseResponse.files:type_name -> ollqd.v1.SMBFileEntry
-	0,  // 12: ollqd.v1.IndexingService.IndexCodebase:input_type -> ollqd.v1.IndexCodebaseRequest
-	1,  // 13: ollqd.v1.IndexingService.IndexDocuments:input_type -> ollqd.v1.IndexDocumentsRequest
-	2,  // 14: ollqd.v1.IndexingService.IndexImages:input_type -> ollqd.v1.IndexImagesRequest
-	3,  // 15: ollqd.v1.IndexingService.IndexUploads:input_type -> ollqd.v1.IndexUploadsRequest
-	4,  // 16: ollqd.v1.IndexingService.IndexSMBFiles:input_type -> ollqd.v1.IndexSMBFilesRequest
-	5,  // 17: ollqd.v1.IndexingService.CancelTask:input_type -> ollqd.v1.CancelTaskRequest
-	7,  // 18: ollqd.v1.SearchService.Search:input_type -> ollqd.v1.SearchRequest
-	8,  // 19: ollqd.v1.SearchService.SearchCollection:input_type -> ollqd.v1.SearchCollectionRequest
-	10, // 20: ollqd.v1.ChatService.Chat:input_type -> ollqd.v1.ChatRequest
-	12, // 21: ollqd.v1.EmbeddingService.GetInfo:input_type -> ollqd.v1.GetEmbeddingInfoRequest
-	14, // 22: ollqd.v1.EmbeddingService.TestEmbed:input_type -> ollqd.v1.TestEmbedRequest
-	16, // 23: ollqd.v1.EmbeddingService.CompareModels:input_type -> ollqd.v1.CompareModelsRequest
-	19, // 24: ollqd.v1.EmbeddingService.SetModel:input_type -> ollqd.v1.SetEmbedModelRequest
-	20, // 25: ollqd.v1.PIIService.TestMasking:input_type -> ollqd.v1.TestMaskingRequest
-	23, // 26: ollqd.v1.ConfigService.GetConfig:input_type -> ollqd.v1.GetConfigRequest
-	24, // 27: ollqd.v1.ConfigService.UpdateMountedPaths:input_type -> ollqd.v1.UpdateMountedPathsRequest
-	26, // 28: ollqd.v1.ConfigService.UpdatePII:input_type -> ollqd.v1.UpdatePIIRequest
-	28, // 29: ollqd.v1.ConfigService.UpdateDocling:input_type -> ollqd.v1.UpdateDoclingRequest
-	30, // 30: ollqd.v1.ConfigService.UpdateDistance:input_type -> ollqd.v1.UpdateDistanceRequest
-	32, // 31: ollqd.v1.ConfigService.UpdateOllama:input_type -> ollqd.v1.UpdateOllamaRequest
-	34, // 32: ollqd.v1.ConfigService.UpdateQdrant:input_type -> ollqd.v1.UpdateQdrantRequest
-	36, // 33: ollqd.v1.ConfigService.UpdateChunking:input_type -> ollqd.v1.UpdateChunkingRequest
-	38, // 34: ollqd.v1.ConfigService.UpdateImage:input_type -> ollqd.v1.UpdateImageRequest
-	40, // 35: ollqd.v1.ConfigService.GetPIIConfig:input_type -> ollqd.v1.GetPIIConfigRequest
-	41, // 36: ollqd.v1.ConfigService.GetDoclingConfig:input_type -> ollqd.v1.GetDoclingConfigRequest
-	42, // 37: ollqd.v1.ConfigService.ResetConfig:input_type -> ollqd.v1.ResetConfigRequest
-	44, // 38: ollqd.v1.VisualizationService.Overview:input_type -> ollqd.v1.OverviewRequest
-	49, // 39: ollqd.v1.VisualizationService.FileTree:input_type -> ollqd.v1.FileTreeRequest
-	51, // 40: ollqd.v1.VisualizationService.Vectors:input_type -> ollqd.v1.VectorsRequest
-	54, // 41: ollqd.v1.SMBService.TestConnection:input_type -> ollqd.v1.SMBTestRequest
-	56, // 42: ollqd.v1.SMBService.Browse:input_type -> ollqd.v1.SMBBrowseRequest
-	60, // 43: ollqd.v1.IndexingService.IndexCodebase:output_type -> ollqd.v1.TaskProgress
-	60, // 44: ollqd.v1.IndexingService.IndexDocuments:output_type -> ollqd.v1.TaskProgress
-	60, // 45: ollqd.v1.IndexingService.IndexImages:output_type -> ollqd.v1.TaskProgress
-	60, // 46: ollqd.v1.IndexingService.IndexUploads:output_type -> ollqd.v1.TaskProgress
-	60, // 47: ollqd.v1.IndexingService.IndexSMBFiles:output_type -> ollqd.v1.TaskProgress
-	6,  // 48: ollqd.v1.IndexingService.CancelTask:output_type -> ollqd.v1.CancelTaskResponse
-	9,  // 49: ollqd.v1.SearchService.Search:output_type -> ollqd.v1.SearchResponse
-	9,  // 50: ollqd.v1.SearchService.SearchCollection:output_type -> ollqd.v1.SearchResponse
-	11, // 51: ollqd.v1.ChatService.Chat:output_type -> ollqd.v1.ChatEvent
-	13, // 52: ollqd.v1.EmbeddingService.GetInfo:output_type -> ollqd.v1.EmbeddingInfoResponse
-	15, // 53: ollqd.v1.EmbeddingService.TestEmbed:output_type -> ollqd.v1.TestEmbedResponse
-	18, // 54: ollqd.v1.EmbeddingService.CompareModels:output_type -> ollqd.v1.CompareModelsResponse
-	13, // 55: ollqd.v1.EmbeddingService.SetModel:output_type -> ollqd.v1.EmbeddingInfoResponse
-	22, // 56: ollqd.v1.PIIService.TestMasking:output_type -> ollqd.v1.TestMaskingResponse
-	61, // 57: ollqd.v1.ConfigService.GetConfig:output_type -> ollqd.v1.AppConfig
-	25, // 58: ollqd.v1.ConfigService.UpdateMountedPaths:output_type -> ollqd.v1.UpdateMountedPathsResponse
-	27, // 59: ollqd.v1.ConfigService.UpdatePII:output_type -> ollqd.v1.PIIConfigResponse
-	29, // 60: ollqd.v1.ConfigService.UpdateDocling:output_type -> ollqd.v1.DoclingConfigResponse
-	31, // 61: ollqd.v1.ConfigService.UpdateDistance:output_type -> ollqd.v1.UpdateDistanceResponse
-	33, // 62: ollqd.v1.ConfigService.UpdateOllama:output_type -> ollqd.v1.OllamaConfigResponse
-	35, // 63: ollqd.v1.ConfigService.UpdateQdrant:output_type -> ollqd.v1.QdrantConfigResponse
-	37, // 64: ollqd.v1.ConfigService.UpdateChunking:output_type -> ollqd.v1.ChunkingConfigResponse
-	39, // 65: ollqd.v1.ConfigService.UpdateImage:output_type -> ollqd.v1.ImageConfigResponse
-	27, // 66: ollqd.v1.ConfigService.GetPIIConfig:output_type -> ollqd.v1.PIIConfigResponse
-	29, // 67: ollqd.v1.ConfigService.GetDoclingConfig:output_type -> ollqd.v1.DoclingConfigResponse
-	43, // 68: ollqd.v1.ConfigService.ResetConfig:output_type -> ollqd.v1.ResetConfigResponse
-	48, // 69: ollqd.v1.VisualizationService.Overview:output_type -> ollqd.v1.OverviewResponse
-	50, // 70: ollqd.v1.VisualizationService.FileTree:output_type -> ollqd.v1.FileTreeResponse
-	53, // 71: ollqd.v1.VisualizationService.Vectors:output_type -> ollqd.v1.VectorsResponse
-	55, // 72: ollqd.v1.SMBService.TestConnection:output_type -> ollqd.v1.SMBTestResponse
-	58, // 73: ollqd.v1.SMBService.Browse:output_type -> ollqd.v1.SMBBrowseResponse
-	43, // [43:74] is the sub-list for method output_type
-	12, // [12:43] is the sub-list for method input_type
-	12, // [12:12] is the sub-list for extension type_name
-	12, // [12:12] is the sub-list for extension extendee
-	0,  // [0:12] is the sub-list for field type_name
+	70, // 12: ollqd.v1.ListUsersResponse.users:type_name -> ollqd.v1.User
+	70, // 13: ollqd.v1.CreateUserResponse.user:type_name -> ollqd.v1.User
+	0,  // 14: ollqd.v1.IndexingService.IndexCodebase:input_type -> ollqd.v1.IndexCodebaseRequest
+	1,  // 15: ollqd.v1.IndexingService.IndexDocuments:input_type -> ollqd.v1.IndexDocumentsRequest
+	2,  // 16: ollqd.v1.IndexingService.IndexImages:input_type -> ollqd.v1.IndexImagesRequest
+	3,  // 17: ollqd.v1.IndexingService.IndexUploads:input_type -> ollqd.v1.IndexUploadsRequest
+	4,  // 18: ollqd.v1.IndexingService.IndexSMBFiles:input_type -> ollqd.v1.IndexSMBFilesRequest
+	5,  // 19: ollqd.v1.IndexingService.CancelTask:input_type -> ollqd.v1.CancelTaskRequest
+	7,  // 20: ollqd.v1.SearchService.Search:input_type -> ollqd.v1.SearchRequest
+	8,  // 21: ollqd.v1.SearchService.SearchCollection:input_type -> ollqd.v1.SearchCollectionRequest
+	10, // 22: ollqd.v1.ChatService.Chat:input_type -> ollqd.v1.ChatRequest
+	12, // 23: ollqd.v1.EmbeddingService.GetInfo:input_type -> ollqd.v1.GetEmbeddingInfoRequest
+	14, // 24: ollqd.v1.EmbeddingService.TestEmbed:input_type -> ollqd.v1.TestEmbedRequest
+	16, // 25: ollqd.v1.EmbeddingService.CompareModels:input_type -> ollqd.v1.CompareModelsRequest
+	19, // 26: ollqd.v1.EmbeddingService.SetModel:input_type -> ollqd.v1.SetEmbedModelRequest
+	20, // 27: ollqd.v1.PIIService.TestMasking:input_type -> ollqd.v1.TestMaskingRequest
+	23, // 28: ollqd.v1.ConfigService.GetConfig:input_type -> ollqd.v1.GetConfigRequest
+	24, // 29: ollqd.v1.ConfigService.UpdateMountedPaths:input_type -> ollqd.v1.UpdateMountedPathsRequest
+	26, // 30: ollqd.v1.ConfigService.UpdatePII:input_type -> ollqd.v1.UpdatePIIRequest
+	28, // 31: ollqd.v1.ConfigService.UpdateDocling:input_type -> ollqd.v1.UpdateDoclingRequest
+	30, // 32: ollqd.v1.ConfigService.UpdateDistance:input_type -> ollqd.v1.UpdateDistanceRequest
+	32, // 33: ollqd.v1.ConfigService.UpdateOllama:input_type -> ollqd.v1.UpdateOllamaRequest
+	34, // 34: ollqd.v1.ConfigService.UpdateQdrant:input_type -> ollqd.v1.UpdateQdrantRequest
+	36, // 35: ollqd.v1.ConfigService.UpdateChunking:input_type -> ollqd.v1.UpdateChunkingRequest
+	38, // 36: ollqd.v1.ConfigService.UpdateImage:input_type -> ollqd.v1.UpdateImageRequest
+	40, // 37: ollqd.v1.ConfigService.GetPIIConfig:input_type -> ollqd.v1.GetPIIConfigRequest
+	41, // 38: ollqd.v1.ConfigService.GetDoclingConfig:input_type -> ollqd.v1.GetDoclingConfigRequest
+	42, // 39: ollqd.v1.ConfigService.ResetConfig:input_type -> ollqd.v1.ResetConfigRequest
+	44, // 40: ollqd.v1.VisualizationService.Overview:input_type -> ollqd.v1.OverviewRequest
+	49, // 41: ollqd.v1.VisualizationService.FileTree:input_type -> ollqd.v1.FileTreeRequest
+	51, // 42: ollqd.v1.VisualizationService.Vectors:input_type -> ollqd.v1.VectorsRequest
+	54, // 43: ollqd.v1.SMBService.TestConnection:input_type -> ollqd.v1.SMBTestRequest
+	56, // 44: ollqd.v1.SMBService.Browse:input_type -> ollqd.v1.SMBBrowseRequest
+	59, // 45: ollqd.v1.AuthService.Login:input_type -> ollqd.v1.LoginRequest
+	61, // 46: ollqd.v1.AuthService.ValidateToken:input_type -> ollqd.v1.ValidateTokenRequest
+	63, // 47: ollqd.v1.AuthService.ListUsers:input_type -> ollqd.v1.ListUsersRequest
+	65, // 48: ollqd.v1.AuthService.CreateUser:input_type -> ollqd.v1.CreateUserRequest
+	67, // 49: ollqd.v1.AuthService.DeleteUser:input_type -> ollqd.v1.DeleteUserRequest
+	71, // 50: ollqd.v1.IndexingService.IndexCodebase:output_type -> ollqd.v1.TaskProgress
+	71, // 51: ollqd.v1.IndexingService.IndexDocuments:output_type -> ollqd.v1.TaskProgress
+	71, // 52: ollqd.v1.IndexingService.IndexImages:output_type -> ollqd.v1.TaskProgress
+	71, // 53: ollqd.v1.IndexingService.IndexUploads:output_type -> ollqd.v1.TaskProgress
+	71, // 54: ollqd.v1.IndexingService.IndexSMBFiles:output_type -> ollqd.v1.TaskProgress
+	6,  // 55: ollqd.v1.IndexingService.CancelTask:output_type -> ollqd.v1.CancelTaskResponse
+	9,  // 56: ollqd.v1.SearchService.Search:output_type -> ollqd.v1.SearchResponse
+	9,  // 57: ollqd.v1.SearchService.SearchCollection:output_type -> ollqd.v1.SearchResponse
+	11, // 58: ollqd.v1.ChatService.Chat:output_type -> ollqd.v1.ChatEvent
+	13, // 59: ollqd.v1.EmbeddingService.GetInfo:output_type -> ollqd.v1.EmbeddingInfoResponse
+	15, // 60: ollqd.v1.EmbeddingService.TestEmbed:output_type -> ollqd.v1.TestEmbedResponse
+	18, // 61: ollqd.v1.EmbeddingService.CompareModels:output_type -> ollqd.v1.CompareModelsResponse
+	13, // 62: ollqd.v1.EmbeddingService.SetModel:output_type -> ollqd.v1.EmbeddingInfoResponse
+	22, // 63: ollqd.v1.PIIService.TestMasking:output_type -> ollqd.v1.TestMaskingResponse
+	72, // 64: ollqd.v1.ConfigService.GetConfig:output_type -> ollqd.v1.AppConfig
+	25, // 65: ollqd.v1.ConfigService.UpdateMountedPaths:output_type -> ollqd.v1.UpdateMountedPathsResponse
+	27, // 66: ollqd.v1.ConfigService.UpdatePII:output_type -> ollqd.v1.PIIConfigResponse
+	29, // 67: ollqd.v1.ConfigService.UpdateDocling:output_type -> ollqd.v1.DoclingConfigResponse
+	31, // 68: ollqd.v1.ConfigService.UpdateDistance:output_type -> ollqd.v1.UpdateDistanceResponse
+	33, // 69: ollqd.v1.ConfigService.UpdateOllama:output_type -> ollqd.v1.OllamaConfigResponse
+	35, // 70: ollqd.v1.ConfigService.UpdateQdrant:output_type -> ollqd.v1.QdrantConfigResponse
+	37, // 71: ollqd.v1.ConfigService.UpdateChunking:output_type -> ollqd.v1.ChunkingConfigResponse
+	39, // 72: ollqd.v1.ConfigService.UpdateImage:output_type -> ollqd.v1.ImageConfigResponse
+	27, // 73: ollqd.v1.ConfigService.GetPIIConfig:output_type -> ollqd.v1.PIIConfigResponse
+	29, // 74: ollqd.v1.ConfigService.GetDoclingConfig:output_type -> ollqd.v1.DoclingConfigResponse
+	43, // 75: ollqd.v1.ConfigService.ResetConfig:output_type -> ollqd.v1.ResetConfigResponse
+	48, // 76: ollqd.v1.VisualizationService.Overview:output_type -> ollqd.v1.OverviewResponse
+	50, // 77: ollqd.v1.VisualizationService.FileTree:output_type -> ollqd.v1.FileTreeResponse
+	53, // 78: ollqd.v1.VisualizationService.Vectors:output_type -> ollqd.v1.VectorsResponse
+	55, // 79: ollqd.v1.SMBService.TestConnection:output_type -> ollqd.v1.SMBTestResponse
+	58, // 80: ollqd.v1.SMBService.Browse:output_type -> ollqd.v1.SMBBrowseResponse
+	60, // 81: ollqd.v1.AuthService.Login:output_type -> ollqd.v1.LoginResponse
+	62, // 82: ollqd.v1.AuthService.ValidateToken:output_type -> ollqd.v1.ValidateTokenResponse
+	64, // 83: ollqd.v1.AuthService.ListUsers:output_type -> ollqd.v1.ListUsersResponse
+	66, // 84: ollqd.v1.AuthService.CreateUser:output_type -> ollqd.v1.CreateUserResponse
+	68, // 85: ollqd.v1.AuthService.DeleteUser:output_type -> ollqd.v1.DeleteUserResponse
+	50, // [50:86] is the sub-list for method output_type
+	14, // [14:50] is the sub-list for method input_type
+	14, // [14:14] is the sub-list for extension type_name
+	14, // [14:14] is the sub-list for extension extendee
+	0,  // [0:14] is the sub-list for field type_name
 }
 
 func init() { file_ollqd_v1_processing_proto_init() }
@@ -4471,9 +5034,9 @@ func file_ollqd_v1_processing_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_ollqd_v1_processing_proto_rawDesc), len(file_ollqd_v1_processing_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   59,
+			NumMessages:   69,
 			NumExtensions: 0,
-			NumServices:   8,
+			NumServices:   9,
 		},
 		GoTypes:           file_ollqd_v1_processing_proto_goTypes,
 		DependencyIndexes: file_ollqd_v1_processing_proto_depIdxs,

@@ -797,6 +797,66 @@ func (x *DoclingConfig) GetTimeoutS() float64 {
 	return 0
 }
 
+type User struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Username      string                 `protobuf:"bytes,1,opt,name=username,proto3" json:"username,omitempty"`
+	Role          string                 `protobuf:"bytes,2,opt,name=role,proto3" json:"role,omitempty"`
+	CreatedAt     string                 `protobuf:"bytes,3,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *User) Reset() {
+	*x = User{}
+	mi := &file_ollqd_v1_types_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *User) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*User) ProtoMessage() {}
+
+func (x *User) ProtoReflect() protoreflect.Message {
+	mi := &file_ollqd_v1_types_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use User.ProtoReflect.Descriptor instead.
+func (*User) Descriptor() ([]byte, []int) {
+	return file_ollqd_v1_types_proto_rawDescGZIP(), []int{10}
+}
+
+func (x *User) GetUsername() string {
+	if x != nil {
+		return x.Username
+	}
+	return ""
+}
+
+func (x *User) GetRole() string {
+	if x != nil {
+		return x.Role
+	}
+	return ""
+}
+
+func (x *User) GetCreatedAt() string {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return ""
+}
+
 type AppConfig struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Ollama        *OllamaConfig          `protobuf:"bytes,1,opt,name=ollama,proto3" json:"ollama,omitempty"`
@@ -813,7 +873,7 @@ type AppConfig struct {
 
 func (x *AppConfig) Reset() {
 	*x = AppConfig{}
-	mi := &file_ollqd_v1_types_proto_msgTypes[10]
+	mi := &file_ollqd_v1_types_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -825,7 +885,7 @@ func (x *AppConfig) String() string {
 func (*AppConfig) ProtoMessage() {}
 
 func (x *AppConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_ollqd_v1_types_proto_msgTypes[10]
+	mi := &file_ollqd_v1_types_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -838,7 +898,7 @@ func (x *AppConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AppConfig.ProtoReflect.Descriptor instead.
 func (*AppConfig) Descriptor() ([]byte, []int) {
-	return file_ollqd_v1_types_proto_rawDescGZIP(), []int{10}
+	return file_ollqd_v1_types_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *AppConfig) GetOllama() *OllamaConfig {
@@ -979,7 +1039,12 @@ const file_ollqd_v1_types_proto_rawDesc = "" +
 	"\n" +
 	"ocr_engine\x18\x03 \x01(\tR\tocrEngine\x12'\n" +
 	"\x0ftable_structure\x18\x04 \x01(\bR\x0etableStructure\x12\x1b\n" +
-	"\ttimeout_s\x18\x05 \x01(\x01R\btimeoutS\"\xfd\x02\n" +
+	"\ttimeout_s\x18\x05 \x01(\x01R\btimeoutS\"U\n" +
+	"\x04User\x12\x1a\n" +
+	"\busername\x18\x01 \x01(\tR\busername\x12\x12\n" +
+	"\x04role\x18\x02 \x01(\tR\x04role\x12\x1d\n" +
+	"\n" +
+	"created_at\x18\x03 \x01(\tR\tcreatedAt\"\xfd\x02\n" +
 	"\tAppConfig\x12.\n" +
 	"\x06ollama\x18\x01 \x01(\v2\x16.ollqd.v1.OllamaConfigR\x06ollama\x12.\n" +
 	"\x06qdrant\x18\x02 \x01(\v2\x16.ollqd.v1.QdrantConfigR\x06qdrant\x124\n" +
@@ -1002,7 +1067,7 @@ func file_ollqd_v1_types_proto_rawDescGZIP() []byte {
 	return file_ollqd_v1_types_proto_rawDescData
 }
 
-var file_ollqd_v1_types_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
+var file_ollqd_v1_types_proto_msgTypes = make([]protoimpl.MessageInfo, 13)
 var file_ollqd_v1_types_proto_goTypes = []any{
 	(*Chunk)(nil),          // 0: ollqd.v1.Chunk
 	(*SearchHit)(nil),      // 1: ollqd.v1.SearchHit
@@ -1014,11 +1079,12 @@ var file_ollqd_v1_types_proto_goTypes = []any{
 	(*UploadConfig)(nil),   // 7: ollqd.v1.UploadConfig
 	(*PIIConfig)(nil),      // 8: ollqd.v1.PIIConfig
 	(*DoclingConfig)(nil),  // 9: ollqd.v1.DoclingConfig
-	(*AppConfig)(nil),      // 10: ollqd.v1.AppConfig
-	nil,                    // 11: ollqd.v1.TaskProgress.ResultEntry
+	(*User)(nil),           // 10: ollqd.v1.User
+	(*AppConfig)(nil),      // 11: ollqd.v1.AppConfig
+	nil,                    // 12: ollqd.v1.TaskProgress.ResultEntry
 }
 var file_ollqd_v1_types_proto_depIdxs = []int32{
-	11, // 0: ollqd.v1.TaskProgress.result:type_name -> ollqd.v1.TaskProgress.ResultEntry
+	12, // 0: ollqd.v1.TaskProgress.result:type_name -> ollqd.v1.TaskProgress.ResultEntry
 	3,  // 1: ollqd.v1.AppConfig.ollama:type_name -> ollqd.v1.OllamaConfig
 	4,  // 2: ollqd.v1.AppConfig.qdrant:type_name -> ollqd.v1.QdrantConfig
 	5,  // 3: ollqd.v1.AppConfig.chunking:type_name -> ollqd.v1.ChunkingConfig
@@ -1044,7 +1110,7 @@ func file_ollqd_v1_types_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_ollqd_v1_types_proto_rawDesc), len(file_ollqd_v1_types_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   12,
+			NumMessages:   13,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

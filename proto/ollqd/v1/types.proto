@@ -89,6 +89,12 @@ message DoclingConfig {
   double timeout_s = 5;
 }
 
+message User {
+  string username = 1;
+  string role = 2;
+  string created_at = 3;
+}
+
 message AppConfig {
   OllamaConfig   ollama = 1;
   QdrantConfig   qdrant = 2;

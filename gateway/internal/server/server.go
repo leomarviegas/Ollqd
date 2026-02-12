@@ -10,6 +10,7 @@ import (
 	"github.com/alfagnish/ollqd-gateway/internal/docker"
 	grpcclient "github.com/alfagnish/ollqd-gateway/internal/grpc"
 	"github.com/alfagnish/ollqd-gateway/internal/handlers"
+	authmw "github.com/alfagnish/ollqd-gateway/internal/middleware"
 	"github.com/alfagnish/ollqd-gateway/internal/proxy"
 	"github.com/alfagnish/ollqd-gateway/internal/tasks"
 	"github.com/go-chi/chi/v5"
@@ -49,6 +50,8 @@ func New(cfg *config.Config, gc *grpcclient.Client, tm *tasks.Manager) (http.Han
 	dm := docker.New(cfg.DockerSocket)
 
 	// ── Handlers ────────────────────────────────────────────
+	authH := handlers.NewAuthHandler(cfg, gc)
+	usersH := handlers.NewUsersHandler(gc)
 	systemH := handlers.NewSystemHandler(cfg, gc, dm)
 	ollamaH := handlers.NewOllamaHandler(ollamaProxy, cfg.OllamaURL)
 	qdrantH := handlers.NewQdrantHandler(qdrantProxy, cfg.QdrantURL, gc)
@@ -59,20 +62,34 @@ func New(cfg *config.Config, gc *grpcclient.Client, tm *tasks.Manager) (http.Han
 	smbH := handlers.NewSMBHandler(gc, tm)
 	imageH := handlers.NewImageHandler(cfg)
 
-	// ── Route groups ────────────────────────────────────────
-	r.Route("/api/system", systemH.Routes)
-	r.Route("/api/ollama", ollamaH.Routes)
-	r.Route("/api/qdrant", qdrantH.Routes)
+	// ── Public routes (no auth) ─────────────────────────────
+	r.Route("/api/auth", authH.Routes)
+	r.Get("/api/health", systemH.Health)
 
-	r.Route("/api/rag", func(r chi.Router) {
-		ragH.Routes(r)
-		r.Route("/tasks", tasksH.Routes)
-		r.Route("/upload", uploadH.Routes)
-		r.Route("/ws", wsH.Routes)
-		r.Route("/image", imageH.Routes)
+	// ── Protected routes (auth required) ────────────────────
+	r.Group(func(r chi.Router) {
+		r.Use(authmw.RequireAuth(cfg.JWTSecret))
+
+		r.Route("/api/system", systemH.Routes)
+		r.Route("/api/ollama", ollamaH.Routes)
+		r.Route("/api/qdrant", qdrantH.Routes)
+
+		r.Route("/api/rag", func(r chi.Router) {
+			ragH.Routes(r)
+			r.Route("/tasks", tasksH.Routes)
+			r.Route("/upload", uploadH.Routes)
+			r.Route("/ws", wsH.Routes)
+			r.Route("/image", imageH.Routes)
+		})
+
+		r.Route("/api/smb", smbH.Routes)
+
+		// Admin-only user management
+		r.Route("/api/users", func(r chi.Router) {
+			r.Use(authmw.RequireAdmin)
+			usersH.Routes(r)
+		})
 	})
-
-	r.Route("/api/smb", smbH.Routes)
 
 	return r, nil
 }
