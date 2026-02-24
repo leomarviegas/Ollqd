@@ -1,7 +1,7 @@
 import { Page, expect } from '@playwright/test';
 
 /** Gateway API base URL (Go service) */
-export const GATEWAY_URL = process.env.GATEWAY_URL || 'http://localhost:8000';
+export const GATEWAY_URL = process.env.GATEWAY_URL || 'http://localhost:18000';
 
 /**
  * Log in to the Ollqd WebUI.

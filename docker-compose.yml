@@ -3,8 +3,8 @@ services:
     image: qdrant/qdrant:latest
     container_name: ollqd-qdrant
     ports:
-      - "6333:6333"   # REST API
-      - "6334:6334"   # gRPC
+      - "16333:6333"   # REST API
+      - "16334:6334"   # gRPC
     volumes:
       - qdrant_data:/qdrant/storage
     environment:
@@ -16,7 +16,7 @@ services:
     container_name: ollqd-ollama
     entrypoint: ["/bin/bash", "/ollama-entrypoint.sh"]
     ports:
-      - "11434:11434"
+      - "21434:11434"
     volumes:
       - ollama_data:/root/.ollama
       - ./ollama-entrypoint.sh:/ollama-entrypoint.sh:ro
@@ -39,7 +39,7 @@ services:
     build: ./web
     container_name: ollqd-web
     ports:
-      - "3000:80"
+      - "13100:80"
     restart: unless-stopped
 
   # Legacy FastAPI web service (kept for reference)
@@ -47,7 +47,7 @@ services:
     build: .
     container_name: ollqd-web-legacy
     ports:
-      - "8001:8000"
+      - "18001:8000"
     volumes:
       - /Users/alfagnish/VSCode:/Users/alfagnish/VSCode:ro
       - /tmp:/tmp
@@ -76,7 +76,7 @@ services:
     expose:
       - "50051"
     ports:
-      - "50051:50051"
+      - "15051:50051"
     volumes:
       - /Users/alfagnish/VSCode:/Users/alfagnish/VSCode:ro
       - /tmp:/tmp
@@ -103,7 +103,7 @@ services:
       dockerfile: Dockerfile.gateway
     container_name: ollqd-gateway
     ports:
-      - "8000:8000"
+      - "18000:8000"
     volumes:
       - uploads_data:/uploads
       - /var/run/docker.sock:/var/run/docker.sock

@@ -52,9 +52,9 @@ if $RUN_ALL; then
 fi
 
 # Export environment
-export GATEWAY_URL="${GATEWAY_URL:-http://localhost:8000}"
-export WEB_URL="${WEB_URL:-http://localhost:3000}"
-export WORKER_ADDR="${WORKER_ADDR:-localhost:50051}"
+export GATEWAY_URL="${GATEWAY_URL:-http://localhost:18000}"
+export WEB_URL="${WEB_URL:-http://localhost:13100}"
+export WORKER_ADDR="${WORKER_ADDR:-localhost:15051}"
 export HEALTH_TIMEOUT="${HEALTH_TIMEOUT:-120}"
 
 # Colors

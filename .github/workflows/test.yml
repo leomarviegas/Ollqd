@@ -8,9 +8,9 @@ on:
   workflow_dispatch:
 
 env:
-  GATEWAY_URL: http://localhost:8000
-  WEB_URL: http://localhost:3000
-  WORKER_ADDR: localhost:50051
+  GATEWAY_URL: http://localhost:18000
+  WEB_URL: http://localhost:13100
+  WORKER_ADDR: localhost:15051
   HEALTH_TIMEOUT: "180"
 
 jobs:
@@ -54,7 +54,7 @@ jobs:
         run: |
           elapsed=0
           while [ $elapsed -lt 180 ]; do
-            if curl -sf http://localhost:8000/api/system/health > /dev/null 2>&1; then
+            if curl -sf http://localhost:18000/api/system/health > /dev/null 2>&1; then
               echo "Gateway is healthy after ${elapsed}s"
               exit 0
             fi
@@ -69,7 +69,7 @@ jobs:
         run: |
           elapsed=0
           while [ $elapsed -lt 60 ]; do
-            if curl -sf http://localhost:8000/api/qdrant/collections > /dev/null 2>&1; then
+            if curl -sf http://localhost:18000/api/qdrant/collections > /dev/null 2>&1; then
               echo "Qdrant reachable after ${elapsed}s"
               exit 0
             fi

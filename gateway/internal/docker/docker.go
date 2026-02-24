@@ -140,7 +140,7 @@ func (m *Manager) EnsureContainer(ctx context.Context, name string) error {
 		"HostConfig": map[string]interface{}{
 			"PortBindings": map[string]interface{}{
 				"11434/tcp": []map[string]string{
-					{"HostIp": "", "HostPort": "11434"},
+					{"HostIp": "", "HostPort": "21434"},
 				},
 			},
 			"Binds": []string{

@@ -20,11 +20,11 @@ except ImportError:
 # ---------------------------------------------------------------------------
 # Environment defaults
 # ---------------------------------------------------------------------------
-GATEWAY_URL = os.getenv("GATEWAY_URL", "http://localhost:8000")
-WORKER_ADDR = os.getenv("WORKER_ADDR", "localhost:50051")
-WEB_URL = os.getenv("WEB_URL", "http://localhost:3000")
-OLLAMA_URL = os.getenv("OLLAMA_URL", "http://localhost:11434")
-QDRANT_URL = os.getenv("QDRANT_URL", "http://localhost:6333")
+GATEWAY_URL = os.getenv("GATEWAY_URL", "http://localhost:18000")
+WORKER_ADDR = os.getenv("WORKER_ADDR", "localhost:15051")
+WEB_URL = os.getenv("WEB_URL", "http://localhost:13100")
+OLLAMA_URL = os.getenv("OLLAMA_URL", "http://localhost:21434")
+QDRANT_URL = os.getenv("QDRANT_URL", "http://localhost:16333")
 
 FIXTURES_DIR = Path(__file__).parent / "fixtures"
 ARTIFACTS_DIR = Path(__file__).parent.parent / "artifacts"

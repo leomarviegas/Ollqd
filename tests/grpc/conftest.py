@@ -29,8 +29,8 @@ except ImportError:
 # ---------------------------------------------------------------------------
 # Environment
 # ---------------------------------------------------------------------------
-WORKER_ADDR = os.getenv("WORKER_ADDR", "localhost:50051")
-OLLAMA_URL = os.getenv("OLLAMA_URL", "http://localhost:11434")
+WORKER_ADDR = os.getenv("WORKER_ADDR", "localhost:15051")
+OLLAMA_URL = os.getenv("OLLAMA_URL", "http://localhost:21434")
 FIXTURES_DIR = Path(__file__).resolve().parents[1] / "fixtures"
 
 # ---------------------------------------------------------------------------
